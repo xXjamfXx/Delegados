@@ -1359,10 +1359,17 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
             .on("mouseover", function(event, d) {
     const depto = d.properties.NOMBRE_DPT;
     
-    // 🔥 SOLUCIÓN: Usar la función de mapeo para obtener el nombre CORRECTO
-    const nombreCorregido = mapearNombreDepartamento(depto);
-    const delegadosReales = delegadosPorDepartamento[nombreCorregido] || [];
-    const cantidadDelegados = delegadosReales.length;
+    // SOLUCIÓN DIRECTA: Buscar coincidencias en los nombres
+    let cantidadDelegados = 0;
+    
+    // Buscar en todos los departamentos
+    Object.keys(delegadosPorDepartamento).forEach(nombreDepto => {
+        if (depto === nombreDepto || 
+            depto.toLowerCase().includes(nombreDepto.toLowerCase()) ||
+            nombreDepto.toLowerCase().includes(depto.toLowerCase())) {
+            cantidadDelegados = delegadosPorDepartamento[nombreDepto].length;
+        }
+    });
     
     tooltip.transition().duration(200).style("opacity", .9);
     tooltip.html(`<strong>${depto}</strong><br/>${cantidadDelegados} delegado${cantidadDelegados !== 1 ? 's' : ''}`)
