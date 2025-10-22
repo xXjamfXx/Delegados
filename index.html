@@ -1554,6 +1554,7 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
             function mostrarDelegados(nombreDepartamento) {
                  console.log("🔍 Departamento clickeado:", nombreDepartamento);
     console.log("📋 Todos los departamentos en datos:", Object.keys(delegadosPorDepartamento));
+                    console.log("🔍 NOMBRE EXACTO en GeoJSON:", d.properties.NOMBRE_DPT); // Agrega esta línea
                 const delegados = delegadosPorDepartamento[nombreDepartamento] || [];
                 const searchTerm = searchInput.value.toLowerCase();
                 const comisionSeleccionada = comisionFilter.value;
