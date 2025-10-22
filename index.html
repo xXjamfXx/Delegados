@@ -1357,16 +1357,20 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
             .attr("d", path)
             .attr("data-depto", d => d.properties.NOMBRE_DPT)
             .on("mouseover", function(event, d) {
-                const depto = d.properties.NOMBRE_DPT;
-                const delegados = delegadosPorDepartamento[depto] || [];
-                
-                tooltip.transition().duration(200).style("opacity", .9);
-                tooltip.html(`<strong>${depto}</strong><br/>${delegados.length} delegado${delegados.length !== 1 ? 's' : ''}`)
-                    .style("left", (event.pageX + 10) + "px")
-                    .style("top", (event.pageY - 28) + "px");
+    const depto = d.properties.NOMBRE_DPT;
+    
+    // 🔥 SOLUCIÓN: Usar la función de mapeo para obtener el nombre CORRECTO
+    const nombreCorregido = mapearNombreDepartamento(depto);
+    const delegadosReales = delegadosPorDepartamento[nombreCorregido] || [];
+    const cantidadDelegados = delegadosReales.length;
+    
+    tooltip.transition().duration(200).style("opacity", .9);
+    tooltip.html(`<strong>${depto}</strong><br/>${cantidadDelegados} delegado${cantidadDelegados !== 1 ? 's' : ''}`)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 28) + "px");
 
-                d3.select(this).style("fill", "#004d99");
-            })
+    d3.select(this).style("fill", "#004d99");
+})
             .on("mouseout", function(d) {
                 tooltip.transition().duration(500).style("opacity", 0);
                 d3.select(this).style("fill", "#e6f2ff");
