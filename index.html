@@ -1372,13 +1372,13 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
                 d3.select(this).style("fill", "#e6f2ff");
             })
             .on("click", function(event, d) {
-    const depto = mapearNombreDepartamento(d.properties.NOMBRE_DPT);
-                mostrarDelegados(depto);
-                
-                // Resaltar selección
-                g.selectAll(".department-path").style("fill", "#e6f2ff");
-                d3.select(this).style("fill", "#003366");
-            });
+    const depto = d.properties.NOMBRE_DPT;
+    mostrarDelegados(depto);
+    
+    // Resaltar selección
+    g.selectAll(".department-path").style("fill", "#e6f2ff");
+    d3.select(this).style("fill", "#003366");
+})
 
         // LUEGO ETIQUETAS
         g.selectAll("text")
@@ -1442,53 +1442,14 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
 
             // Función para mapear nombres entre GeoJSON y datos
             function mapearNombreDepartamento(nombreGeoJSON) {
-    console.log("🔍 Mapeando departamento:", nombreGeoJSON);
-    
     const mapeo = {
-        // Nombres largos del mapa → Nombres cortos de tus datos
         "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés",
         "Bogotá D.C.": "Bogotá D.C.",
-        "La Guajira": "La Guajira", 
-        "Norte de Santander": "Norte de Santander",
-        
-        // Agregar TODOS los departamentos para seguridad
-        "Amazonas": "Amazonas",
-        "Antioquia": "Antioquia", 
-        "Arauca": "Arauca",
-        "Atlántico": "Atlántico",
-        "Bolívar": "Bolívar",
-        "Boyacá": "Boyacá",
-        "Caldas": "Caldas", 
-        "Caquetá": "Caquetá",
-        "Casanare": "Casanare",
-        "Cauca": "Cauca",
-        "Cesar": "Cesar",
-        "Chocó": "Chocó",
-        "Córdoba": "Córdoba",
-        "Cundinamarca": "Cundinamarca", 
-        "Guainía": "Guainía",
-        "Guaviare": "Guaviare",
-        "Huila": "Huila",
-        "Magdalena": "Magdalena",
-        "Meta": "Meta",
-        "Nariño": "Nariño",
-        "Putumayo": "Putumayo",
-        "Quindío": "Quindío",
-        "Risaralda": "Risaralda", 
-        "Santander": "Santander",
-        "Sucre": "Sucre",
-        "Tolima": "Tolima",
-        "Valle del Cauca": "Valle del Cauca",
-        "Vaupés": "Vaupés",
-        "Vichada": "Vichada"
+        "La Guajira": "La Guajira",
+        "Norte de Santander": "Norte de Santander"
     };
-    
-    const resultado = mapeo[nombreGeoJSON] || nombreGeoJSON;
-    console.log("✅ Resultado mapeo:", resultado);
-    return resultado;
-};
-                return mapeo[nombreGeoJSON] || nombreGeoJSON;
-            }
+    return mapeo[nombreGeoJSON] || nombreGeoJSON;
+}
 
             // Actualizar mapa basado en filtros
             function actualizarMapaConFiltros() {
