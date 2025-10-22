@@ -1552,11 +1552,27 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
             }
 
             // Mostrar delegados en modal
+                        // Mostrar delegados en modal
             function mostrarDelegados(nombreDepartamento) {
-                console.log("🔍 Departamento clickeado:", nombreDepartamento);
-                console.log("📋 Todos los departamentos en datos:", Object.keys(delegadosPorDepartamento));
+                console.log("=== DEBUG DELEGADOS ===");
+                console.log("🔍 Departamento recibido:", nombreDepartamento);
+                console.log("📋 Todos los departamentos disponibles:", Object.keys(delegadosPorDepartamento));
                 
+                // Verificar coincidencia EXACTA
+                const coincideExacto = Object.keys(delegadosPorDepartamento).includes(nombreDepartamento);
+                console.log("✅ ¿Coincide exacto?", coincideExacto);
+                
+                // Buscar coincidencias parciales
+                const coincidencias = Object.keys(delegadosPorDepartamento).filter(depto => 
+                    depto.toLowerCase().includes(nombreDepartamento.toLowerCase()) ||
+                    nombreDepartamento.toLowerCase().includes(depto.toLowerCase())
+                );
+                console.log("🔍 Coincidencias encontradas:", coincidencias);
+
                 const delegados = delegadosPorDepartamento[nombreDepartamento] || [];
+                console.log("👥 Delegados encontrados:", delegados);
+                console.log("=== FIN DEBUG ===");
+
                 const searchTerm = searchInput.value.toLowerCase();
                 const comisionSeleccionada = comisionFilter.value;
                 const departamentoSeleccionado = departamentoFilter.value;
@@ -1577,6 +1593,7 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
                     listaDelegados.innerHTML = `
                         <div class="no-results">
                             <p>No hay delegados que coincidan con los filtros aplicados.</p>
+                            <p><small>Departamento: ${nombreDepartamento}</small></p>
                         </div>
                     `;
                 } else {
@@ -1599,7 +1616,6 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
 
                 modal.style.display = 'block';
             }
-
             function cerrarModal() {
                 modal.style.display = 'none';
                 // Limpiar selección del mapa
