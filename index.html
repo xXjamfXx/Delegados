@@ -1343,6 +1343,8 @@
                             .fitSize([width, height], colombia);
 
                         const path = d3.geoPath().projection(projection);
+                        console.log("GeoJSON cargado:", colombia);
+                        console.log("Primer departamento:", colombia.features[0]);
 
                         // Dibujar departamentos
                         g.selectAll("path")
