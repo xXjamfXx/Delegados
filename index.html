@@ -1408,7 +1408,7 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
         `;
     });
             }
-            // Cargar opciones de filtros
+            //             // Cargar opciones de filtros
             function cargarFiltros() {
                 departamentosData = Object.keys(delegadosPorDepartamento).sort();
 
@@ -1451,63 +1451,44 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
                 return mapeo[nombreGeoJSON] || nombreGeoJSON;
             }
 
-                // Agregar opciones de comisión al select
-                comisionFilter.innerHTML = '<option value="">Todas las comisiones</option>';
-                [...comisionesUnicas].sort().forEach(comision => {
-                    const option = document.createElement('option');
-                    option.value = comision;
-                    option.textContent = comision;
-                    comisionFilter.appendChild(option);
-                });
-
-                // Agregar opciones de departamento al select
-                departamentoFilter.innerHTML = '<option value="">Todos los departamentos</option>';
-                departamentosData.forEach(depto => {
-                    const option = document.createElement('option');
-                    option.value = depto;
-                    option.textContent = depto;
-                    departamentoFilter.appendChild(option);
-                });
-            }
-
             // Actualizar mapa basado en filtros
             function actualizarMapaConFiltros() {
-    if (!mapaCargado) return;
+                if (!mapaCargado) return;
 
-    const searchTerm = searchInput.value.toLowerCase();
-    const comisionSeleccionada = comisionFilter.value;
-    const departamentoSeleccionado = departamentoFilter.value;
+                const searchTerm = searchInput.value.toLowerCase();
+                const comisionSeleccionada = comisionFilter.value;
+                const departamentoSeleccionado = departamentoFilter.value;
 
-    d3.selectAll(".department-path")
-        .style("opacity", function(d) {
-            const depto = d.properties.NOMBRE_DPT;
-            const delegados = delegadosPorDepartamento[depto] || [];
-            
-            const tieneDelegadosFiltrados = delegados.some(delegado => {
-                const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
-                const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                const coincideDepartamento = !departamentoSeleccionado || depto === departamentoSeleccionado;
-                
-                return coincideNombre && coincideComision && coincideDepartamento;
-            });
+                d3.selectAll(".department-path")
+                    .style("opacity", function(d) {
+                        const depto = d.properties.NOMBRE_DPT;
+                        const delegados = delegadosPorDepartamento[depto] || [];
+                        
+                        const tieneDelegadosFiltrados = delegados.some(delegado => {
+                            const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
+                            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+                            const coincideDepartamento = !departamentoSeleccionado || depto === departamentoSeleccionado;
+                            
+                            return coincideNombre && coincideComision && coincideDepartamento;
+                        });
 
-            return tieneDelegadosFiltrados ? 1 : 0.3;
-        })
-        .style("pointer-events", function(d) {
-            const depto = d.properties.NOMBRE_DPT;
-            const delegados = delegadosPorDepartamento[depto] || [];
-            
-            const tieneDelegadosFiltrados = delegados.some(delegado => {
-                const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
-                const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                const coincideDepartamento = !departamentoSeleccionado || depto === departamentoSeleccionado;
-                
-                return coincideNombre && coincideComision && coincideDepartamento;
-            });
+                        return tieneDelegadosFiltrados ? 1 : 0.3;
+                    })
+                    .style("pointer-events", function(d) {
+                        const depto = d.properties.NOMBRE_DPT;
+                        const delegados = delegadosPorDepartamento[depto] || [];
+                        
+                        const tieneDelegadosFiltrados = delegados.some(delegado => {
+                            const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
+                            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+                            const coincideDepartamento = !departamentoSeleccionado || depto === departamentoSeleccionado;
+                            
+                            return coincideNombre && coincideComision && coincideDepartamento;
+                        });
 
-            return tieneDelegadosFiltrados ? "all" : "none";
-        });
-}
+                        return tieneDelegadosFiltrados ? "all" : "none";
+                    });
+            }
 
             // Agregar event listeners
             function agregarEventListeners() {
@@ -1572,9 +1553,9 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
 
             // Mostrar delegados en modal
             function mostrarDelegados(nombreDepartamento) {
-                 console.log("🔍 Departamento clickeado:", nombreDepartamento);
-    console.log("📋 Todos los departamentos en datos:", Object.keys(delegadosPorDepartamento));
-                    console.log("🔍 NOMBRE EXACTO en GeoJSON:", d.properties.NOMBRE_DPT); // Agrega esta línea
+                console.log("🔍 Departamento clickeado:", nombreDepartamento);
+                console.log("📋 Todos los departamentos en datos:", Object.keys(delegadosPorDepartamento));
+                
                 const delegados = delegadosPorDepartamento[nombreDepartamento] || [];
                 const searchTerm = searchInput.value.toLowerCase();
                 const comisionSeleccionada = comisionFilter.value;
@@ -1624,7 +1605,6 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
                 // Limpiar selección del mapa
                 d3.selectAll(".department-path").classed("seleccionado", false);
             }
-
             // Inicializar la aplicación
             inicializar();
         });
