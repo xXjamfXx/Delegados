@@ -1357,12 +1357,43 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
             .attr("d", path)
             .attr("data-depto", d => d.properties.NOMBRE_DPT)
   .on("mouseover", function(event, d) {
-    const depto = d.properties.NOMBRE_DPT;
-    const nombreCorregido = mapearNombreDepartamento(depto);
-    const delegados = delegadosPorDepartamento[nombreCorregido] || [];
+    const deptoMapa = d.properties.NOMBRE_DPT;
+    
+    // BUSCAR COINCIDENCIA INTELIGENTE
+    let cantidad = 0;
+    let departamentoEncontrado = "";
+    
+    // Normalizar nombre del mapa (minúsculas, sin tildes)
+    const nombreNormalizado = deptoMapa
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
+        .replace(/[^a-z0-9 ]/g, '') // solo letras y números
+        .replace(/\s+/g, ' ') // espacios múltiples a simple
+        .trim();
+    
+    // Buscar en todos los departamentos
+    Object.keys(delegadosPorDepartamento).forEach(nombreDepto => {
+        // Normalizar nombre del departamento en datos
+        const nombreDeptoNormalizado = nombreDepto
+            .toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9 ]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        
+        // Verificar coincidencia
+        if (nombreNormalizado === nombreDeptoNormalizado || 
+            nombreNormalizado.includes(nombreDeptoNormalizado) ||
+            nombreDeptoNormalizado.includes(nombreNormalizado)) {
+            departamentoEncontrado = nombreDepto;
+            cantidad = delegadosPorDepartamento[nombreDepto].length;
+        }
+    });
+    
+    console.log("🔍 Mapa:", deptoMapa, "| 📊 Datos:", departamentoEncontrado, "| 👥 Cantidad:", cantidad);
     
     tooltip.transition().duration(200).style("opacity", .9);
-    tooltip.html(`<strong>${depto}</strong><br/>${delegados.length} delegado${delegados.length !== 1 ? 's' : ''}`)
+    tooltip.html(`<strong>${deptoMapa}</strong><br/>${cantidad} delegado${cantidad !== 1 ? 's' : ''}`)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 28) + "px");
 
