@@ -1533,30 +1533,53 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     const departamentoSeleccionado = departamentoFilter.value;
 
     d3.selectAll(".department-path")
-        .style("opacity", 1) // ✅ SIEMPRE visible
-        .style("pointer-events", "all") // ✅ SIEMPRE clickeable
         .classed("filtrado", function(d) {
-            const depto = d.properties.NOMBRE_DPT;
+            const deptoMapa = d.properties.NOMBRE_DPT;
             
-            // Buscar el departamento CORRECTO en los datos
+            // 🔥 BUSCAR COINCIDENCIA INTELIGENTE entre mapa y datos
             let departamentoEncontrado = "";
+            let delegadosDelDepto = [];
+            
+            // Normalizar nombre del mapa
+            const nombreMapaNormalizado = deptoMapa
+                .toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9 ]/g, '')
+                .trim();
+            
+            // Buscar coincidencia en datos
             Object.keys(delegadosPorDepartamento).forEach(nombreDepto => {
-                if (depto === nombreDepto) {
+                const nombreDeptoNormalizado = nombreDepto
+                    .toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-z0-9 ]/g, '')
+                    .trim();
+                
+                if (nombreMapaNormalizado === nombreDeptoNormalizado) {
                     departamentoEncontrado = nombreDepto;
+                    delegadosDelDepto = delegadosPorDepartamento[nombreDepto] || [];
                 }
             });
             
-            const delegados = delegadosPorDepartamento[departamentoEncontrado] || [];
+            // Si no se encontró el departamento en datos, mostrar tenue
+            if (delegadosDelDepto.length === 0) return true;
             
-            const tieneDelegadosFiltrados = delegados.some(delegado => {
-                const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
+            // Aplicar filtros
+            const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
+                const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
                 const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
                 const coincideDepartamento = !departamentoSeleccionado || departamentoEncontrado === departamentoSeleccionado;
                 
                 return coincideNombre && coincideComision && coincideDepartamento;
             });
 
-            // Si NO tiene delegados que coincidan con los filtros, aplicar estilo tenue
+            // 🔥 RESALTAR departamento que coincide con filtro de departamento
+            if (departamentoSeleccionado && departamentoEncontrado === departamentoSeleccionado) {
+                d3.select(this).style("fill", "#003366"); // Resaltar
+            } else {
+                d3.select(this).style("fill", "#e6f2ff"); // Color normal
+            }
+
             return !tieneDelegadosFiltrados;
         });
 }
