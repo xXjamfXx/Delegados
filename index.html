@@ -1356,20 +1356,12 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
             .attr("class", "department-path")
             .attr("d", path)
             .attr("data-depto", d => d.properties.NOMBRE_DPT)
-            .on("mouseover", function(event, d) {
+  .on("mouseover", function(event, d) {
     const depto = d.properties.NOMBRE_DPT;
-    
-    // SOLUCIÓN MÁS SIMPLE
-    let cantidad = 0;
-    for (let nombreDepto in delegadosPorDepartamento) {
-        if (depto === nombreDepto) {
-            cantidad = delegadosPorDepartamento[nombreDepto].length;
-            break;
-        }
-    }
+    const delegados = delegadosPorDepartamento[depto] || [];
     
     tooltip.transition().duration(200).style("opacity", .9);
-    tooltip.html(`<strong>${depto}</strong><br/>${cantidad} delegado${cantidad !== 1 ? 's' : ''}`)
+    tooltip.html(`<strong>${depto}</strong><br/>${delegados.length} delegado${delegados.length !== 1 ? 's' : ''}`)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 28) + "px");
 
