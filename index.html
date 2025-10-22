@@ -193,9 +193,9 @@
         }
 
         #colombia-map {
-            width: 100%;
-            height: 600px;
-            background: #f8fbff;
+    width: 100%;
+    height: 800px;
+    background: #f8fbff;
             border-radius: 10px;
             overflow: hidden;
         }
@@ -1372,7 +1372,7 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
                 d3.select(this).style("fill", "#e6f2ff");
             })
             .on("click", function(event, d) {
-                const depto = d.properties.NOMBRE_DPT;
+    const depto = mapearNombreDepartamento(d.properties.NOMBRE_DPT);
                 mostrarDelegados(depto);
                 
                 // Resaltar selección
@@ -1418,7 +1418,16 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
                     delegados.forEach(delegado => {
                         if (delegado.comision) {
                             comisionesUnicas.add(delegado.comision);
-                        }
+                        } 
+                        function mapearNombreDepartamento(nombreGeoJSON) {
+    const mapeo = {
+        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés",
+        "Bogotá D.C.": "Bogotá D.C.",
+        "La Guajira": "La Guajira",
+        "Norte de Santander": "Norte de Santander"
+    };
+    return mapeo[nombreGeoJSON] || nombreGeoJSON;
+}
                     });
                 });
 
@@ -1529,6 +1538,8 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
 
             // Mostrar delegados en modal
             function mostrarDelegados(nombreDepartamento) {
+                 console.log("🔍 Departamento clickeado:", nombreDepartamento);
+    console.log("📋 Todos los departamentos en datos:", Object.keys(delegadosPorDepartamento));
                 const delegados = delegadosPorDepartamento[nombreDepartamento] || [];
                 const searchTerm = searchInput.value.toLowerCase();
                 const comisionSeleccionada = comisionFilter.value;
