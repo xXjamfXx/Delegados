@@ -1327,9 +1327,11 @@
                 const height = 1000;
 
                 const svg = d3.select("#colombia-map")
-                    .append("svg")
-                    .attr("width", width)
-                    .attr("height", height);
+                    const svg = d3.select("#colombia-map")
+    .append("svg")
+    .attr("width", "100%")    // ✅ OCUPAR TODO EL ANCHO
+    .attr("height", "100%")   // ✅ OCUPAR TODO EL ALTO
+    .attr("viewBox", `0 0 ${width} ${height}`); // ✅ MANTENER PROPORCIONES
 
                 const g = svg.append("g");
 
@@ -1347,9 +1349,10 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
         
         // Proyección más simple
         const projection = d3.geoMercator()
-            .center([-74, 4.5])
-            .scale(1200)
-            .translate([width / 2, height / 2]);
+    .center([-74, 4.5])
+    .scale(1200)              // 🔥 AUMENTA ESTE NÚMERO
+    .scale(1500)              // ✅ MÁS GRANDE
+    .translate([width / 2, height / 2]);
 
         const path = d3.geoPath().projection(projection);
 
