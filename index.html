@@ -1552,26 +1552,106 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
             }
 
             // Mostrar delegados en modal
-                        // Mostrar delegados en modal
-            function mostrarDelegados(nombreDepartamento) {
-                console.log("=== DEBUG DELEGADOS ===");
-                console.log("🔍 Departamento recibido:", nombreDepartamento);
-                console.log("📋 Todos los departamentos disponibles:", Object.keys(delegadosPorDepartamento));
-                
-                // Verificar coincidencia EXACTA
-                const coincideExacto = Object.keys(delegadosPorDepartamento).includes(nombreDepartamento);
-                console.log("✅ ¿Coincide exacto?", coincideExacto);
-                
-                // Buscar coincidencias parciales
-                const coincidencias = Object.keys(delegadosPorDepartamento).filter(depto => 
-                    depto.toLowerCase().includes(nombreDepartamento.toLowerCase()) ||
-                    nombreDepartamento.toLowerCase().includes(depto.toLowerCase())
-                );
-                console.log("🔍 Coincidencias encontradas:", coincidencias);
+                        // Mostrar delegados en modal// ==================================================
+// SISTEMA DE CORRECCIÓN DE DEPARTAMENTOS
+// ==================================================
+class NormalizadorDepartamentos {
+    constructor() {
+        this.correcciones = {
+            "casamare": "Casanare",
+            "bogota d.c.": "Bogotá D.C.", 
+            "bogota dc": "Bogotá D.C.",
+            "bogota": "Bogotá D.C.",
+            "la gugiira": "La Guajira",
+            "gugiira": "La Guajira",
+            "botivar": "Bolívar",
+            "gustafa": "Guainía",
+            "hullo": "Huila",
+            "nurillo": "Nariño",
+            "otando": "Quindío",
+            "risardada": "Risaralda",
+            "tolana": "Tolima",
+            "vuques": "Vaupés",
+            "aduito mayor": "Adulto Mayor",
+            "persona con discapacidad": "Persona con discapacidad",
+            "victimas": "Víctimas"
+        };
+    }
 
-                const delegados = delegadosPorDepartamento[nombreDepartamento] || [];
-                console.log("👥 Delegados encontrados:", delegados);
-                console.log("=== FIN DEBUG ===");
+    normalizarTexto(texto) {
+        if (!texto) return '';
+        return texto.toString()
+            .toLowerCase()
+            .trim()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9 ]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    corregirDepartamento(departamento) {
+        if (!departamento) return null;
+        const normalizado = this.normalizarTexto(departamento);
+        
+        if (this.correcciones[normalizado]) {
+            return this.correcciones[normalizado];
+        }
+        
+        return this.capitalizarTexto(departamento);
+    }
+
+    capitalizarTexto(texto) {
+        return texto.toLowerCase()
+            .split(' ')
+            .map(palabra => {
+                if (palabra === 'd.c.') return 'D.C.';
+                if (palabra === 'dc') return 'D.C.';
+                return palabra.charAt(0).toUpperCase() + palabra.slice(1);
+            })
+            .join(' ');
+    }
+
+    encontrarMejorCoincidencia(departamentoBuscado, listaDepartamentos) {
+        const corregido = this.corregirDepartamento(departamentoBuscado);
+        const normalizadoBuscado = this.normalizarTexto(corregido);
+
+        const coincidencias = listaDepartamentos.filter(depto => {
+            const normalizadoDisponible = this.normalizarTexto(depto);
+            return normalizadoDisponible === normalizadoBuscado;
+        });
+
+        return {
+            departamentoOriginal: departamentoBuscado,
+            departamentoCorregido: corregido,
+            coincidenciasExactas: coincidencias,
+            mejorCoincidencia: coincidencias.length > 0 ? coincidencias[0] : null,
+            encontrado: coincidencias.length > 0
+        };
+    }
+}
+
+// FUNCIÓN MEJORADA PARA MOSTRAR DELEGADOS
+function mostrarDelegados(nombreDepartamento) {
+    const normalizador = new NormalizadorDepartamentos();
+    const todosDepartamentos = Object.keys(delegadosPorDepartamento);
+    
+    console.log("=== DEBUG MEJORADO DELEGADOS ===");
+    console.log("🔍 Departamento recibido:", nombreDepartamento);
+    console.log("📋 Todos los departamentos disponibles:", todosDepartamentos);
+    
+    // CORREGIR EL NOMBRE DEL DEPARTAMENTO
+    const resultadoCorreccion = normalizador.encontrarMejorCoincidencia(nombreDepartamento, todosDepartamentos);
+    
+    console.log("🔄 Departamento corregido:", resultadoCorreccion.departamentoCorregido);
+    console.log("✅ ¿Coincidencia encontrada?", resultadoCorreccion.encontrado);
+    console.log("🎯 Mejor coincidencia:", resultadoCorreccion.mejorCoincidencia);
+    
+    // USAR EL DEPARTAMENTO CORREGIDO para buscar delegados
+    const departamentoFinal = resultadoCorreccion.encontrado ? resultadoCorreccion.mejorCoincidencia : nombreDepartamento;
+    const delegados = delegadosPorDepartamento[departamentoFinal] || [];
+    
+    console.log("👥 Delegados encontrados para", departamentoFinal + ":", delegados);
+    console.log("=== FIN DEBUG MEJORADO ===");
 
                 const searchTerm = searchInput.value.toLowerCase();
                 const comisionSeleccionada = comisionFilter.value;
