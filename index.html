@@ -1531,77 +1531,49 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     const searchTerm = searchInput.value.toLowerCase();
     const comisionSeleccionada = comisionFilter.value;
     const departamentoSeleccionado = departamentoFilter.value;
-                console.log("=== 🎯 DEBUG FILTROS ===");
-    console.log("Search Term:", searchTerm);
-    console.log("Comisión Seleccionada:", comisionSeleccionada);
-    console.log("Departamento Seleccionado:", departamentoSeleccionado);
-    console.log("=== FIN DEBUG ===");
 
-    // 🗺️ MAPEO MANUAL GARANTIZADO entre nombres de mapa y datos
-    const mapeoDepartamentos = {
-        "Amazonas": "Amazonas",
-        "Antioquia": "Antioquia", 
-        "Arauca": "Arauca",
-        "Atlántico": "Atlántico",
-        "Bogotá D.C.": "Bogotá D.C.",
-        "Bolívar": "Bolívar",
-        "Boyacá": "Boyacá",
-        "Caldas": "Caldas",
-        "Caquetá": "Caquetá", 
-        "Casanare": "Casanare",
-        "Cauca": "Cauca",
-        "Cesar": "Cesar",
-        "Chocó": "Chocó",
-        "Córdoba": "Córdoba",
-        "Cundinamarca": "Cundinamarca",
-        "Guainía": "Guainía",
-        "Guaviare": "Guaviare",
-        "Huila": "Huila", 
-        "La Guajira": "La Guajira",
-        "Magdalena": "Magdalena",
-        "Meta": "Meta",
-        "Nariño": "Nariño",
-        "Norte de Santander": "Norte de Santander",
-        "Putumayo": "Putumayo",
-        "Quindío": "Quindío",
-        "Risaralda": "Risaralda", 
-        "Santander": "Santander",
-        "Sucre": "Sucre",
-        "Tolima": "Tolima",
-        "Valle del Cauca": "Valle del Cauca",
-        "Vaupés": "Vaupés",
-        "Vichada": "Vichada",
-        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés"
-    };
+    console.log("=== 🔍 DEBUG FILTROS ===");
+    console.log("Búsqueda:", searchTerm);
+    console.log("Comisión:", comisionSeleccionada);
+    console.log("Departamento:", departamentoSeleccionado);
 
     d3.selectAll(".department-path")
         .classed("filtrado", function(d) {
             const deptoMapa = d.properties.NOMBRE_DPT;
             
-            // 🔥 USAR MAPEO MANUAL GARANTIZADO
-            const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
-            const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
+            // BUSCAR DEPARTAMENTO EN DATOS
+            let departamentoEnDatos = "";
+            Object.keys(delegadosPorDepartamento).forEach(depto => {
+                if (deptoMapa === depto) {
+                    departamentoEnDatos = depto;
+                }
+            });
             
-            console.log("🔍 Filtro - Mapa:", deptoMapa, "| Datos:", departamentoEnDatos, "| Delegados:", delegadosDelDepto.length);
-            
-            // Si no hay delegados en este departamento, mostrar tenue
-            if (delegadosDelDepto.length === 0) {
+            const delegados = delegadosPorDepartamento[departamentoEnDatos] || [];
+            console.log(`📊 ${deptoMapa} -> ${departamentoEnDatos}: ${delegados.length} delegados`);
+
+            // Si no hay delegados, mostrar tenue
+            if (delegados.length === 0) {
                 console.log("❌ Sin delegados");
                 return true;
             }
-            
-            // Aplicar filtros
-            const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
+
+            // APLICAR FILTROS
+            const coincideFiltros = delegados.some(delegado => {
                 const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
                 const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
+                const coincideDepto = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
                 
-                const coincide = coincideNombre && coincideComision && coincideDepartamento;
-                if (coincide) console.log("✅ Coincide filtro:", delegado.nombre);
+                const coincide = coincideNombre && coincideComision && coincideDepto;
+                if (coincide) console.log("✅ Coincide:", delegado.nombre);
                 
                 return coincide;
             });
 
+            console.log(`🎯 ${deptoMapa} - Coincide con filtros: ${coincideFiltros}`);
+            return !coincideFiltros;
+        });
+}
             // RESALTAR si coincide con filtro de departamento
             if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado && tieneDelegadosFiltrados) {
                 d3.select(this).style("fill", "#003366");
