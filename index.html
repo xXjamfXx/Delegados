@@ -1349,8 +1349,13 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
         // Proyección más simple
         const projection = d3.geoMercator()
     .center([-74, 4.5])
-    .scale(1500)              // ✅ MÁS GRANDE
+    .scale(2000)              // ✅ MÁS GRANDE
     .translate([width / 2, height / 2]);
+        // 🔥 DEBUG TEMPORAL - AGREGAR ESTO
+console.log("🔍 DEBUG MAPA:");
+console.log("Scale aplicado:", projection.scale());
+console.log("Width:", width, "Height:", height);
+console.log("Centro:", projection.center());
 
         const path = d3.geoPath().projection(projection);
 
