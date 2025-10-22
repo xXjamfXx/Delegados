@@ -1336,7 +1336,7 @@
                     .style("opacity", 0);
 
                 // Cargar el GeoJSON
-                d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw/3aadedf47badbdac823b00dbe259f6bc6d9e1899/colombia.geo.json")
+               d3.json("https://raw.githubusercontent.com/johnguerra/colombia_mapa_geojson/master/colombia.geo.json")
                     .then(function(colombia) {
                         // Crear proyección
                         const projection = d3.geoMercator()
