@@ -1359,20 +1359,17 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
             .on("mouseover", function(event, d) {
     const depto = d.properties.NOMBRE_DPT;
     
-    // SOLUCIÓN DIRECTA: Buscar coincidencias en los nombres
-    let cantidadDelegados = 0;
-    
-    // Buscar en todos los departamentos
-    Object.keys(delegadosPorDepartamento).forEach(nombreDepto => {
-        if (depto === nombreDepto || 
-            depto.toLowerCase().includes(nombreDepto.toLowerCase()) ||
-            nombreDepto.toLowerCase().includes(depto.toLowerCase())) {
-            cantidadDelegados = delegadosPorDepartamento[nombreDepto].length;
+    // SOLUCIÓN MÁS SIMPLE
+    let cantidad = 0;
+    for (let nombreDepto in delegadosPorDepartamento) {
+        if (depto === nombreDepto) {
+            cantidad = delegadosPorDepartamento[nombreDepto].length;
+            break;
         }
-    });
+    }
     
     tooltip.transition().duration(200).style("opacity", .9);
-    tooltip.html(`<strong>${depto}</strong><br/>${cantidadDelegados} delegado${cantidadDelegados !== 1 ? 's' : ''}`)
+    tooltip.html(`<strong>${depto}</strong><br/>${cantidad} delegado${cantidad !== 1 ? 's' : ''}`)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 28) + "px");
 
