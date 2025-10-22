@@ -1525,14 +1525,13 @@ function mapearNombreDepartamento(nombreGeoJSON) {
 }
 
             // Actualizar mapa basado en filtros
-            function actualizarMapaConFiltros() {
+ function actualizarMapaConFiltros() {
     if (!mapaCargado) return;
 
     const searchTerm = searchInput.value.toLowerCase();
     const comisionSeleccionada = comisionFilter.value;
     const departamentoSeleccionado = departamentoFilter.value;
-
-    console.log("=== 🎯 DEBUG FILTROS ===");
+                console.log("=== 🎯 DEBUG FILTROS ===");
     console.log("Search Term:", searchTerm);
     console.log("Comisión Seleccionada:", comisionSeleccionada);
     console.log("Departamento Seleccionado:", departamentoSeleccionado);
@@ -1602,11 +1601,6 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                 
                 return coincide;
             });
-
-            console.log(`🎯 ${deptoMapa} - Coincide con filtros: ${tieneDelegadosFiltrados}`);
-            return !tieneDelegadosFiltrados;
-        });
-}
             // RESALTAR si coincide con filtro de departamento
             if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado && tieneDelegadosFiltrados) {
                 d3.select(this).style("fill", "#003366");
