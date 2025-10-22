@@ -1532,58 +1532,83 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     const comisionSeleccionada = comisionFilter.value;
     const departamentoSeleccionado = departamentoFilter.value;
 
+    // 🗺️ MAPEO MANUAL GARANTIZADO entre nombres de mapa y datos
+    const mapeoDepartamentos = {
+        "Amazonas": "Amazonas",
+        "Antioquia": "Antioquia", 
+        "Arauca": "Arauca",
+        "Atlántico": "Atlántico",
+        "Bogotá D.C.": "Bogotá D.C.",
+        "Bolívar": "Bolívar",
+        "Boyacá": "Boyacá",
+        "Caldas": "Caldas",
+        "Caquetá": "Caquetá", 
+        "Casanare": "Casanare",
+        "Cauca": "Cauca",
+        "Cesar": "Cesar",
+        "Chocó": "Chocó",
+        "Córdoba": "Córdoba",
+        "Cundinamarca": "Cundinamarca",
+        "Guainía": "Guainía",
+        "Guaviare": "Guaviare",
+        "Huila": "Huila", 
+        "La Guajira": "La Guajira",
+        "Magdalena": "Magdalena",
+        "Meta": "Meta",
+        "Nariño": "Nariño",
+        "Norte de Santander": "Norte de Santander",
+        "Putumayo": "Putumayo",
+        "Quindío": "Quindío",
+        "Risaralda": "Risaralda", 
+        "Santander": "Santander",
+        "Sucre": "Sucre",
+        "Tolima": "Tolima",
+        "Valle del Cauca": "Valle del Cauca",
+        "Vaupés": "Vaupés",
+        "Vichada": "Vichada",
+        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés"
+    };
+
     d3.selectAll(".department-path")
         .classed("filtrado", function(d) {
             const deptoMapa = d.properties.NOMBRE_DPT;
             
-            // 🔥 BUSCAR COINCIDENCIA INTELIGENTE entre mapa y datos
-            let departamentoEncontrado = "";
-            let delegadosDelDepto = [];
+            // 🔥 USAR MAPEO MANUAL GARANTIZADO
+            const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
+            const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
             
-            // Normalizar nombre del mapa
-            const nombreMapaNormalizado = deptoMapa
-                .toLowerCase()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                .replace(/[^a-z0-9 ]/g, '')
-                .trim();
+            console.log("🔍 Filtro - Mapa:", deptoMapa, "| Datos:", departamentoEnDatos, "| Delegados:", delegadosDelDepto.length);
             
-            // Buscar coincidencia en datos
-            Object.keys(delegadosPorDepartamento).forEach(nombreDepto => {
-                const nombreDeptoNormalizado = nombreDepto
-                    .toLowerCase()
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                    .replace(/[^a-z0-9 ]/g, '')
-                    .trim();
-                
-                if (nombreMapaNormalizado === nombreDeptoNormalizado) {
-                    departamentoEncontrado = nombreDepto;
-                    delegadosDelDepto = delegadosPorDepartamento[nombreDepto] || [];
-                }
-            });
-            
-            // Si no se encontró el departamento en datos, mostrar tenue
-            if (delegadosDelDepto.length === 0) return true;
+            // Si no hay delegados en este departamento, mostrar tenue
+            if (delegadosDelDepto.length === 0) {
+                console.log("❌ Sin delegados");
+                return true;
+            }
             
             // Aplicar filtros
             const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
                 const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
                 const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                const coincideDepartamento = !departamentoSeleccionado || departamentoEncontrado === departamentoSeleccionado;
+                const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
                 
-                return coincideNombre && coincideComision && coincideDepartamento;
+                const coincide = coincideNombre && coincideComision && coincideDepartamento;
+                if (coincide) console.log("✅ Coincide filtro:", delegado.nombre);
+                
+                return coincide;
             });
 
-            // 🔥 RESALTAR departamento que coincide con filtro de departamento
-            if (departamentoSeleccionado && departamentoEncontrado === departamentoSeleccionado) {
-                d3.select(this).style("fill", "#003366"); // Resaltar
+            // RESALTAR si coincide con filtro de departamento
+            if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado && tieneDelegadosFiltrados) {
+                d3.select(this).style("fill", "#003366");
+                console.log("🎯 Resaltando:", deptoMapa);
             } else {
-                d3.select(this).style("fill", "#e6f2ff"); // Color normal
+                d3.select(this).style("fill", "#e6f2ff");
             }
 
+            console.log("📊 Resultado final - Filtrado:", !tieneDelegadosFiltrados);
             return !tieneDelegadosFiltrados;
         });
 }
-
             // Agregar event listeners
             function agregarEventListeners() {
                 closeModal.addEventListener('click', cerrarModal);
