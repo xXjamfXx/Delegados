@@ -1329,9 +1329,8 @@
                 const svg = d3.select("#colombia-map")
                     const svg = d3.select("#colombia-map")
     .append("svg")
-    .attr("width", "100%")    // ✅ OCUPAR TODO EL ANCHO
-    .attr("height", "100%")   // ✅ OCUPAR TODO EL ALTO
-    .attr("viewBox", `0 0 ${width} ${height}`); // ✅ MANTENER PROPORCIONES
+    .attr("width", width)     // ✅ VUELVE A ESTO
+    .attr("height", height);
 
                 const g = svg.append("g");
 
