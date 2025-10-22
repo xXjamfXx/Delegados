@@ -1350,13 +1350,20 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
         
         // Proyección más simple
         const isMobile = window.innerWidth < 768;
-const baseScale = isMobile ? 1800 : 3000;
+const baseScale = isMobile ? 2000 : 3000;
+
+let center = [-74, 4.5];
+let translate = [width / 2, height / 2];
+
+// 📱 SOLO PARA MÓVILES - ajustar posición
+if (isMobile) {
+    translate = [width / 2, height / 1.8];
+}
 
 const projection = d3.geoMercator()
-    .center([-74, 4.5])
+    .center(center)
     .scale(baseScale)
-    .translate([width / 2, height / 2]);
-
+    .translate(translate);
 console.log("📱 Dispositivo:", isMobile ? "Móvil" : "Computadora", "Scale:", baseScale);
         // 🔥 DEBUG TEMPORAL - AGREGAR ESTO
 console.log("🔍 DEBUG MAPA:");
