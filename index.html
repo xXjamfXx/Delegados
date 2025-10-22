@@ -1647,9 +1647,10 @@ function mapearNombreDepartamento(nombreGeoJSON) {
 
                 // Redimensionar mapa cuando cambie el tamaño de la ventana
                 window.addEventListener('resize', function() {
-                    if (mapaCargado) {
-                        // En una implementación real, aquí se redimensionaría el mapa
-                    }
+    if (mapaCargado) {
+        console.log("🔄 Redimensionando ventana...");
+        cargarMapaColombia();
+    }
                 });
             }
 
