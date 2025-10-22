@@ -1602,12 +1602,12 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                 return coincide;
             });
             // RESALTAR si coincide con filtro de departamento
-            if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado && tieneDelegadosFiltrados) {
-                d3.select(this).style("fill", "#003366");
-                console.log("🎯 Resaltando:", deptoMapa);
-            } else {
-                d3.select(this).style("fill", "#e6f2ff");
-            }
+          //  if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado && tieneDelegadosFiltrados) {
+            //    d3.select(this).style("fill", "#003366");
+              //  console.log("🎯 Resaltando:", deptoMapa);
+            //} else {
+               // d3.select(this).style("fill", "#e6f2ff");
+            //}
 
             console.log("📊 Resultado final - Filtrado:", !tieneDelegadosFiltrados);
             return !tieneDelegadosFiltrados;
