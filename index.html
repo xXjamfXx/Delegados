@@ -1531,6 +1531,11 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     const searchTerm = searchInput.value.toLowerCase();
     const comisionSeleccionada = comisionFilter.value;
     const departamentoSeleccionado = departamentoFilter.value;
+                console.log("=== 🎯 DEBUG FILTROS ===");
+    console.log("Search Term:", searchTerm);
+    console.log("Comisión Seleccionada:", comisionSeleccionada);
+    console.log("Departamento Seleccionado:", departamentoSeleccionado);
+    console.log("=== FIN DEBUG ===");
 
     // 🗺️ MAPEO MANUAL GARANTIZADO entre nombres de mapa y datos
     const mapeoDepartamentos = {
