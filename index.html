@@ -1347,10 +1347,15 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
         console.log("✅ GeoJSON cargado:", colombia);
         
         // Proyección más simple
-        const projection = d3.geoMercator()
+        const isMobile = window.innerWidth < 768;
+const baseScale = isMobile ? 1200 : 3000;
+
+const projection = d3.geoMercator()
     .center([-74, 4.5])
-    .scale(3000)              // ✅ MÁS GRANDE
+    .scale(baseScale)
     .translate([width / 2, height / 2]);
+
+console.log("📱 Dispositivo:", isMobile ? "Móvil" : "Computadora", "Scale:", baseScale);
         // 🔥 DEBUG TEMPORAL - AGREGAR ESTO
 console.log("🔍 DEBUG MAPA:");
 console.log("Scale aplicado:", projection.scale());
