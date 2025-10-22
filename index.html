@@ -213,12 +213,17 @@
             stroke: #003366;
             stroke-width: 2;
         }
+        
 
         .department-path.seleccionado {
             fill: #003366;
             stroke: #ffd700;
             stroke-width: 2;
         }
+        .department-path.filtrado {
+    opacity: 0.3 !important;
+    fill: #cccccc !important;
+}
 
         .department-label {
             font-size: 10px;
@@ -1521,42 +1526,40 @@ function mapearNombreDepartamento(nombreGeoJSON) {
 
             // Actualizar mapa basado en filtros
             function actualizarMapaConFiltros() {
-                if (!mapaCargado) return;
+    if (!mapaCargado) return;
 
-                const searchTerm = searchInput.value.toLowerCase();
-                const comisionSeleccionada = comisionFilter.value;
-                const departamentoSeleccionado = departamentoFilter.value;
+    const searchTerm = searchInput.value.toLowerCase();
+    const comisionSeleccionada = comisionFilter.value;
+    const departamentoSeleccionado = departamentoFilter.value;
 
-                d3.selectAll(".department-path")
-                    .style("opacity", function(d) {
-                        const depto = d.properties.NOMBRE_DPT;
-                        const delegados = delegadosPorDepartamento[depto] || [];
-                        
-                        const tieneDelegadosFiltrados = delegados.some(delegado => {
-                            const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
-                            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                            const coincideDepartamento = !departamentoSeleccionado || depto === departamentoSeleccionado;
-                            
-                            return coincideNombre && coincideComision && coincideDepartamento;
-                        });
+    d3.selectAll(".department-path")
+        .style("opacity", 1) // ✅ SIEMPRE visible
+        .style("pointer-events", "all") // ✅ SIEMPRE clickeable
+        .classed("filtrado", function(d) {
+            const depto = d.properties.NOMBRE_DPT;
+            
+            // Buscar el departamento CORRECTO en los datos
+            let departamentoEncontrado = "";
+            Object.keys(delegadosPorDepartamento).forEach(nombreDepto => {
+                if (depto === nombreDepto) {
+                    departamentoEncontrado = nombreDepto;
+                }
+            });
+            
+            const delegados = delegadosPorDepartamento[departamentoEncontrado] || [];
+            
+            const tieneDelegadosFiltrados = delegados.some(delegado => {
+                const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
+                const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+                const coincideDepartamento = !departamentoSeleccionado || departamentoEncontrado === departamentoSeleccionado;
+                
+                return coincideNombre && coincideComision && coincideDepartamento;
+            });
 
-                        return tieneDelegadosFiltrados ? 1 : 0.3;
-                    })
-                    .style("pointer-events", function(d) {
-                        const depto = d.properties.NOMBRE_DPT;
-                        const delegados = delegadosPorDepartamento[depto] || [];
-                        
-                        const tieneDelegadosFiltrados = delegados.some(delegado => {
-                            const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
-                            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                            const coincideDepartamento = !departamentoSeleccionado || depto === departamentoSeleccionado;
-                            
-                            return coincideNombre && coincideComision && coincideDepartamento;
-                        });
-
-                        return tieneDelegadosFiltrados ? "all" : "none";
-                    });
-            }
+            // Si NO tiene delegados que coincidan con los filtros, aplicar estilo tenue
+            return !tieneDelegadosFiltrados;
+        });
+}
 
             // Agregar event listeners
             function agregarEventListeners() {
