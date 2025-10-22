@@ -1408,7 +1408,6 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
         `;
     });
             }
-
             // Cargar opciones de filtros
             function cargarFiltros() {
                 departamentosData = Object.keys(delegadosPorDepartamento).sort();
@@ -1418,18 +1417,39 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
                     delegados.forEach(delegado => {
                         if (delegado.comision) {
                             comisionesUnicas.add(delegado.comision);
-                        } 
-                        function mapearNombreDepartamento(nombreGeoJSON) {
-    const mapeo = {
-        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés",
-        "Bogotá D.C.": "Bogotá D.C.",
-        "La Guajira": "La Guajira",
-        "Norte de Santander": "Norte de Santander"
-    };
-    return mapeo[nombreGeoJSON] || nombreGeoJSON;
-}
+                        }
                     });
                 });
+
+                // Agregar opciones de comisión al select
+                comisionFilter.innerHTML = '<option value="">Todas las comisiones</option>';
+                [...comisionesUnicas].sort().forEach(comision => {
+                    const option = document.createElement('option');
+                    option.value = comision;
+                    option.textContent = comision;
+                    comisionFilter.appendChild(option);
+                });
+
+                // Agregar opciones de departamento al select
+                departamentoFilter.innerHTML = '<option value="">Todos los departamentos</option>';
+                departamentosData.forEach(depto => {
+                    const option = document.createElement('option');
+                    option.value = depto;
+                    option.textContent = depto;
+                    departamentoFilter.appendChild(option);
+                });
+            }
+
+            // Función para mapear nombres entre GeoJSON y datos
+            function mapearNombreDepartamento(nombreGeoJSON) {
+                const mapeo = {
+                    "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés",
+                    "Bogotá D.C.": "Bogotá D.C.",
+                    "La Guajira": "La Guajira",
+                    "Norte de Santander": "Norte de Santander"
+                };
+                return mapeo[nombreGeoJSON] || nombreGeoJSON;
+            }
 
                 // Agregar opciones de comisión al select
                 comisionFilter.innerHTML = '<option value="">Todas las comisiones</option>';
