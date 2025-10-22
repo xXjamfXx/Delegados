@@ -1359,7 +1359,7 @@ d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw
   .on("mouseover", function(event, d) {
     const depto = d.properties.NOMBRE_DPT;
     const nombreCorregido = mapearNombreDepartamento(depto);
-const delegados = delegadosPorDepartamento[nombreCorregido] || [];
+    const delegados = delegadosPorDepartamento[nombreCorregido] || [];
     
     tooltip.transition().duration(200).style("opacity", .9);
     tooltip.html(`<strong>${depto}</strong><br/>${delegados.length} delegado${delegados.length !== 1 ? 's' : ''}`)
