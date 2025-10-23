@@ -1112,29 +1112,31 @@ async function agregarDelegado() {
         return;
     }
     
-    // 1️⃣ ENVIAR A GOOGLE SHEETS (ignorar si hay error)
-    try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-                departamento: departamento,
-                nombre: nombre,
-                comision: comision,
-                enlace: enlace
-            })
-        });
-    } catch (error) {
-        console.log('Error ignorado - el dato igual se guardó');
+    // ✅ VERSIÓN LOCAL - Sin Google Sheets
+    if (!delegadosPorDepartamento[departamento]) {
+        delegadosPorDepartamento[departamento] = [];
     }
     
-    // 2️⃣ ESPERAR 1 SEGUNDO Y RECARGAR DATOS ACTUALIZADOS
-    setTimeout(async () => {
-        await cargarDelegadosDesdeSheets();
-        document.getElementById('admin-nombre').value = '';
-        document.getElementById('admin-enlace').value = '';
-        alert('✅ Delegado agregado permanentemente');
-    }, 1000);
+    delegadosPorDepartamento[departamento].push({
+        nombre: nombre,
+        comision: comision,
+        votos: 0,
+        enlace: enlace || "https://docs.google.com/spreadsheets/d/ejemplo"
+    });
+    
+    // Actualizar la interfaz
+    actualizarFiltros();
+    actualizarMapaConFiltros();
+    
+    // Limpiar formulario
+    document.getElementById('admin-nombre').value = '';
+    document.getElementById('admin-enlace').value = '';
+    
+    alert('✅ Delegado agregado localmente\n(En producción se guardaría en Google Sheets)');
+    console.log('Nuevo delegado:', { nombre, departamento, comision, enlace });
+    console.log('Delegados actualizados:', delegadosPorDepartamento);
 }
+        
         // 🔐 FUNCIONES DEL PANEL
 function mostrarPanelAdmin() {
     document.getElementById('panel-admin').style.display = 'block';
@@ -1203,4 +1205,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <button id="btn-admin" onclick="mostrarPanelAdmin()" style="position: fixed; bottom: 20px; right: 20px; background: #ff9c03; color: white; border: none; padding: 10px; border-radius: 50%; display: none; cursor: pointer; z-index: 10000;">🔧</button>
 </body>
+            
 </html>
