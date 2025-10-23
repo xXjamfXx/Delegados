@@ -812,16 +812,22 @@ function actualizarMapaConFiltros() {
             // Aplicar o remover clase filtrado
             pathElement.classed("filtrado", !tieneDelegadosFiltrados);
             
-            // RESALTAR si coincide con filtro de departamento
-            if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado && tieneDelegadosFiltrados) {
+            // RESETAR COLORES - Esta es la parte importante
+            if (pathElement.classed("filtrado")) {
+                // Si está filtrado, mantener el color gris
+                pathElement.style("fill", "#cccccc");
+            } else if (pathElement.classed("seleccionado")) {
+                // Si está seleccionado, mantener el color de selección
+                pathElement.style("fill", "#cc7d02");
+            } else if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado) {
+                // Si coincide con filtro de departamento, resaltar
                 pathElement.style("fill", "#003366");
-            } else if (!pathElement.classed("filtrado") && !pathElement.classed("seleccionado")) {
-                // Volver al color naranja original si no está filtrado ni seleccionado
+            } else {
+                // Por defecto, volver al naranja original
                 pathElement.style("fill", "#ff9c03");
             }
         });
-}
-            // Agregar event listeners
+}            // Agregar event listeners
             function agregarEventListeners() {
                 closeModal.addEventListener('click', cerrarModal);
                 window.addEventListener('click', (event) => {
@@ -1030,10 +1036,12 @@ function mostrarDelegados(nombreDepartamento) {
             }
             function cerrarModal() {
     modal.style.display = 'none';
-    // Limpiar selección del mapa y restaurar colores
+    // Limpiar selección del mapa pero mantener filtros
     d3.selectAll(".department-path")
-        .classed("seleccionado", false)
-        .style("fill", "#ff9c03"); // Volver al color naranja original
+        .classed("seleccionado", false);
+    
+    // Re-aplicar los filtros actuales para restaurar colores correctamente
+    actualizarMapaConFiltros();
 }
             // Inicializar la aplicación
             inicializar();
