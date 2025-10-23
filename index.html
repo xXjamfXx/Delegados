@@ -997,13 +997,15 @@ function mostrarDelegados(nombreDepartamento) {
                 const departamentoSeleccionado = departamentoFilter.value;
 
                 // Filtrar delegados según los filtros activos
-                const delegadosFiltrados = delegados.filter(delegado => {
-                    const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
-                    const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                    const coincideDepartamento = !departamentoSeleccionado || nombreDepartamento === departamentoSeleccionado;
-                    
-                    return coincideNombre && coincideComision && coincideDepartamento;
-                });
+                // Filtrar delegados - SI hay filtro de departamento activo, ignorarlo al hacer clic en el mapa
+const delegadosFiltrados = delegados.filter(delegado => {
+    const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
+    const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+    
+    // Si se hace clic en un departamento, MOSTRAR todos sus delegados
+    // ignorando el filtro de departamento
+    return coincideNombre && coincideComision;
+});
 
                 modalTitulo.textContent = `Delegados - ${nombreDepartamento} (${delegadosFiltrados.length})`;
                 listaDelegados.innerHTML = '';
