@@ -744,11 +744,88 @@ function mapearNombreDepartamento(nombreGeoJSON) {
 
             // Actualizar mapa basado en filtros
 // Si no hay filtros activos, mostrar todos normales
-if (!hayFiltrosActivos) {
-    pathElement.classed("filtrado", false);
-    return;
-}            
+            // Actualizar mapa basado en filtros
+function actualizarMapaConFiltros() {
+    if (!mapaCargado) return;
+
+    const searchTerm = searchInput.value.toLowerCase();
+    const comisionSeleccionada = comisionFilter.value;
+    const departamentoSeleccionado = departamentoFilter.value;
+
+    // 🗺️ MAPEO MANUAL GARANTIZADO entre nombres de mapa y datos
+    const mapeoDepartamentos = {
+        "Amazonas": "Amazonas",
+        "Antioquia": "Antioquia", 
+        "Arauca": "Arauca",
+        "Atlántico": "Atlántico",
+        "Bogotá D.C.": "Bogotá D.C.",
+        "Bolívar": "Bolívar",
+        "Boyacá": "Boyacá",
+        "Caldas": "Caldas",
+        "Caquetá": "Caquetá", 
+        "Casanare": "Casanare",
+        "Cauca": "Cauca",
+        "Cesar": "Cesar",
+        "Chocó": "Chocó",
+        "Córdoba": "Córdoba",
+        "Cundinamarca": "Cundinamarca",
+        "Guainía": "Guainía",
+        "Guaviare": "Guaviare",
+        "Huila": "Huila", 
+        "La Guajira": "La Guajira",
+        "Magdalena": "Magdalena",
+        "Meta": "Meta",
+        "Nariño": "Nariño",
+        "Norte de Santander": "Norte de Santander",
+        "Putumayo": "Putumayo",
+        "Quindío": "Quindío",
+        "Risaralda": "Risaralda", 
+        "Santander": "Santander",
+        "Sucre": "Sucre",
+        "Tolima": "Tolima",
+        "Valle del Cauca": "Valle del Cauca",
+        "Vaupés": "Vaupés",
+        "Vichada": "Vichada",
+        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés"
+    };
+
+    // Verificar si hay algún filtro activo
+    const hayFiltrosActivos = searchTerm || comisionSeleccionada || departamentoSeleccionado;
+    
+    d3.selectAll(".department-path")
+        .each(function(d) {
+            const deptoMapa = d.properties.NOMBRE_DPT;
+            const pathElement = d3.select(this);
             
+            // 🔥 USAR MAPEO MANUAL GARANTIZADO
+            const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
+            const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
+            
+            // Si no hay filtros activos, mostrar todos normales
+            if (!hayFiltrosActivos) {
+                pathElement.classed("filtrado", false);
+                return;
+            }
+            
+            // Si no hay delegados en este departamento, mostrar tenue
+            if (delegadosDelDepto.length === 0) {
+                pathElement.classed("filtrado", true);
+                return;
+            }
+            
+            // Aplicar filtros
+            const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
+                const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
+                const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+                const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
+                
+                return coincideNombre && coincideComision && coincideDepartamento;
+            });
+
+            // Solo aplicar/remover la clase filtrado
+            pathElement.classed("filtrado", !tieneDelegadosFiltrados);
+        });
+}      
             
             
             // Agregar event listeners
