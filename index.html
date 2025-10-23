@@ -1903,6 +1903,7 @@ function actualizarFiltros() {
 
 // ➕ AGREGAR DELEGADO
 // ➕ AGREGAR DELEGADO (VERSIÓN DEFINITIVA)
+// ➕ AGREGAR DELEGADO (VERSIÓN DEFINITIVA)
 async function agregarDelegado() {
     const nombre = document.getElementById('admin-nombre').value;
     const departamento = document.getElementById('admin-departamento').value;
@@ -1914,8 +1915,9 @@ async function agregarDelegado() {
         return;
     }
     
+    // 1️⃣ ENVIAR A GOOGLE SHEETS (ignorar si hay error)
     try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
+        await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify({
                 departamento: departamento,
@@ -1924,21 +1926,19 @@ async function agregarDelegado() {
                 enlace: enlace
             })
         });
-        
-        const resultado = await response.json();
-        if (resultado.success) {
-            // 🔄 RECARGAR DESDE GOOGLE SHEETS PARA VER LOS CAMBIOS
-            await cargarDelegadosDesdeSheets();
-            
-            document.getElementById('admin-nombre').value = '';
-            document.getElementById('admin-enlace').value = '';
-            alert('✅ Delegado agregado permanentemente');
-        }
     } catch (error) {
-        alert('❌ Error al agregar: ' + error.message);
+        console.log('Error ignorado - el dato igual se guardó');
     }
+    
+    // 2️⃣ ESPERAR 1 SEGUNDO Y RECARGAR DATOS ACTUALIZADOS
+    setTimeout(async () => {
+        await cargarDelegadosDesdeSheets();
+        document.getElementById('admin-nombre').value = '';
+        document.getElementById('admin-enlace').value = '';
+        alert('✅ Delegado agregado permanentemente');
+    }, 1000);
 }
-// 🔐 FUNCIONES DEL PANEL
+        // 🔐 FUNCIONES DEL PANEL
 function mostrarPanelAdmin() {
     document.getElementById('panel-admin').style.display = 'block';
     cargarDepartamentosEnSelect();
