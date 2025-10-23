@@ -1921,6 +1921,45 @@ async function agregarDelegado() {
 document.addEventListener('DOMContentLoaded', function() {
     cargarDelegadosDesdeSheets();
 });
+        // 🔐 FUNCIONES DEL PANEL ADMINISTRATIVO
+function mostrarPanelAdmin() {
+    document.getElementById('panel-admin').style.display = 'block';
+    cargarDepartamentosEnSelect();
+}
+
+function cerrarPanelAdmin() {
+    document.getElementById('panel-admin').style.display = 'none';
+}
+
+function cargarDepartamentosEnSelect() {
+    const select = document.getElementById('admin-departamento');
+    select.innerHTML = '<option value="">Seleccionar departamento</option>';
+    
+    Object.keys(delegadosPorDepartamento).forEach(depto => {
+        const option = document.createElement('option');
+        option.value = depto;
+        option.textContent = depto;
+        select.appendChild(option);
+    });
+}
+
+// 🎹 DETECCIÓN DE TECLAS (presionar 'A' 3 veces)
+let adminKeyCount = 0;
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'a' || e.key === 'A') {
+        adminKeyCount++;
+        if (adminKeyCount === 3) {
+            document.getElementById('btn-admin').style.display = 'block';
+            adminKeyCount = 0;
+            console.log('🔧 Panel administrativo activado');
+        }
+        // Reset después de 2 segundos
+        setTimeout(() => { adminKeyCount = 0; }, 2000);
+    }
+});
+
+// 🖱️ EVENTO DEL BOTÓN ADMIN
+document.getElementById('btn-admin').addEventListener('click', mostrarPanelAdmin);
     </script>
             <!-- 🔐 PANEL ADMINISTRATIVO -->
 <div id="panel-admin" class="modal">
@@ -1945,6 +1984,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
-<button id="btn-admin" style="position: fixed; bottom: 20px; right: 20px; background: #ff9c03; color: white; border: none; padding: 10px; border-radius: 50%; display: none;">🔧</button>
+<button id="btn-admin" onclick="mostrarPanelAdmin()" style="position: fixed; bottom: 20px; right: 20px; background: #ff9c03; color: white; border: none; padding: 10px; border-radius: 50%; display: none; cursor: pointer; z-index: 10000;">🔧</button>
 </body>
 </html>
