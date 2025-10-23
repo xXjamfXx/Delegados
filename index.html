@@ -624,8 +624,13 @@ console.log("Centro:", projection.center());
     mostrarDelegados(depto);
     
     // Resaltar selección
-    g.selectAll(".department-path").style("fill", "#ff9c03");  // ✅ NARANJA BASE
-    d3.select(this).style("fill", "#cc7d02");  // ✅ NARANJA OSCURO
+    g.selectAll(".department-path")
+        .classed("seleccionado", false)
+        .style("fill", "#ff9c03"); // Resetear todos al naranja
+    
+    d3.select(this)
+        .classed("seleccionado", true)
+        .style("fill", "#cc7d02"); // Naranja oscuro para selección
 })
 
         // LUEGO ETIQUETAS
@@ -736,17 +741,12 @@ function mapearNombreDepartamento(nombreGeoJSON) {
 }
 
             // Actualizar mapa basado en filtros
- function actualizarMapaConFiltros() {
+function actualizarMapaConFiltros() {
     if (!mapaCargado) return;
 
     const searchTerm = searchInput.value.toLowerCase();
     const comisionSeleccionada = comisionFilter.value;
     const departamentoSeleccionado = departamentoFilter.value;
-                console.log("=== 🎯 DEBUG FILTROS ===");
-    console.log("Search Term:", searchTerm);
-    console.log("Comisión Seleccionada:", comisionSeleccionada);
-    console.log("Departamento Seleccionado:", departamentoSeleccionado);
-    console.log("=== FIN DEBUG ===");
 
     // 🗺️ MAPEO MANUAL GARANTIZADO entre nombres de mapa y datos
     const mapeoDepartamentos = {
@@ -786,19 +786,18 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     };
 
     d3.selectAll(".department-path")
-        .classed("filtrado", function(d) {
+        .each(function(d) {
             const deptoMapa = d.properties.NOMBRE_DPT;
+            const pathElement = d3.select(this);
             
             // 🔥 USAR MAPEO MANUAL GARANTIZADO
             const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
             const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
             
-            console.log("🔍 Filtro - Mapa:", deptoMapa, "| Datos:", departamentoEnDatos, "| Delegados:", delegadosDelDepto.length);
-            
             // Si no hay delegados en este departamento, mostrar tenue
             if (delegadosDelDepto.length === 0) {
-                console.log("❌ Sin delegados");
-                return true;
+                pathElement.classed("filtrado", true);
+                return;
             }
             
             // Aplicar filtros
@@ -807,21 +806,19 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                 const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
                 const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
                 
-                const coincide = coincideNombre && coincideComision && coincideDepartamento;
-                if (coincide) console.log("✅ Coincide filtro:", delegado.nombre);
-                
-                return coincide;
+                return coincideNombre && coincideComision && coincideDepartamento;
             });
-            // RESALTAR si coincide con filtro de departamento
-          //  if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado && tieneDelegadosFiltrados) {
-            //    d3.select(this).style("fill", "#003366");
-              //  console.log("🎯 Resaltando:", deptoMapa);
-            //} else {
-               // d3.select(this).style("fill", "#e6f2ff");
-            //}
 
-            console.log("📊 Resultado final - Filtrado:", !tieneDelegadosFiltrados);
-            return !tieneDelegadosFiltrados;
+            // Aplicar o remover clase filtrado
+            pathElement.classed("filtrado", !tieneDelegadosFiltrados);
+            
+            // RESALTAR si coincide con filtro de departamento
+            if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado && tieneDelegadosFiltrados) {
+                pathElement.style("fill", "#003366");
+            } else if (!pathElement.classed("filtrado") && !pathElement.classed("seleccionado")) {
+                // Volver al color naranja original si no está filtrado ni seleccionado
+                pathElement.style("fill", "#ff9c03");
+            }
         });
 }
             // Agregar event listeners
@@ -1032,10 +1029,12 @@ function mostrarDelegados(nombreDepartamento) {
                 modal.style.display = 'block';
             }
             function cerrarModal() {
-                modal.style.display = 'none';
-                // Limpiar selección del mapa
-                d3.selectAll(".department-path").classed("seleccionado", false);
-            }
+    modal.style.display = 'none';
+    // Limpiar selección del mapa y restaurar colores
+    d3.selectAll(".department-path")
+        .classed("seleccionado", false)
+        .style("fill", "#ff9c03"); // Volver al color naranja original
+}
             // Inicializar la aplicación
             inicializar();
         });
