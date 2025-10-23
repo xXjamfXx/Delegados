@@ -1856,6 +1856,7 @@ function mostrarDelegados(nombreDepartamento) {
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwluQjpgQ5srF2WwGIflUig1NqoI0_iOn2nKairjBxEPQ851IQGTTIuPMflyr3oX6UPcQ/exec';
 
 // 🔄 CARGAR DATOS DESDE GOOGLE SHEETS
+// 🔄 CARGAR DATOS DESDE GOOGLE SHEETS (VERSIÓN MEJORADA)
 async function cargarDelegadosDesdeSheets() {
     try {
         const response = await fetch(GOOGLE_SCRIPT_URL);
@@ -1874,17 +1875,17 @@ async function cargarDelegadosDesdeSheets() {
             });
         });
         
-        // Limpiar y reconstruir completamente
+        // 🔥 ESTA ES LA PARTE IMPORTANTE - REEMPLAZAR COMPLETAMENTE
         Object.keys(delegadosPorDepartamento).forEach(key => delete delegadosPorDepartamento[key]);
         Object.assign(delegadosPorDepartamento, nuevosDelegados);
         
         actualizarFiltros();
+        actualizarMapaConFiltros();
         
     } catch (error) {
         console.error('Error cargando delegados:', error);
     }
 }
-
 // 🔄 ACTUALIZAR FILTROS
 function actualizarFiltros() {
     const departamentoFilter = document.getElementById('departamento-filter');
@@ -1901,6 +1902,7 @@ function actualizarFiltros() {
 }
 
 // ➕ AGREGAR DELEGADO
+// ➕ AGREGAR DELEGADO (VERSIÓN DEFINITIVA)
 async function agregarDelegado() {
     const nombre = document.getElementById('admin-nombre').value;
     const departamento = document.getElementById('admin-departamento').value;
@@ -1925,16 +1927,17 @@ async function agregarDelegado() {
         
         const resultado = await response.json();
         if (resultado.success) {
+            // 🔄 RECARGAR DESDE GOOGLE SHEETS PARA VER LOS CAMBIOS
             await cargarDelegadosDesdeSheets();
+            
             document.getElementById('admin-nombre').value = '';
             document.getElementById('admin-enlace').value = '';
-            alert('✅ Delegado agregado');
+            alert('✅ Delegado agregado permanentemente');
         }
     } catch (error) {
-        alert('❌ Error al agregar');
+        alert('❌ Error al agregar: ' + error.message);
     }
 }
-
 // 🔐 FUNCIONES DEL PANEL
 function mostrarPanelAdmin() {
     document.getElementById('panel-admin').style.display = 'block';
