@@ -1847,6 +1847,8 @@ function mostrarDelegados(nombreDepartamento) {
             }
             // Inicializar la aplicación
             inicializar();
+        });
+        
             // ==================================================
 // 🔐 PANEL ADMINISTRATIVO COMPLETO
 // ==================================================
@@ -1886,8 +1888,6 @@ async function cargarDelegadosDesdeSheets() {
                 votos: 0,
                 enlace: delegado.enlace
             });
-        });
-        
         // Limpiar y reconstruir completamente
         Object.keys(delegadosPorDepartamento).forEach(key => delete delegadosPorDepartamento[key]);
         Object.assign(delegadosPorDepartamento, nuevosDelegados);
