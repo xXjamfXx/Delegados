@@ -1060,24 +1060,8 @@ const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysSBNSjB2BKb
 // 🔄 CARGAR DATOS DESDE GOOGLE SHEETS (VERSIÓN MEJORADA)
 async function cargarDelegadosDesdeSheets() {
     try {
-        // Usar proxy para evitar CORS
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-        const targetUrl = GOOGLE_SCRIPT_URL;
-        
-        console.log("🔧 Intentando cargar desde:", targetUrl);
-        
-        const response = await fetch(proxyUrl + targetUrl, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        const response = await fetch(GOOGLE_SCRIPT_URL);
         const delegados = await response.json();
-        console.log("✅ Datos recibidos:", delegados);
         
         const nuevosDelegados = {};
         const comisionesUnicas = new Set();
@@ -1108,17 +1092,9 @@ async function cargarDelegadosDesdeSheets() {
         actualizarMapaConFiltros();
         
         console.log('✅ Delegados cargados desde Google Sheets');
-        console.log('📊 Comisiones únicas:', [...comisionesUnicas]);
-        console.log('🗺️ Departamentos únicos:', [...departamentosUnicos]);
         
     } catch (error) {
-        console.error('❌ Error cargando delegados:', error);
-        
-        // Mostrar mensaje de error al usuario
-        const filterResults = document.getElementById('filter-results');
-        if (filterResults) {
-            filterResults.innerHTML = '<span style="color: red;">Error cargando datos. Recarga la página.</span>';
-        }
+        console.error('Error cargando delegados:', error);
     }
 }        
         
