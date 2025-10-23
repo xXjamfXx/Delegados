@@ -1847,6 +1847,133 @@ function mostrarDelegados(nombreDepartamento) {
             }
             // Inicializar la aplicación
             inicializar();
+            // ==================================================
+// 🔐 PANEL ADMINISTRATIVO COMPLETO
+// ==================================================
+
+// 🔄 ACTUALIZAR FILTROS
+function actualizarFiltros() {
+    const departamentoFilter = document.getElementById('departamento-filter');
+    departamentoFilter.innerHTML = '<option value="">Todos los departamentos</option>';
+    
+    Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
+        const option = document.createElement('option');
+        option.value = depto;
+        option.textContent = depto;
+        departamentoFilter.appendChild(option);
+    });
+    
+    console.log('✅ Filtros actualizados');
+}
+
+// 🔥 REEMPLAZA ESTA URL CON LA TUYA
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/TU_SCRIPT_ID/exec';
+
+// 🔄 CARGAR DATOS DESDE GOOGLE SHEETS
+async function cargarDelegadosDesdeSheets() {
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const delegados = await response.json();
+        
+        const nuevosDelegados = {};
+        delegados.forEach(delegado => {
+            if (!nuevosDelegados[delegado.departamento]) {
+                nuevosDelegados[delegado.departamento] = [];
+            }
+            nuevosDelegados[delegado.departamento].push({
+                nombre: delegado.nombre,
+                comision: delegado.comision,
+                votos: 0,
+                enlace: delegado.enlace
+            });
+        });
+        
+        // Limpiar y reconstruir completamente
+        Object.keys(delegadosPorDepartamento).forEach(key => delete delegadosPorDepartamento[key]);
+        Object.assign(delegadosPorDepartamento, nuevosDelegados);
+        
+        actualizarFiltros();
+        
+    } catch (error) {
+        console.error('Error cargando delegados:', error);
+    }
+}
+
+// ➕ AGREGAR DELEGADO
+async function agregarDelegado() {
+    const nombre = document.getElementById('admin-nombre').value;
+    const departamento = document.getElementById('admin-departamento').value;
+    const comision = document.getElementById('admin-comision').value;
+    const enlace = document.getElementById('admin-enlace').value;
+    
+    if (!nombre || !departamento || !comision) {
+        alert('Completa todos los campos');
+        return;
+    }
+    
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                departamento: departamento,
+                nombre: nombre,
+                comision: comision,
+                enlace: enlace
+            })
+        });
+        
+        const resultado = await response.json();
+        if (resultado.success) {
+            await cargarDelegadosDesdeSheets();
+            document.getElementById('admin-nombre').value = '';
+            document.getElementById('admin-enlace').value = '';
+            alert('✅ Delegado agregado');
+        }
+    } catch (error) {
+        alert('❌ Error al agregar');
+    }
+}
+
+// 🔐 FUNCIONES DEL PANEL
+function mostrarPanelAdmin() {
+    document.getElementById('panel-admin').style.display = 'block';
+    cargarDepartamentosEnSelect();
+}
+
+function cerrarPanelAdmin() {
+    document.getElementById('panel-admin').style.display = 'none';
+}
+
+function cargarDepartamentosEnSelect() {
+    const select = document.getElementById('admin-departamento');
+    select.innerHTML = '<option value="">Seleccionar departamento</option>';
+    
+    Object.keys(delegadosPorDepartamento).forEach(depto => {
+        const option = document.createElement('option');
+        option.value = depto;
+        option.textContent = depto;
+        select.appendChild(option);
+    });
+}
+
+// 🎹 DETECCIÓN DE TECLAS
+let adminKeyCount = 0;
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'a' || e.key === 'A') {
+        adminKeyCount++;
+        if (adminKeyCount === 3) {
+            document.getElementById('btn-admin').style.display = 'block';
+            adminKeyCount = 0;
+            console.log('🔧 Panel administrativo activado');
+        }
+        setTimeout(() => { adminKeyCount = 0; }, 2000);
+    }
+});
+
+// 📱 CARGAR AL INICIAR
+document.addEventListener('DOMContentLoaded', function() {
+    cargarDelegadosDesdeSheets();
+});
         });
         // ==================================================
 // 🔐 PANEL ADMINISTRATIVO CON GOOGLE SHEETS
