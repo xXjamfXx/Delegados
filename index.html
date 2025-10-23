@@ -1848,6 +1848,103 @@ function mostrarDelegados(nombreDepartamento) {
             // Inicializar la aplicación
             inicializar();
         });
+        // ==================================================
+// 🔐 PANEL ADMINISTRATIVO CON GOOGLE SHEETS
+// ==================================================
+
+// 🔥 REEMPLAZA ESTA URL CON LA TUYA
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwluQjpgQ5srF2WwGIflUig1NqoI0_iOn2nKairjBxEPQ851IQGTTIuPMflyr3oX6UPcQ/exec';
+
+// 🔄 CARGAR DATOS DESDE GOOGLE SHEETS
+async function cargarDelegadosDesdeSheets() {
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const delegados = await response.json();
+        
+        const nuevosDelegados = {};
+        delegados.forEach(delegado => {
+            if (!nuevosDelegados[delegado.departamento]) {
+                nuevosDelegados[delegado.departamento] = [];
+            }
+            nuevosDelegados[delegado.departamento].push({
+                nombre: delegado.nombre,
+                comision: delegado.comision,
+                votos: 0,
+                enlace: delegado.enlace
+            });
+        });
+        
+        Object.assign(delegadosPorDepartamento, nuevosDelegados);
+        actualizarFiltros();
+        
+    } catch (error) {
+        console.error('Error cargando delegados:', error);
+    }
+}
+
+// ➕ AGREGAR DELEGADO
+async function agregarDelegado() {
+    const nombre = document.getElementById('admin-nombre').value;
+    const departamento = document.getElementById('admin-departamento').value;
+    const comision = document.getElementById('admin-comision').value;
+    const enlace = document.getElementById('admin-enlace').value;
+    
+    if (!nombre || !departamento || !comision) {
+        alert('Completa todos los campos');
+        return;
+    }
+    
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                departamento: departamento,
+                nombre: nombre,
+                comision: comision,
+                enlace: enlace
+            })
+        });
+        
+        const resultado = await response.json();
+        if (resultado.success) {
+            await cargarDelegadosDesdeSheets();
+            document.getElementById('admin-nombre').value = '';
+            document.getElementById('admin-enlace').value = '';
+            alert('✅ Delegado agregado');
+        }
+    } catch (error) {
+        alert('❌ Error al agregar');
+    }
+}
+
+// 📱 CARGAR AL INICIAR
+document.addEventListener('DOMContentLoaded', function() {
+    cargarDelegadosDesdeSheets();
+});
     </script>
+            <!-- 🔐 PANEL ADMINISTRATIVO -->
+<div id="panel-admin" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+        <span class="close-modal" onclick="cerrarPanelAdmin()">&times;</span>
+        <h3>🔐 Panel Administrativo</h3>
+        
+        <div class="form-agregar">
+            <h4>Agregar Nuevo Delegado</h4>
+            <input type="text" id="admin-nombre" placeholder="Nombre completo" class="search-box">
+            <select id="admin-departamento" class="filter-select">
+                <option value="">Seleccionar departamento</option>
+            </select>
+            <select id="admin-comision" class="filter-select">
+                <option value="COMISIÓN QUINTA">COMISIÓN QUINTA</option>
+                <option value="COMISIÓN SEGUNDA">COMISIÓN SEGUNDA</option>
+                <option value="COMISIÓN SEXTA">COMISIÓN SEXTA</option>
+            </select>
+            <input type="text" id="admin-enlace" placeholder="Enlace Google Sheets" class="search-box">
+            <button onclick="agregarDelegado()" class="delegado-votos">➕ Agregar Delegado</button>
+        </div>
+    </div>
+</div>
+
+<button id="btn-admin" style="position: fixed; bottom: 20px; right: 20px; background: #ff9c03; color: white; border: none; padding: 10px; border-radius: 50%; display: none;">🔧</button>
 </body>
 </html>
