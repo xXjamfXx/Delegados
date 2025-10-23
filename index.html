@@ -224,6 +224,10 @@
     opacity: 0.3 !important;
     fill: #cccccc !important;
 }
+/* 🎯 AGREGAR ESTO */
+.department-path.hover {
+    fill: #004d99 !important;
+}
 
 
         .department-label {
@@ -614,11 +618,13 @@ console.log("Centro:", projection.center());
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 28) + "px");
 
-    d3.select(this).style("fill", "#004d99");
+    // NO usar style("fill") - solo agregar clase hover
+    d3.select(this).classed("hover", true);
 })
-            .on("mouseout", function(d) {
+.on("mouseout", function(d) {
     tooltip.transition().duration(500).style("opacity", 0);
-    d3.select(this).style("fill", "#ff9c03");  // ✅ NARANJA BASE
+    // NO usar style("fill") - solo remover clase hover
+    d3.select(this).classed("hover", false);
 })
             .on("click", function(event, d) {
     const depto = d.properties.NOMBRE_DPT;
@@ -1022,8 +1028,10 @@ function mostrarDelegados(nombreDepartamento) {
             }
             function cerrarModal() {
     modal.style.display = 'none';
-    // Solo quitar la clase seleccionado - los colores los maneja CSS
-    d3.selectAll(".department-path").classed("seleccionado", false);
+    // Limpiar selección y hover
+    d3.selectAll(".department-path")
+        .classed("seleccionado", false)
+        .classed("hover", false);
 }
             // Inicializar la aplicación
             inicializar();
