@@ -201,18 +201,18 @@
         }
 
         .department-path {
-            fill: #ff9c03;
+    fill: #ff9c03;
     stroke: #cc7d02;
-            stroke-width: 1;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    stroke-width: 1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
         .department-path:hover {
-            fill: #e68a00;
+    fill: #e68a00;
     stroke: #b36b00;
-            stroke-width: 2;
-        }
+    stroke-width: 2;
+}
         
 
         .department-path.seleccionado {
@@ -224,6 +224,7 @@
     opacity: 0.3 !important;
     fill: #cccccc !important;
 }
+
 
         .department-label {
             font-size: 12px;
@@ -623,14 +624,9 @@ console.log("Centro:", projection.center());
     const depto = d.properties.NOMBRE_DPT;
     mostrarDelegados(depto);
     
-    // Resaltar selección
-    g.selectAll(".department-path")
-        .classed("seleccionado", false)
-        .style("fill", "#ff9c03"); // Resetear todos al naranja
-    
-    d3.select(this)
-        .classed("seleccionado", true)
-        .style("fill", "#cc7d02"); // Naranja oscuro para selección
+    // Resaltar selección - SOLO usar clases, no styles
+    g.selectAll(".department-path").classed("seleccionado", false);
+    d3.select(this).classed("seleccionado", true);
 })
 
         // LUEGO ETIQUETAS
@@ -809,25 +805,15 @@ function actualizarMapaConFiltros() {
                 return coincideNombre && coincideComision && coincideDepartamento;
             });
 
-            // Aplicar o remover clase filtrado
+            // Solo aplicar/remover la clase filtrado - NO TOCAR LOS COLORES DIRECTAMENTE
             pathElement.classed("filtrado", !tieneDelegadosFiltrados);
-            
-            // RESETAR COLORES - Esta es la parte importante
-            if (pathElement.classed("filtrado")) {
-                // Si está filtrado, mantener el color gris
-                pathElement.style("fill", "#cccccc");
-            } else if (pathElement.classed("seleccionado")) {
-                // Si está seleccionado, mantener el color de selección
-                pathElement.style("fill", "#cc7d02");
-            } else if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado) {
-                // Si coincide con filtro de departamento, resaltar
-                pathElement.style("fill", "#003366");
-            } else {
-                // Por defecto, volver al naranja original
-                pathElement.style("fill", "#ff9c03");
-            }
         });
-}            // Agregar event listeners
+}
+            
+            
+            
+            
+            // Agregar event listeners
             function agregarEventListeners() {
                 closeModal.addEventListener('click', cerrarModal);
                 window.addEventListener('click', (event) => {
@@ -1036,12 +1022,8 @@ function mostrarDelegados(nombreDepartamento) {
             }
             function cerrarModal() {
     modal.style.display = 'none';
-    // Limpiar selección del mapa pero mantener filtros
-    d3.selectAll(".department-path")
-        .classed("seleccionado", false);
-    
-    // Re-aplicar los filtros actuales para restaurar colores correctamente
-    actualizarMapaConFiltros();
+    // Solo quitar la clase seleccionado - los colores los maneja CSS
+    d3.selectAll(".department-path").classed("seleccionado", false);
 }
             // Inicializar la aplicación
             inicializar();
