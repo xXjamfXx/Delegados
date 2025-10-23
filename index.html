@@ -1425,16 +1425,16 @@ console.log("Centro:", projection.center());
     d3.select(this).style("fill", "#004d99");
 })
             .on("mouseout", function(d) {
-                tooltip.transition().duration(500).style("opacity", 0);
-                d3.select(this).style("fill", "#e6f2ff");
-            })
+    tooltip.transition().duration(500).style("opacity", 0);
+    d3.select(this).style("fill", "#ff9c03");  // ✅ NARANJA BASE
+})
             .on("click", function(event, d) {
     const depto = d.properties.NOMBRE_DPT;
     mostrarDelegados(depto);
     
     // Resaltar selección
-    g.selectAll(".department-path").style("fill", "#e6f2ff");
-    d3.select(this).style("fill", "#003366");
+    g.selectAll(".department-path").style("fill", "#ff9c03");  // ✅ NARANJA BASE
+    d3.select(this).style("fill", "#cc7d02");  // ✅ NARANJA OSCURO
 })
 
         // LUEGO ETIQUETAS
