@@ -1054,12 +1054,17 @@ const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysSBNSjB2BKb
 
 // 🔄 CARGAR DATOS DESDE GOOGLE SHEETS
 // 🔄 CARGAR DATOS DESDE GOOGLE SHEETS (VERSIÓN MEJORADA)
+// 🔄 CARGAR DATOS DESDE GOOGLE SHEETS
+// 🔄 CARGAR DATOS DESDE GOOGLE SHEETS (VERSIÓN MEJORADA)
 async function cargarDelegadosDesdeSheets() {
     try {
         const response = await fetch(GOOGLE_SCRIPT_URL);
         const delegados = await response.json();
         
         const nuevosDelegados = {};
+        const comisionesUnicas = new Set();
+        const departamentosUnicos = new Set();
+        
         delegados.forEach(delegado => {
             if (!nuevosDelegados[delegado.departamento]) {
                 nuevosDelegados[delegado.departamento] = [];
@@ -1070,20 +1075,55 @@ async function cargarDelegadosDesdeSheets() {
                 votos: 0,
                 enlace: delegado.enlace
             });
+            
+            // Agregar comisión y departamento a conjuntos únicos
+            if (delegado.comision) comisionesUnicas.add(delegado.comision);
+            if (delegado.departamento) departamentosUnicos.add(delegado.departamento);
         });
         
         // 🔥 ESTA ES LA PARTE IMPORTANTE - REEMPLAZAR COMPLETAMENTE
         Object.keys(delegadosPorDepartamento).forEach(key => delete delegadosPorDepartamento[key]);
         Object.assign(delegadosPorDepartamento, nuevosDelegados);
         
-        actualizarFiltros();
+        // Actualizar filtros con datos dinámicos
+        actualizarFiltrosDinamicos(comisionesUnicas, departamentosUnicos);
         actualizarMapaConFiltros();
+        
+        console.log('✅ Delegados cargados desde Google Sheets');
+        console.log('📊 Comisiones únicas:', [...comisionesUnicas]);
+        console.log('🗺️ Departamentos únicos:', [...departamentosUnicos]);
         
     } catch (error) {
         console.error('Error cargando delegados:', error);
     }
 }
-// 🔄 ACTUALIZAR FILTROS
+        
+        
+        // 🔄 ACTUALIZAR FILTROS
+        // 🔄 ACTUALIZAR FILTROS DINÁMICAMENTE
+function actualizarFiltrosDinamicos(comisionesUnicas, departamentosUnicos) {
+    // Actualizar filtro de comisiones
+    const comisionFilter = document.getElementById('comision-filter');
+    comisionFilter.innerHTML = '<option value="">Todas las comisiones</option>';
+    [...comisionesUnicas].sort().forEach(comision => {
+        const option = document.createElement('option');
+        option.value = comision;
+        option.textContent = comision;
+        comisionFilter.appendChild(option);
+    });
+
+    // Actualizar filtro de departamentos
+    const departamentoFilter = document.getElementById('departamento-filter');
+    departamentoFilter.innerHTML = '<option value="">Todos los departamentos</option>';
+    [...departamentosUnicos].sort().forEach(depto => {
+        const option = document.createElement('option');
+        option.value = depto;
+        option.textContent = depto;
+        departamentoFilter.appendChild(option);
+    });
+    
+    console.log('✅ Filtros actualizados dinámicamente');
+}
 function actualizarFiltros() {
     const departamentoFilter = document.getElementById('departamento-filter');
     departamentoFilter.innerHTML = '<option value="">Todos los departamentos</option>';
