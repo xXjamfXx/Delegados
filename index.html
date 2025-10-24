@@ -1939,36 +1939,62 @@ class SheetConnector {
         this.isLoading = false;
     }
     
-   // CONTAR TODOS LOS VOTOS CON APPS SCRIPT
+// VUELVE A PONER ESTO en countVotesForSheet:
 async countVotesForSheet(sheetName) {
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-gSnJ09YYLvPYwG5tUsjMghLZiEYQmEL07xyGT6gIyRgj-GH3dCA8NXOZn1m5eULD/exec';
-    
-    function obtenerNombreCorto(nombreCompleto) {
-        const partes = nombreCompleto.trim().split(' ');
-        if (partes.length >= 3) return `${partes[0]} ${partes[1]} ${partes[2]}`;
-        if (partes.length === 2) return `${partes[0]} ${partes[1]}`;
-        return nombreCompleto;
-    }
-    
-    const nombreCorto = obtenerNombreCorto(sheetName);
-    console.log(`🔍 Contando: "${nombreCorto}" (de: "${sheetName}")`);
-    
     try {
-        const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(nombreCorto)}`;
-        const response = await fetch(url);
-        const text = await response.text();
-        const voteCount = parseInt(text);
+        let totalVotes = 0;
+        let startRow = 8;
+        const batchSize = 200;
+        let hasMoreData = true;
         
-        if (!isNaN(voteCount)) {
-            console.log(`✅ ${sheetName}: ${voteCount} votos`);
-            return voteCount;
+        while (hasMoreData) {
+            const range = `${sheetName}!A${startRow}:H${startRow + batchSize - 1}`;
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
+            
+            const response = await fetch(url);
+            const text = await response.text();
+            
+            if (!text || text.includes('No table data') || text.length < 100) {
+                hasMoreData = false;
+                break;
+            }
+            
+            try {
+                const json = JSON.parse(text.substring(47).slice(0, -2));
+                const rows = json.table?.rows || [];
+                
+                if (rows.length === 0) {
+                    hasMoreData = false;
+                    break;
+                }
+                
+                const validRows = rows.filter(row => 
+                    row.c && row.c[0] && row.c[0].v && row.c[0].v.toString().trim() !== ''
+                );
+                
+                totalVotes += validRows.length;
+                
+                if (rows.length < batchSize) {
+                    hasMoreData = false;
+                } else {
+                    startRow += batchSize;
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 50));
+                
+            } catch (parseError) {
+                hasMoreData = false;
+                break;
+            }
         }
+        
+        return totalVotes;
+        
     } catch (error) {
-        console.log(`❌ Error para ${sheetName}`);
+        return 0;
     }
-    
-    return 0;
 }
+    
     // ENLACE EXACTO
     getExactDelegadoLink(delegadoName) {
         const encodedName = encodeURIComponent(delegadoName);
