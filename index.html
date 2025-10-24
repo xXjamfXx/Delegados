@@ -2418,6 +2418,49 @@ setTimeout(() => {
     }
 }, 1000);
 </script>
+            <script>
+// ============================================
+// 🔧 SISTEMA DE NOMBRES CORTOS PARA TODOS LOS DELEGADOS
+// ============================================
+
+function obtenerNombreCorto(nombreCompleto) {
+    const partes = nombreCompleto.trim().split(' ');
+    
+    if (partes.length >= 3) {
+        return `${partes[0]} ${partes[1]} ${partes[2]}`;
+    } else if (partes.length === 2) {
+        return `${partes[0]} ${partes[1]}`;
+    } else {
+        return nombreCompleto;
+    }
+}
+
+// SOBREESCRIBIR LA FUNCIÓN DE CONTEO
+SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
+    const nombreCorto = obtenerNombreCorto(sheetName);
+    console.log(`🔍 Buscando: "${nombreCorto}" (de: "${sheetName}")`);
+    
+    try {
+        const url = `https://script.google.com/macros/s/AKfycbw-gSnJ09YYLvPYwG5tUsjMghLZiEYQmEL07xyGT6gIyRgj-GH3dCA8NXOZn1m5eULD/exec?sheet=${encodeURIComponent(nombreCorto)}`;
+        const response = await fetch(url);
+        const voteCount = parseInt(await response.text());
+        
+        console.log(`✅ ${sheetName}: ${voteCount} votos`);
+        return voteCount;
+    } catch (error) {
+        console.log(`❌ ${sheetName}: 0 votos (falló)`);
+        return 0;
+    }
+};
+
+// FORZAR ACTUALIZACIÓN DE TODOS
+setTimeout(() => {
+    if (window.sheetConnector) {
+        console.log('🚀 ACTIVANDO SISTEMA DE NOMBRES CORTOS...');
+        window.sheetConnector.updateDelegadosFromSheets();
+    }
+}, 2000);
+</script>
             
 </body>
 </html>
