@@ -2257,81 +2257,90 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('✅ Parche para contar todos los votos activado');
-</script>
-<script>
+</script><script>
 // ============================================
-// 🚀 VERSIÓN RÁPIDA CON PARALELISMO
+// 🔧 SOLUCIÓN DEFINITIVA CON FALLBACK
 // ============================================
 
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-gSnJ09YYLvPYwG5tUsjMghLZiEYQmEL07xyGT6gIyRgj-GH3dCA8NXOZn1m5eULD/exec';
 
-// FUNCIÓN DE CONTEO (igual que antes)
 SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
     try {
+        // Intentar con Apps Script primero
         const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
         const response = await fetch(url);
-        const voteCount = parseInt(await response.text());
-        return voteCount;
+        
+        if (response.ok) {
+            const text = await response.text();
+            const voteCount = parseInt(text);
+            if (!isNaN(voteCount) && voteCount > 0) {
+                return voteCount;
+            }
+        }
     } catch (error) {
-        console.error(`Error en ${sheetName}:`, error);
+        console.log(`Apps Script falló para ${sheetName}, usando método alternativo`);
+    }
+    
+    // FALLBACK: Método directo de Google Sheets
+    try {
+        const range = `${sheetName}!A8:H`;
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
+        
+        const response = await fetch(url);
+        const text = await response.text();
+        const json = JSON.parse(text.substring(47).slice(0, -2));
+        
+        return json.table?.rows?.length || 0;
+    } catch (fallbackError) {
         return 0;
     }
 };
 
-// NUEVA FUNCIÓN DE ACTUALIZACIÓN RÁPIDA EN PARALELO
+// ACTUALIZACIÓN EN PARALELO
 SheetConnector.prototype.updateDelegadosFromSheets = async function() {
     if (this.isLoading) return;
     this.isLoading = true;
     
-    console.log('🚀 Actualización RÁPIDA en paralelo...');
+    console.log('🔄 Actualizando TODOS los delegados...');
     
     try {
         const allPromises = [];
         
-        // CREAR TODAS LAS PROMESAS A LA VEZ
         for (const [departamento, delegados] of Object.entries(delegadosPorDepartamento)) {
             for (const delegado of delegados) {
                 const promise = this.countVotesForSheet(delegado.nombre)
                     .then(voteCount => {
                         delegado.votos = voteCount;
-                        delegado.enlace = this.getExactDelegadoLink(delegado.nombre);
-                        console.log(`✅ ${delegado.nombre}: ${voteCount} votos`);
+                        delegado.enlace = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0&range=A1&sheet=${encodeURIComponent(delegado.nombre)}`;
                     });
-                
                 allPromises.push(promise);
             }
         }
         
-        // EJECUTAR TODAS LAS CONSULTAS EN PARALELO
         await Promise.all(allPromises);
         
-        // CALCULAR TOTAL
+        // Calcular total
         let total = 0;
-        for (const [departamento, delegados] of Object.entries(delegadosPorDepartamento)) {
+        for (const delegados of Object.values(delegadosPorDepartamento)) {
             for (const delegado of delegados) {
                 total += delegado.votos;
             }
         }
         
         this.updateTotalVotesCounter(total);
-        console.log(`🎯 TOTAL: ${total} votos`);
+        console.log(`✅ TOTAL ACTUALIZADO: ${total} votos`);
         
-    } catch (error) {
-        console.error('❌ Error en actualización:', error);
     } finally {
         this.isLoading = false;
     }
 };
 
-// Forzar recarga rápida
+// Forzar actualización completa
 setTimeout(() => {
     if (window.sheetConnector) {
-        console.log('🚀 INICIANDO CONTEO RÁPIDO...');
         window.sheetConnector.updateDelegadosFromSheets();
     }
 }, 1000);
-
-console.log('✅ Versión RÁPIDA activada');
 </script>
             
 </body>
