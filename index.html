@@ -1941,6 +1941,23 @@ class SheetConnector {
     
 // VUELVE A PONER ESTO en countVotesForSheet:
 async countVotesForSheet(sheetName) {
+    // PRIMERO intentar con el NUEVO Apps Script
+    try {
+        const url = `https://script.google.com/macros/s/AKfycbwCVQnH_YqajiIMtaYSKwBgBb3thk-i9SmiRkUKsblAxrXBrHW4anhRTiMqEoGzkUMt/exec?sheet=${encodeURIComponent(sheetName)}`;
+        const response = await fetch(url);
+        
+        if (response.ok) {
+            const htmlText = await response.text();
+            // El Apps Script ahora devuelve HTML, necesitamos parsear el JSON interno
+            const data = JSON.parse(htmlText);
+            console.log(`✅ ${sheetName}: ${data.votes} votos EXACTOS`);
+            return data.votes;
+        }
+    } catch (error) {
+        console.log(`❌ Apps Script falló para ${sheetName}, usando método directo`);
+    }
+    
+    // SEGUNDO: Fallback al método directo (por si acaso)
     try {
         let totalVotes = 0;
         let startRow = 8;
@@ -1988,13 +2005,13 @@ async countVotesForSheet(sheetName) {
             }
         }
         
+        console.log(`📊 ${sheetName}: ${totalVotes} votos (método directo)`);
         return totalVotes;
         
     } catch (error) {
         return 0;
     }
-}
-    
+}    
     // ENLACE EXACTO
     getExactDelegadoLink(delegadoName) {
         const encodedName = encodeURIComponent(delegadoName);
