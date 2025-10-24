@@ -2066,9 +2066,9 @@ function mostrarDelegados(nombreDepartamento) {
         });
 
     </script>
-            <script>
+         <script>
 // ============================================
-// 🌀 INDICADOR DE CARGA PARA GOOGLE SHEETS
+// 🌀 INDICADOR DE CARGA MEJORADO
 // ============================================
 
 class LoadingIndicator {
@@ -2109,22 +2109,24 @@ class LoadingIndicator {
             Conectando con Google Sheets...
         `;
         
-        // Agregar animación CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
         document.body.appendChild(loader);
     }
     
     show() {
         this.isLoading = true;
         const loader = document.getElementById('sheet-loading-indicator');
-        if (loader) loader.style.display = 'flex';
+        if (loader) {
+            loader.style.display = 'flex';
+            // Agregar animación CSS directamente
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
     
     hide() {
@@ -2141,15 +2143,21 @@ const sheetLoader = new LoadingIndicator();
 const originalUpdate = SheetConnector.prototype.updateDelegadosFromSheets;
 SheetConnector.prototype.updateDelegadosFromSheets = async function() {
     sheetLoader.show();
+    console.log('🔄 Iniciando actualización...');
+    
     try {
         await originalUpdate.call(this);
+        console.log('✅ Actualización completada');
+    } catch (error) {
+        console.error('❌ Error en actualización:', error);
     } finally {
-        // Ocultar después de 2 segundos (para que se vea el indicador)
-        setTimeout(() => sheetLoader.hide(), 2000);
+        // Ocultar inmediatamente cuando termine, no después de tiempo fijo
+        sheetLoader.hide();
+        console.log('📊 Indicador ocultado');
     }
 };
 
-console.log('✅ Indicador de carga activado');
+console.log('✅ Indicador de carga mejorado activado');
 </script>
 </body>
 </html>
