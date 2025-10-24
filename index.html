@@ -2095,6 +2095,75 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 45000);
 });
 </script>
+
+<script>
+// ============================================
+// 🔧 FUNCIÓN PARA ACORTAR NOMBRES DE HOJAS
+// ============================================
+
+function obtenerNombreCorto(nombreCompleto) {
+    // Dividir el nombre en partes
+    const partes = nombreCompleto.trim().split(' ');
+    
+    // Tomar máximo 2 nombres + 1 apellido
+    if (partes.length >= 3) {
+        // 2 nombres + 1 apellido: "Juan Carlos" + "Perez"
+        return `${partes[0]} ${partes[1]} ${partes[2]}`;
+    } else if (partes.length === 2) {
+        // 1 nombre + 1 apellido: "Maria" + "Lopez"  
+        return `${partes[0]} ${partes[1]}`;
+    } else {
+        // Nombre muy corto, devolver original
+        return nombreCompleto;
+    }
+}
+
+// MODIFICAR LA FUNCIÓN DE CONTEO PARA USAR NOMBRES CORTOS
+SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
+    try {
+        // Usar nombre corto para la consulta
+        const nombreCorto = obtenerNombreCorto(sheetName);
+        console.log(`🔍 Buscando: "${nombreCorto}" (original: "${sheetName}")`);
+        
+        const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(nombreCorto)}`;
+        const response = await fetch(url);
+        
+        if (response.ok) {
+            const text = await response.text();
+            const voteCount = parseInt(text);
+            
+            if (!isNaN(voteCount) && voteCount > 0) {
+                console.log(`✅ ${sheetName}: ${voteCount} votos (como "${nombreCorto}")`);
+                return voteCount;
+            }
+        }
+    } catch (error) {
+        console.log(`❌ Falló con nombre corto para ${sheetName}`);
+    }
+    
+    // FALLBACK: Intentar con el nombre completo original
+    try {
+        const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
+        const response = await fetch(url);
+        
+        if (response.ok) {
+            const text = await response.text();
+            const voteCount = parseInt(text);
+            if (!isNaN(voteCount)) {
+                console.log(`✅ ${sheetName}: ${voteCount} votos (nombre completo)`);
+                return voteCount;
+            }
+        }
+    } catch (error) {
+        console.log(`💀 ${sheetName}: 0 votos (ambos métodos fallaron)`);
+    }
+    
+    return 0;
+};
+
+console.log('✅ Sistema de nombres cortos activado');
+</script>
+            
          <script>
 // ============================================
 // 🌀 INDICADOR DE CARGA MEJORADO
