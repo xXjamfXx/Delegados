@@ -2095,290 +2095,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 45000);
 });
 </script>
-
 <script>
 // ============================================
-// 🔧 FUNCIÓN PARA ACORTAR NOMBRES DE HOJAS
+// 🚀 SISTEMA DEFINITIVO - NOMBRES CORTOS + APPS SCRIPT
 // ============================================
 
+const SHEET_ID = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-gSnJ09YYLvPYwG5tUsjMghLZiEYQmEL07xyGT6gIyRgj-GH3dCA8NXOZn1m5eULD/exec';
+
+// FUNCIÓN PARA NOMBRES CORTOS
 function obtenerNombreCorto(nombreCompleto) {
-    // Dividir el nombre en partes
     const partes = nombreCompleto.trim().split(' ');
-    
-    // Tomar máximo 2 nombres + 1 apellido
-    if (partes.length >= 3) {
-        // 2 nombres + 1 apellido: "Juan Carlos" + "Perez"
-        return `${partes[0]} ${partes[1]} ${partes[2]}`;
-    } else if (partes.length === 2) {
-        // 1 nombre + 1 apellido: "Maria" + "Lopez"  
-        return `${partes[0]} ${partes[1]}`;
-    } else {
-        // Nombre muy corto, devolver original
-        return nombreCompleto;
-    }
+    if (partes.length >= 3) return `${partes[0]} ${partes[1]} ${partes[2]}`;
+    if (partes.length === 2) return `${partes[0]} ${partes[1]}`;
+    return nombreCompleto;
 }
 
-// MODIFICAR LA FUNCIÓN DE CONTEO PARA USAR NOMBRES CORTOS
+// CONTEO CON NOMBRES CORTOS Y FALLBACK
 SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
+    const nombreCorto = obtenerNombreCorto(sheetName);
+    console.log(`🔍 Buscando: "${nombreCorto}" (de: "${sheetName}")`);
+    
     try {
-        // Usar nombre corto para la consulta
-        const nombreCorto = obtenerNombreCorto(sheetName);
-        console.log(`🔍 Buscando: "${nombreCorto}" (original: "${sheetName}")`);
-        
         const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(nombreCorto)}`;
         const response = await fetch(url);
+        const voteCount = parseInt(await response.text());
         
-        if (response.ok) {
-            const text = await response.text();
-            const voteCount = parseInt(text);
-            
-            if (!isNaN(voteCount) && voteCount > 0) {
-                console.log(`✅ ${sheetName}: ${voteCount} votos (como "${nombreCorto}")`);
-                return voteCount;
-            }
-        }
-    } catch (error) {
-        console.log(`❌ Falló con nombre corto para ${sheetName}`);
-    }
-    
-    // FALLBACK: Intentar con el nombre completo original
-    try {
-        const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
-        const response = await fetch(url);
-        
-        if (response.ok) {
-            const text = await response.text();
-            const voteCount = parseInt(text);
-            if (!isNaN(voteCount)) {
-                console.log(`✅ ${sheetName}: ${voteCount} votos (nombre completo)`);
-                return voteCount;
-            }
-        }
-    } catch (error) {
-        console.log(`💀 ${sheetName}: 0 votos (ambos métodos fallaron)`);
-    }
-    
-    return 0;
-};
-
-console.log('✅ Sistema de nombres cortos activado');
-</script>
-            
-         <script>
-// ============================================
-// 🌀 INDICADOR DE CARGA MEJORADO
-// ============================================
-
-class LoadingIndicator {
-    constructor() {
-        this.isLoading = false;
-        this.createLoader();
-    }
-    
-    createLoader() {
-        const loader = document.createElement('div');
-        loader.id = 'sheet-loading-indicator';
-        loader.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #003366;
-            color: white;
-            padding: 12px 18px;
-            border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 10000;
-            font-size: 14px;
-            font-weight: bold;
-            display: none;
-            align-items: center;
-            gap: 10px;
-            border: 2px solid #ffd700;
-        `;
-        loader.innerHTML = `
-            <div class="spinner" style="
-                width: 16px;
-                height: 16px;
-                border: 2px solid transparent;
-                border-top: 2px solid #ffd700;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            "></div>
-            Conectando con Google Sheets...
-        `;
-        
-        document.body.appendChild(loader);
-    }
-    
-    show() {
-        this.isLoading = true;
-        const loader = document.getElementById('sheet-loading-indicator');
-        if (loader) {
-            loader.style.display = 'flex';
-            // Agregar animación CSS directamente
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-    }
-    
-    hide() {
-        this.isLoading = false;
-        const loader = document.getElementById('sheet-loading-indicator');
-        if (loader) loader.style.display = 'none';
-    }
-}
-
-// Crear instancia global
-const sheetLoader = new LoadingIndicator();
-
-// Interceptar las actualizaciones del SheetConnector existente
-const originalUpdate = SheetConnector.prototype.updateDelegadosFromSheets;
-SheetConnector.prototype.updateDelegadosFromSheets = async function() {
-    sheetLoader.show();
-    console.log('🔄 Iniciando actualización...');
-    
-    try {
-        await originalUpdate.call(this);
-        console.log('✅ Actualización completada');
-    } catch (error) {
-        console.error('❌ Error en actualización:', error);
-    } finally {
-        // Ocultar inmediatamente cuando termine, no después de tiempo fijo
-        sheetLoader.hide();
-        console.log('📊 Indicador ocultado');
-    }
-};
-
-console.log('✅ Indicador de carga mejorado activado');
-</script>
-            <script>
-// ============================================
-// 🔧 PARCHE PARA CONTAR TODOS LOS VOTOS
-// ============================================
-
-// Reemplazar la función de conteo de votos
-SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
-    try {
-        let totalVotes = 0;
-        let startRow = 8; // Empezar en fila 8
-        const batchSize = 200; // Máximo por consulta
-        
-        while (true) {
-            const range = `${sheetName}!A${startRow}:H${startRow + batchSize - 1}`;
-            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
-            
-            const response = await fetch(url);
-            const text = await response.text();
-            
-            // Verificar si hay datos
-            if (!text || text.includes('No table data')) {
-                break;
-            }
-            
-            try {
-                const json = JSON.parse(text.substring(47).slice(0, -2));
-                const rows = json.table?.rows || [];
-                
-                if (rows.length === 0) {
-                    break; // No más filas
-                }
-                
-                // Contar filas con datos en columna A (nombres)
-                const validRows = rows.filter(row => 
-                    row.c && row.c[0] && row.c[0].v && row.c[0].v.toString().trim() !== ''
-                );
-                
-                totalVotes += validRows.length;
-                startRow += batchSize;
-                
-                // Pequeña pausa para no saturar
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-            } catch (parseError) {
-                console.log(`Fin de datos para ${sheetName}`);
-                break;
-            }
-        }
-        
-        console.log(`📊 ${sheetName}: ${totalVotes} votos totales`);
-        return totalVotes;
-        
-    } catch (error) {
-        console.error(`Error contando votos para ${sheetName}:`, error);
-        return 0;
-    }
-};
-
-// Forzar actualización inmediata
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        if (window.sheetConnector) {
-            console.log('🔄 Recontando todos los votos...');
-            window.sheetConnector.updateDelegadosFromSheets();
-        }
-    }, 2000);
-});
-
-console.log('✅ Parche para contar todos los votos activado');
-</script>
-
-            <script>
-// ============================================
-// 🚀 VERSIÓN RÁPIDA CON FALLBACK GARANTIZADO
-// ============================================
-
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-gSnJ09YYLvPYwG5tUsjMghLZiEYQmEL07xyGT6gIyRgj-GH3dCA8NXOZn1m5eULD/exec';
-const SHEET_ID = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
-
-// FUNCIÓN DE CONTEO CON FALLBACK GARANTIZADO
-SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
-    // PRIMERO: Intentar con Apps Script
-    try {
-        const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
-        const response = await fetch(url);
-        
-        if (response.ok) {
-            const text = await response.text();
-            const voteCount = parseInt(text);
-            if (!isNaN(voteCount)) {
-                console.log(`✅ ${sheetName}: ${voteCount} votos (Apps Script)`);
-                return voteCount;
-            }
+        if (!isNaN(voteCount)) {
+            console.log(`✅ ${sheetName}: ${voteCount} votos`);
+            return voteCount;
         }
     } catch (error) {
         console.log(`❌ Apps Script falló para ${sheetName}`);
     }
     
-    // SEGUNDO: Fallback a Google Sheets directo
-    try {
-        const range = `${sheetName}!A8:H`;
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
-        
-        const response = await fetch(url);
-        const text = await response.text();
-        const json = JSON.parse(text.substring(47).slice(0, -2));
-        
-        const fallbackCount = json.table?.rows?.length || 0;
-        console.log(`🔄 ${sheetName}: ${fallbackCount} votos (Fallback)`);
-        return fallbackCount;
-    } catch (error) {
-        console.log(`💀 ${sheetName}: 0 votos (Error total)`);
-        return 0;
-    }
+    return 0;
 };
 
-// FUNCIÓN DE ACTUALIZACIÓN RÁPIDA (igual que antes)
+// ACTUALIZACIÓN RÁPIDA EN PARALELO
 SheetConnector.prototype.updateDelegadosFromSheets = async function() {
     if (this.isLoading) return;
     this.isLoading = true;
     
-    console.log('🚀 Actualización RÁPIDA con Fallback...');
+    console.log('🚀 Actualizando TODOS los delegados...');
     
     try {
         const allPromises = [];
@@ -2411,57 +2170,25 @@ SheetConnector.prototype.updateDelegadosFromSheets = async function() {
     }
 };
 
-// Forzar actualización
+// INDICADOR DE CARGA SIMPLE
+const originalUpdate = SheetConnector.prototype.updateDelegadosFromSheets;
+SheetConnector.prototype.updateDelegadosFromSheets = async function() {
+    // Mostrar carga
+    console.log('🔄 Conectando con Google Sheets...');
+    
+    await originalUpdate.call(this);
+    console.log('✅ Actualización completada');
+};
+
+// INICIAR
 setTimeout(() => {
     if (window.sheetConnector) {
         window.sheetConnector.updateDelegadosFromSheets();
     }
 }, 1000);
-</script>
-            <script>
-// ============================================
-// 🔧 SISTEMA DE NOMBRES CORTOS PARA TODOS LOS DELEGADOS
-// ============================================
 
-function obtenerNombreCorto(nombreCompleto) {
-    const partes = nombreCompleto.trim().split(' ');
-    
-    if (partes.length >= 3) {
-        return `${partes[0]} ${partes[1]} ${partes[2]}`;
-    } else if (partes.length === 2) {
-        return `${partes[0]} ${partes[1]}`;
-    } else {
-        return nombreCompleto;
-    }
-}
-
-// SOBREESCRIBIR LA FUNCIÓN DE CONTEO
-SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
-    const nombreCorto = obtenerNombreCorto(sheetName);
-    console.log(`🔍 Buscando: "${nombreCorto}" (de: "${sheetName}")`);
-    
-    try {
-        const url = `https://script.google.com/macros/s/AKfycbw-gSnJ09YYLvPYwG5tUsjMghLZiEYQmEL07xyGT6gIyRgj-GH3dCA8NXOZn1m5eULD/exec?sheet=${encodeURIComponent(nombreCorto)}`;
-        const response = await fetch(url);
-        const voteCount = parseInt(await response.text());
-        
-        console.log(`✅ ${sheetName}: ${voteCount} votos`);
-        return voteCount;
-    } catch (error) {
-        console.log(`❌ ${sheetName}: 0 votos (falló)`);
-        return 0;
-    }
-};
-
-// FORZAR ACTUALIZACIÓN DE TODOS
-setTimeout(() => {
-    if (window.sheetConnector) {
-        console.log('🚀 ACTIVANDO SISTEMA DE NOMBRES CORTOS...');
-        window.sheetConnector.updateDelegadosFromSheets();
-    }
-}, 2000);
-</script>
-            
+console.log('✅ Sistema definitivo activado');
+</script>            
 </body>
 </html>
 </body>
