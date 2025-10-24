@@ -1927,145 +1927,174 @@ function mostrarDelegados(nombreDepartamento) {
             inicializar();
         });
     </script>
-                 <script>
-        // ============================================
-        // 🔗 CONEXIÓN CON ENLACES EXACTOS A CADA HOJA
-        // ============================================
+             <script>
+// ============================================
+// 🔗 CONEXIÓN COMPLETA CORREGIDA
+// ============================================
 
-        const SHEET_ID = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
+const SHEET_ID = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
 
-        class SheetConnector {
-            constructor() {
-                this.sheetsCache = new Map(); // Cache de IDs de hojas
-            }
-
-            // Obtener información de TODAS las hojas con sus IDs
-            async getAllSheetsInfo() {
-                try {
-                    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-                    const response = await fetch(url);
-                    const text = await response.text();
-                    
-                    // El formato de Google incluye metadata de hojas
-                    const match = text.match(/google\.visualization\.Query\.setResponse\(({.*})\);/);
-                    if (match) {
-                        const data = JSON.parse(match[1]);
-                        return data;
-                    }
-                    return null;
-                } catch (error) {
-                    console.error('Error obteniendo info de hojas:', error);
-                    return null;
-                }
-            }
-
-            // Buscar el ID (GID) de una hoja por nombre
-            async findSheetGID(sheetName) {
-                // Si ya lo tenemos en cache, usarlo
-                if (this.sheetsCache.has(sheetName)) {
-                    return this.sheetsCache.get(sheetName);
-                }
-
-                try {
-                    const data = await this.getAllSheetsInfo();
-                    if (data && data.table) {
-                        // En el formato de respuesta está la info de hojas
-                        // Para sheets públicos, necesitamos un enfoque diferente
-                        
-                        // Método alternativo: intentar acceder directo
-                        const testUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
-                        const response = await fetch(testUrl);
-                        
-                        if (response.ok) {
-                            // Si la hoja existe, Google redirige internamente al GID correcto
-                            // Usamos un GID por defecto que funciona para la mayoría
-                            const gid = this.generateGIDFromName(sheetName);
-                            this.sheetsCache.set(sheetName, gid);
-                            return gid;
-                        }
-                    }
-                } catch (error) {
-                    console.error(`Error buscando GID para ${sheetName}:`, error);
+class SheetConnector {
+    constructor() {
+        this.isLoading = false;
+    }
+    
+    // CONTAR TODOS LOS VOTOS (versión corregida)
+    async countVotesForSheet(sheetName) {
+        try {
+            let totalVotes = 0;
+            let startRow = 8;
+            const batchSize = 200;
+            let hasMoreData = true;
+            
+            while (hasMoreData) {
+                const range = `${sheetName}!A${startRow}:H${startRow + batchSize - 1}`;
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
+                
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                if (!text || text.includes('No table data') || text.length < 100) {
+                    hasMoreData = false;
+                    break;
                 }
                 
-                return '0'; // Fallback a la primera hoja
-            }
-
-            // Generar GID aproximado basado en el nombre (para sheets públicos)
-            generateGIDFromName(sheetName) {
-                // Esta es una aproximación - Google no expone GIDs fácilmente en público
-                let hash = 0;
-                for (let i = 0; i < sheetName.length; i++) {
-                    hash = ((hash << 5) - hash) + sheetName.charCodeAt(i);
-                    hash = hash & hash; // Convertir a 32-bit
-                }
-                return Math.abs(hash % 1000000).toString();
-            }
-
-            // Contar votos para una hoja específica
-            async countVotesForSheet(sheetName) {
                 try {
-                    const range = `${sheetName}!A8:H`;
-                    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
-                    
-                    const response = await fetch(url);
-                    const text = await response.text();
                     const json = JSON.parse(text.substring(47).slice(0, -2));
+                    const rows = json.table?.rows || [];
                     
-                    return json.table?.rows?.length || 0;
-                } catch (error) {
-                    console.error(`Error contando votos para ${sheetName}:`, error);
-                    return 0;
+                    if (rows.length === 0) {
+                        hasMoreData = false;
+                        break;
+                    }
+                    
+                    // Contar filas con datos reales
+                    const validRows = rows.filter(row => 
+                        row.c && row.c[0] && row.c[0].v && row.c[0].v.toString().trim() !== ''
+                    );
+                    
+                    totalVotes += validRows.length;
+                    
+                    // Si tenemos menos de batchSize, es el final
+                    if (rows.length < batchSize) {
+                        hasMoreData = false;
+                    } else {
+                        startRow += batchSize;
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                    
+                } catch (parseError) {
+                    hasMoreData = false;
+                    break;
                 }
             }
+            
+            console.log(`📊 ${sheetName}: ${totalVotes} votos reales`);
+            return totalVotes;
+            
+        } catch (error) {
+            console.error(`Error contando votos para ${sheetName}:`, error);
+            return 0;
+        }
+    }
 
-            // Obtener enlace EXACTO a la hoja del delegado
-            async getExactDelegadoLink(delegadoName) {
-                const gid = await this.findSheetGID(delegadoName);
-                return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=${gid}`;
-            }
+    // ENLACE EXACTO
+    getExactDelegadoLink(delegadoName) {
+        const encodedName = encodeURIComponent(delegadoName);
+        return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0&range=A1&sheet=${encodedName}`;
+    }
 
-            // Actualizar todos los delegados con enlaces exactos
-            async updateDelegadosFromSheets() {
-                console.log('🔄 Actualizando datos y enlaces exactos...');
-                
-                // Primero precargar todos los GIDs
-                console.log('📋 Precargando IDs de hojas...');
-                
-                for (const [departamento, delegados] of Object.entries(delegadosPorDepartamento)) {
-                    for (const delegado of delegados) {
-                        try {
-                            const [voteCount, exactLink] = await Promise.all([
-                                this.countVotesForSheet(delegado.nombre),
-                                this.getExactDelegadoLink(delegado.nombre)
-                            ]);
-                            
-                            delegado.votos = voteCount;
-                            delegado.enlace = exactLink;
-                            
-                            console.log(`✅ ${delegado.nombre}: ${voteCount} votos | GID: ${exactLink.split('gid=')[1]}`);
-                            
-                        } catch (error) {
-                            console.error(`❌ Error actualizando ${delegado.nombre}:`, error);
-                        }
+    // ACTUALIZAR TODOS LOS DELEGADOS
+    async updateDelegadosFromSheets() {
+        if (this.isLoading) return;
+        
+        this.isLoading = true;
+        console.log('🔄 Iniciando conteo completo...');
+        
+        try {
+            let totalGeneral = 0;
+            
+            for (const [departamento, delegados] of Object.entries(delegadosPorDepartamento)) {
+                for (const delegado of delegados) {
+                    try {
+                        const voteCount = await this.countVotesForSheet(delegado.nombre);
+                        totalGeneral += voteCount;
+                        
+                        delegado.votos = voteCount;
+                        delegado.enlace = this.getExactDelegadoLink(delegado.nombre);
+                        
+                        console.log(`✅ ${delegado.nombre}: ${voteCount} votos`);
+                        
+                        await new Promise(resolve => setTimeout(resolve, 30));
+                        
+                    } catch (error) {
+                        console.error(`❌ Error en ${delegado.nombre}:`, error);
                     }
                 }
-                
-                console.log('✅ Actualización completada con enlaces exactos');
             }
+            
+            // ACTUALIZAR CONTADOR TOTAL
+            this.updateTotalVotesCounter(totalGeneral);
+            console.log(`🎯 TOTAL GENERAL: ${totalGeneral} votos`);
+            
+        } catch (error) {
+            console.error('❌ Error general:', error);
+        } finally {
+            this.isLoading = false;
         }
+    }
+    
+    // ACTUALIZAR CONTADOR TOTAL
+    updateTotalVotesCounter(total) {
+        let counter = document.getElementById('total-votes-counter');
+        if (!counter) {
+            counter = document.createElement('div');
+            counter.id = 'total-votes-counter';
+            counter.style.cssText = `
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                background: linear-gradient(135deg, #003366, #004d99);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-size: 16px;
+                font-weight: bold;
+                border: 3px solid #ffd700;
+                text-align: center;
+                min-width: 200px;
+            `;
+            const mapSection = document.querySelector('.map-section');
+            mapSection.style.position = 'relative';
+            mapSection.insertBefore(counter, mapSection.firstChild);
+        }
+        
+        counter.innerHTML = `
+            <div style="font-size: 12px; opacity: 0.9;">TOTAL VOTOS</div>
+            <div style="font-size: 24px; margin: 5px 0;">${total.toLocaleString()}</div>
+            <div style="font-size: 11px; opacity: 0.7;">Actualizado: ${new Date().toLocaleTimeString()}</div>
+        `;
+    }
+}
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const sheetConnector = new SheetConnector();
-            
-            // Actualizar inmediatamente
-            sheetConnector.updateDelegadosFromSheets();
-            
-            // Actualizar cada 30 segundos
-            setInterval(() => sheetConnector.updateDelegadosFromSheets(), 30000);
-        });
-
-    </script>
+// INICIALIZAR
+document.addEventListener('DOMContentLoaded', function() {
+    window.sheetConnector = new SheetConnector();
+    
+    // Esperar y actualizar
+    setTimeout(() => {
+        window.sheetConnector.updateDelegadosFromSheets();
+    }, 2000);
+    
+    // Actualizar cada 45 segundos
+    setInterval(() => {
+        window.sheetConnector.updateDelegadosFromSheets();
+    }, 45000);
+});
+</script>
          <script>
 // ============================================
 // 🌀 INDICADOR DE CARGA MEJORADO
