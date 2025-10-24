@@ -2159,6 +2159,76 @@ SheetConnector.prototype.updateDelegadosFromSheets = async function() {
 
 console.log('✅ Indicador de carga mejorado activado');
 </script>
+            <script>
+// ============================================
+// 🔧 PARCHE PARA CONTAR TODOS LOS VOTOS
+// ============================================
+
+// Reemplazar la función de conteo de votos
+SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
+    try {
+        let totalVotes = 0;
+        let startRow = 8; // Empezar en fila 8
+        const batchSize = 200; // Máximo por consulta
+        
+        while (true) {
+            const range = `${sheetName}!A${startRow}:H${startRow + batchSize - 1}`;
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
+            
+            const response = await fetch(url);
+            const text = await response.text();
+            
+            // Verificar si hay datos
+            if (!text || text.includes('No table data')) {
+                break;
+            }
+            
+            try {
+                const json = JSON.parse(text.substring(47).slice(0, -2));
+                const rows = json.table?.rows || [];
+                
+                if (rows.length === 0) {
+                    break; // No más filas
+                }
+                
+                // Contar filas con datos en columna A (nombres)
+                const validRows = rows.filter(row => 
+                    row.c && row.c[0] && row.c[0].v && row.c[0].v.toString().trim() !== ''
+                );
+                
+                totalVotes += validRows.length;
+                startRow += batchSize;
+                
+                // Pequeña pausa para no saturar
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+            } catch (parseError) {
+                console.log(`Fin de datos para ${sheetName}`);
+                break;
+            }
+        }
+        
+        console.log(`📊 ${sheetName}: ${totalVotes} votos totales`);
+        return totalVotes;
+        
+    } catch (error) {
+        console.error(`Error contando votos para ${sheetName}:`, error);
+        return 0;
+    }
+};
+
+// Forzar actualización inmediata
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        if (window.sheetConnector) {
+            console.log('🔄 Recontando todos los votos...');
+            window.sheetConnector.updateDelegadosFromSheets();
+        }
+    }, 2000);
+});
+
+console.log('✅ Parche para contar todos los votos activado');
+</script>
 </body>
 </html>
 </body>
