@@ -1927,7 +1927,234 @@ function mostrarDelegados(nombreDepartamento) {
             inicializar();
         });
     </script>
+
+            <script>
+            // ============================================
+// 🔗 CONEXIÓN INTELIGENTE CON TU GOOGLE SHEETS
+// ============================================
+
+class ConexionInteligente {
+    constructor() {
+        this.sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
+        this.nombresHojasCache = new Map();
+    }
+
+    async encontrarHojaDelegado(nombreDelegado) {
+        const formatos = this.generarFormatosNombre(nombreDelegado);
+        
+        for (const formato of formatos) {
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${this.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(formato)}`;
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                if (text && !text.includes('No table data') && text.length > 100) {
+                    console.log(`✅ Encontrada hoja: "${formato}" para ${nombreDelegado}`);
+                    this.nombresHojasCache.set(nombreDelegado, formato);
+                    return formato;
+                }
+            } catch (error) {
+                continue;
+            }
+        }
+        
+        console.log(`❌ No se encontró hoja para: ${nombreDelegado}`);
+        return null;
+    }
+
+    generarFormatosNombre(nombreCompleto) {
+        const partes = nombreCompleto.trim().split(' ').filter(p => p !== '');
+        const formatos = new Set();
+        
+        formatos.add(nombreCompleto);
+        
+        if (partes.length >= 2) {
+            formatos.add(`${partes[0]} ${partes[1]}`);
+        }
+        
+        if (partes.length >= 3) {
+            formatos.add(`${partes[0]} ${partes[1]} ${partes[2]}`);
+            formatos.add(`${partes[0]} ${partes[2]}`);
+        }
+        
+        if (partes.length >= 4) {
+            formatos.add(`${partes[0]} ${partes[1]} ${partes[2]} ${partes[3]}`);
+            formatos.add(`${partes[0]} ${partes[2]} ${partes[3]}`);
+        }
+        
+        const nombreSinTildes = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        formatos.add(nombreSinTildes);
+        
+        if (partes.length >= 2) {
+            const cortoSinTildes = `${partes[0]} ${partes[1]}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            formatos.add(cortoSinTildes);
+        }
+        
+        formatos.add(nombreCompleto.toUpperCase());
+        formatos.add(nombreCompleto.toLowerCase());
+        
+        return Array.from(formatos);
+    }
+
+    async contarVotosHoja(nombreHoja) {
+        try {
+            const url = `https://docs.google.com/spreadsheets/d/${this.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
+            const response = await fetch(url);
+            const text = await response.text();
             
+            if (!text || text.includes('No table data')) {
+                return 0;
+            }
+            
+            const json = JSON.parse(text.substring(47).slice(0, -2));
+            const filas = json.table.rows || [];
+            
+            let votos = 0;
+            filas.forEach((fila, index) => {
+                if (index >= 7) {
+                    if (fila.c && fila.c[0] && fila.c[0].v && fila.c[0].v.toString().trim() !== '') {
+                        votos++;
+                    }
+                }
+            });
+            
+            return votos;
+            
+        } catch (error) {
+            return 0;
+        }
+    }
+
+    async cargarVotosDelegado(nombreDelegado) {
+        if (this.nombresHojasCache.has(nombreDelegado)) {
+            const nombreHoja = this.nombresHojasCache.get(nombreDelegado);
+            return await this.contarVotosHoja(nombreHoja);
+        }
+        
+        const nombreHojaEncontrado = await this.encontrarHojaDelegado(nombreDelegado);
+        if (nombreHojaEncontrado) {
+            return await this.contarVotosHoja(nombreHojaEncontrado);
+        }
+        
+        return 0;
+    }
+
+    async cargarTodosLosVotos() {
+        console.log('🔄 Sincronizando con Google Sheets...');
+        
+        let totalGeneral = 0;
+        let delegadosConExito = 0;
+        const totalDelegados = this.contarTotalDelegados();
+        
+        const promesas = [];
+        
+        for (const [departamento, delegados] of Object.entries(delegadosPorDepartamento)) {
+            for (const delegado of delegados) {
+                const promesa = this.cargarVotosDelegado(delegado.nombre)
+                    .then(votos => {
+                        delegado.votos = votos;
+                        totalGeneral += votos;
+                        
+                        if (votos > 0) {
+                            delegadosConExito++;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(`❌ Error con ${delegado.nombre}`);
+                    });
+                
+                promesas.push(promesa);
+                await new Promise(resolve => setTimeout(resolve, 30));
+            }
+        }
+        
+        await Promise.allSettled(promesas);
+        
+        console.log(`🎯 ${delegadosConExito}/${totalDelegados} delegados - ${totalGeneral} votos totales`);
+        
+        this.actualizarInterfaz();
+        this.mostrarContadorTotal(totalGeneral);
+        
+        return totalGeneral;
+    }
+
+    contarTotalDelegados() {
+        let total = 0;
+        for (const delegados of Object.values(delegadosPorDepartamento)) {
+            total += delegados.length;
+        }
+        return total;
+    }
+
+    actualizarInterfaz() {
+        const modal = document.getElementById('modal-delegados');
+        if (modal.style.display === 'block') {
+            const titulo = document.getElementById('modal-titulo');
+            const depto = titulo.textContent.replace('Delegados - ', '').split(' (')[0];
+            if (typeof mostrarDelegados === 'function') {
+                mostrarDelegados(depto);
+            }
+        }
+    }
+
+    mostrarContadorTotal(total) {
+        let counter = document.getElementById('total-votes-counter');
+        
+        if (!counter) {
+            counter = document.createElement('div');
+            counter.id = 'total-votes-counter';
+            counter.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #003366, #004d99);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-size: 14px;
+                font-weight: bold;
+                border: 3px solid #ffd700;
+                text-align: center;
+                min-width: 180px;
+            `;
+            document.body.appendChild(counter);
+        }
+        
+        const ahora = new Date();
+        const hora = ahora.getHours().toString().padStart(2, '0');
+        const minuto = ahora.getMinutes().toString().padStart(2, '0');
+        
+        counter.innerHTML = `
+            <div style="font-size: 11px; opacity: 0.9;">TOTAL VOTOS</div>
+            <div style="font-size: 22px; margin: 5px 0; color: #ffd700;">${total.toLocaleString()}</div>
+            <div style="font-size: 10px; opacity: 0.7;">Actualizado: ${hora}:${minuto}</div>
+        `;
+    }
+}
+
+// 🚀 INICIALIZAR LA CONEXIÓN
+document.addEventListener('DOMContentLoaded', function() {
+    window.conexionInteligente = new ConexionInteligente();
+    
+    const esperarMapa = setInterval(() => {
+        if (window.mapaCargado) {
+            clearInterval(esperarMapa);
+            
+            setTimeout(() => {
+                window.conexionInteligente.cargarTodosLosVotos();
+            }, 3000);
+            
+            setInterval(() => {
+                window.conexionInteligente.cargarTodosLosVotos();
+            }, 45000);
+        }
+    }, 500);
+    
+    console.log('✅ Sistema de sincronización activado');
+});
+            </script>
 </body>
 </html>
 </body>
