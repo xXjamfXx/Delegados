@@ -1679,32 +1679,35 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     .classed("filtrado", function(d) {
         const deptoMapa = d.properties.NOMBRE_DPT;
         
-        // 🎯 BUSCAR EN TODOS LOS DEPARTAMENTOS DE LOS DATOS
-        let tieneCoincidencias = false;
+        // 🔥 USAR MAPEO MANUAL GARANTIZADO
+        const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
+        const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
         
-        // Recorrer todos los departamentos que tienes en delegadosPorDepartamento
-        Object.keys(delegadosPorDepartamento).forEach(deptoDatos => {
-            const delegados = delegadosPorDepartamento[deptoDatos];
+        console.log("🔍 Filtro - Mapa:", deptoMapa, "| Datos:", departamentoEnDatos, "| Delegados:", delegadosDelDepto.length);
+        
+        // Si no hay delegados en este departamento, mostrar tenue
+        if (delegadosDelDepto.length === 0) {
+            console.log("❌ Sin delegados");
+            return true;
+        }
+        
+        // Aplicar filtros
+        const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
+            const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
+            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+            const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
             
-            // Verificar si algún delegado de este departamento coincide con los filtros
-            const delegadosFiltrados = delegados.filter(delegado => {
-                const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
-                const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                const coincideDepartamento = !departamentoSeleccionado || deptoDatos === departamentoSeleccionado;
-                
-                return coincideNombre && coincideComision && coincideDepartamento;
-            });
+            const coincide = coincideNombre && coincideComision && coincideDepartamento;
+            if (coincide) console.log("✅ Coincide filtro:", delegado.nombre);
             
-            // Si encontró delegados que coinciden, marcar como NO filtrado
-            if (delegadosFiltrados.length > 0) {
-                tieneCoincidencias = true;
-            }
+            return coincide;
         });
         
-        console.log("🔍 Departamento mapa:", deptoMapa, "| Tiene coincidencias:", tieneCoincidencias);
-        return !tieneCoincidencias; // Si NO tiene coincidencias, aplicar filtro (oscurecer)
+        console.log("📊 Resultado final - Filtrado:", !tieneDelegadosFiltrados);
+        return !tieneDelegadosFiltrados;
     });
 
+     
             
         console.log("📊 Resultado final - Filtrado:", !tieneDelegadosFiltrados);
         return !tieneDelegadosFiltrados;
