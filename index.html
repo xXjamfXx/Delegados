@@ -1927,120 +1927,127 @@ function mostrarDelegados(nombreDepartamento) {
             inicializar();
         });
     </script>
-            <!-- AGREGAR ESTO AL FINAL, ANTES DE </body> -->
-<script>
-// ============================================
-// 🔗 CONEXIÓN AUTOMÁTICA CON GOOGLE SHEETS
-// ============================================
+             <script>
+        // ============================================
+        // 🔗 CONEXIÓN AUTOMÁTICA CON GOOGLE SHEETS (VERSIÓN SEGURA)
+        // ============================================
 
-const SHEET_ID = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
-const API_KEY = 'AIzaSyB9TD9FySq9rJ7eGVxsWp6VqkU9vj9z8e4'; // Key pública para solo lectura
+        const SHEET_ID = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
 
-class SheetConnector {
-    constructor() {
-        this.baseURL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`;
-    }
+        class SheetConnector {
+            constructor() {
+                this.baseURL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`;
+            }
 
-    // Obtener información de todas las hojas
-    async getSheetsInfo() {
-        try {
-            const response = await fetch(`${this.baseURL}?key=${API_KEY}`);
-            const data = await response.json();
-            return data.sheets;
-        } catch (error) {
-            console.error('Error obteniendo info de hojas:', error);
-            return [];
-        }
-    }
-
-    // Contar votos para una hoja específica
-    async countVotesForSheet(sheetName) {
-        try {
-            // Leemos desde la fila 8 (donde empiezan los votos)
-            const range = `${sheetName}!A8:H`;
-            const url = `${this.baseURL}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
-            
-            const response = await fetch(url);
-            const data = await response.json();
-            
-            if (!data.values) return 0;
-            
-            // Contamos filas que tengan al menos un dato en la columna A (nombres)
-            let voteCount = 0;
-            data.values.forEach(row => {
-                if (row[0] && row[0].trim() !== '') {
-                    voteCount++;
-                }
-            });
-            
-            return voteCount;
-        } catch (error) {
-            console.error(`Error contando votos para ${sheetName}:`, error);
-            return 0;
-        }
-    }
-
-    // Obtener el ID de una hoja específica para el enlace directo
-    async getSheetIdForName(sheetName, sheetsInfo) {
-        const sheet = sheetsInfo.find(s => s.properties.title === sheetName);
-        return sheet ? sheet.properties.sheetId : null;
-    }
-
-    // Actualizar todos los delegados con datos en tiempo real
-    async updateDelegadosFromSheets() {
-        console.log('🔄 Actualizando datos desde Google Sheets...');
-        
-        const sheetsInfo = await this.getSheetsInfo();
-        
-        for (const [departamento, delegados] of Object.entries(delegadosPorDepartamento)) {
-            for (const delegado of delegados) {
+            // Obtener información de todas las hojas
+            async getSheetsInfo() {
                 try {
-                    // Buscar hoja por nombre exacto del delegado
-                    const voteCount = await this.countVotesForSheet(delegado.nombre);
-                    const sheetId = await this.getSheetIdForName(delegado.nombre, sheetsInfo);
+                    // Método sin API Key para sheets públicos
+                    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+                    const response = await fetch(url);
+                    const text = await response.text();
+                    const json = JSON.parse(text.substring(47).slice(0, -2));
                     
-                    // Actualizar datos del delegado
-                    delegado.votos = voteCount;
-                    delegado.enlace = sheetId 
-                        ? `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=${sheetId}`
-                        : `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
-                    
-                    console.log(`✅ ${delegado.nombre}: ${voteCount} votos`);
-                    
+                    return json.table?.cols || [];
                 } catch (error) {
-                    console.error(`❌ Error actualizando ${delegado.nombre}:`, error);
+                    console.error('Error obteniendo info de hojas:', error);
+                    return [];
                 }
             }
+
+            // Contar votos para una hoja específica (SIN API KEY)
+            async countVotesForSheet(sheetName) {
+                try {
+                    const range = `${sheetName}!A8:H`;
+                    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
+                    
+                    const response = await fetch(url);
+                    const text = await response.text();
+                    const json = JSON.parse(text.substring(47).slice(0, -2));
+                    
+                    return json.table?.rows?.length || 0;
+                } catch (error) {
+                    console.error(`Error contando votos para ${sheetName}:`, error);
+                    return 0;
+                }
+            }
+
+            // Obtener el ID de una hoja específica para el enlace directo
+            async getSheetIdForName(sheetName) {
+                try {
+                    // Para sheets públicos, podemos generar el enlace directo
+                    const allSheetsUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+                    const response = await fetch(allSheetsUrl);
+                    const text = await response.text();
+                    const json = JSON.parse(text.substring(47).slice(0, -2));
+                    
+                    // Buscar la hoja por nombre (esto es aproximado, pero funcional)
+                    // Para enlaces directos usaremos un método alternativo
+                    return null;
+                } catch (error) {
+                    console.error(`Error obteniendo ID para ${sheetName}:`, error);
+                    return null;
+                }
+            }
+
+            // Actualizar todos los delegados con datos en tiempo real
+            async updateDelegadosFromSheets() {
+                console.log('🔄 Actualizando datos desde Google Sheets...');
+                
+                for (const [departamento, delegados] of Object.entries(delegadosPorDepartamento)) {
+                    for (const delegado of delegados) {
+                        try {
+                            // Contar votos reales desde el Sheet
+                            const voteCount = await this.countVotesForSheet(delegado.nombre);
+                            
+                            // Actualizar datos del delegado
+                            delegado.votos = voteCount;
+                            delegado.enlace = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0&range=A1`; // Enlace genérico
+                            
+                            console.log(`✅ ${delegado.nombre}: ${voteCount} votos`);
+                            
+                            // Pequeña pausa para no saturar
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            
+                        } catch (error) {
+                            console.error(`❌ Error actualizando ${delegado.nombre}:`, error);
+                        }
+                    }
+                }
+                
+                console.log('✅ Actualización completada desde Google Sheets');
+                this.actualizarUI();
+            }
+
+            // Actualizar la interfaz después de cargar datos
+            actualizarUI() {
+                console.log('📊 Datos actualizados en tiempo real');
+                // Los datos ya están actualizados en el objeto delegadosPorDepartamento
+                // El modal mostrará los votos actualizados automáticamente
+            }
         }
-        
-        console.log('✅ Actualización completada');
-        this.actualizarUI();
-    }
 
-    // Actualizar la interfaz después de cargar datos
-    actualizarUI() {
-        // Esto se ejecutará cuando los datos estén listos
-        console.log('📊 Datos actualizados, lista para mostrar');
-    }
-}
+        // ============================================
+        // 🚀 INICIALIZAR Y EJECUTAR
+        // ============================================
 
-// ============================================
-// 🚀 INICIALIZAR Y EJECUTAR
-// ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Crear instancia del conector
+            const sheetConnector = new SheetConnector();
+            
+            // Esperar a que el mapa cargue, luego actualizar datos
+            setTimeout(() => {
+                sheetConnector.updateDelegadosFromSheets();
+            }, 2000);
+            
+            // Actualizar cada 3 minutos (180,000 ms)
+            setInterval(() => {
+                sheetConnector.updateDelegadosFromSheets();
+            }, 180000);
+        });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Crear instancia del conector
-    const sheetConnector = new SheetConnector();
-    
-    // Actualizar datos cuando la página cargue
-    sheetConnector.updateDelegadosFromSheets();
-    
-    // Opcional: Actualizar cada 2 minutos
-    setInterval(() => {
-        sheetConnector.updateDelegadosFromSheets();
-    }, 120000); // 120000 ms = 2 minutos
-});
-
-</script>
+    </script>
+</body>
+</html>
 </body>
 </html>
