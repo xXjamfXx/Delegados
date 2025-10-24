@@ -1676,33 +1676,52 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     };
 
     d3.selectAll(".department-path")
-        .classed("filtrado", function(d) {
-            const deptoMapa = d.properties.NOMBRE_DPT;
+    .classed("filtrado", function(d) {
+        const deptoMapa = d.properties.NOMBRE_DPT;
+        
+        // 🎯 MAPEO MEJORADO - Buscar coincidencia inteligente
+        let departamentoEnDatos = null;
+        let delegadosDelDepto = [];
+        
+        // Buscar coincidencia en todos los departamentos de los datos
+        Object.keys(delegadosPorDepartamento).forEach(deptoDatos => {
+            // Normalizar nombres para comparación
+            const mapaNormalizado = deptoMapa.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const datosNormalizado = deptoDatos.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             
-            // 🔥 USAR MAPEO MANUAL GARANTIZADO
-            const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
-            const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
+            // Coincidencias comunes
+            if (mapaNormalizado === datosNormalizado || 
+                (mapaNormalizado.includes("bogotá") && datosNormalizado.includes("bogotá")) ||
+                (mapaNormalizado.includes("san andrés") && datosNormalizado.includes("san andrés"))) {
+                departamentoEnDatos = deptoDatos;
+                delegadosDelDepto = delegadosPorDepartamento[deptoDatos] || [];
+            }
+        });
+        
+        console.log("🔍 Filtro - Mapa:", deptoMapa, "| Datos encontrados:", departamentoEnDatos, "| Delegados:", delegadosDelDepto.length);
+        
+        // Si no se encontró el departamento en los datos, mostrar tenue
+        if (!departamentoEnDatos || delegadosDelDepto.length === 0) {
+            return true;
+        }
+        
+        // Aplicar filtros
+        const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
+            const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
+            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+            const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
             
-            console.log("🔍 Filtro - Mapa:", deptoMapa, "| Datos:", departamentoEnDatos, "| Delegados:", delegadosDelDepto.length);
-            
-            // Si no hay delegados en este departamento, mostrar tenue
-            if (delegadosDelDepto.length === 0) {
-                console.log("❌ Sin delegados");
-                return true;
+            const coincide = coincideNombre && coincideComision && coincideDepartamento;
+            if (coincide) {
+                console.log("✅ Coincide filtro:", delegado.nombre, "-", delegado.comision);
             }
             
-            // Aplicar filtros
-            const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
-                const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
-                const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
-                
-                const coincide = coincideNombre && coincideComision && coincideDepartamento;
-                if (coincide) console.log("✅ Coincide filtro:", delegado.nombre);
-                
-                return coincide;
-            });
-            // RESALTAR si coincide con filtro de departamento
+            return coincide;
+        });
+
+        console.log("📊 Resultado final - Filtrado:", !tieneDelegadosFiltrados);
+        return !tieneDelegadosFiltrados;
+    });        // RESALTAR si coincide con filtro de departamento
           //  if (departamentoSeleccionado && departamentoEnDatos === departamentoSeleccionado && tieneDelegadosFiltrados) {
             //    d3.select(this).style("fill", "#003366");
               //  console.log("🎯 Resaltando:", deptoMapa);
