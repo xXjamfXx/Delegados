@@ -2257,31 +2257,36 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('✅ Parche para contar todos los votos activado');
-</script><script>
+</script>
+
+            <script>
 // ============================================
-// 🔧 SOLUCIÓN DEFINITIVA CON FALLBACK
+// 🚀 VERSIÓN RÁPIDA CON FALLBACK GARANTIZADO
 // ============================================
 
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-gSnJ09YYLvPYwG5tUsjMghLZiEYQmEL07xyGT6gIyRgj-GH3dCA8NXOZn1m5eULD/exec';
+const SHEET_ID = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
 
+// FUNCIÓN DE CONTEO CON FALLBACK GARANTIZADO
 SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
+    // PRIMERO: Intentar con Apps Script
     try {
-        // Intentar con Apps Script primero
         const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
         const response = await fetch(url);
         
         if (response.ok) {
             const text = await response.text();
             const voteCount = parseInt(text);
-            if (!isNaN(voteCount) && voteCount > 0) {
+            if (!isNaN(voteCount)) {
+                console.log(`✅ ${sheetName}: ${voteCount} votos (Apps Script)`);
                 return voteCount;
             }
         }
     } catch (error) {
-        console.log(`Apps Script falló para ${sheetName}, usando método alternativo`);
+        console.log(`❌ Apps Script falló para ${sheetName}`);
     }
     
-    // FALLBACK: Método directo de Google Sheets
+    // SEGUNDO: Fallback a Google Sheets directo
     try {
         const range = `${sheetName}!A8:H`;
         const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
@@ -2290,18 +2295,21 @@ SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
         const text = await response.text();
         const json = JSON.parse(text.substring(47).slice(0, -2));
         
-        return json.table?.rows?.length || 0;
-    } catch (fallbackError) {
+        const fallbackCount = json.table?.rows?.length || 0;
+        console.log(`🔄 ${sheetName}: ${fallbackCount} votos (Fallback)`);
+        return fallbackCount;
+    } catch (error) {
+        console.log(`💀 ${sheetName}: 0 votos (Error total)`);
         return 0;
     }
 };
 
-// ACTUALIZACIÓN EN PARALELO
+// FUNCIÓN DE ACTUALIZACIÓN RÁPIDA (igual que antes)
 SheetConnector.prototype.updateDelegadosFromSheets = async function() {
     if (this.isLoading) return;
     this.isLoading = true;
     
-    console.log('🔄 Actualizando TODOS los delegados...');
+    console.log('🚀 Actualización RÁPIDA con Fallback...');
     
     try {
         const allPromises = [];
@@ -2319,7 +2327,6 @@ SheetConnector.prototype.updateDelegadosFromSheets = async function() {
         
         await Promise.all(allPromises);
         
-        // Calcular total
         let total = 0;
         for (const delegados of Object.values(delegadosPorDepartamento)) {
             for (const delegado of delegados) {
@@ -2328,14 +2335,14 @@ SheetConnector.prototype.updateDelegadosFromSheets = async function() {
         }
         
         this.updateTotalVotesCounter(total);
-        console.log(`✅ TOTAL ACTUALIZADO: ${total} votos`);
+        console.log(`🎯 TOTAL: ${total} votos`);
         
     } finally {
         this.isLoading = false;
     }
 };
 
-// Forzar actualización completa
+// Forzar actualización
 setTimeout(() => {
     if (window.sheetConnector) {
         window.sheetConnector.updateDelegadosFromSheets();
