@@ -2258,6 +2258,62 @@ document.addEventListener('DOMContentLoaded', function() {
 
 console.log('✅ Parche para contar todos los votos activado');
 </script>
+<script>
+// ============================================
+// 🔗 CONEXIÓN CON APPS SCRIPT (CONTEO COMPLETO)
+// ============================================
+
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-gSnJ09YYLvPYwG5tUsjMghLZiEYQmEL07xyGT6gIyRgj-GH3dCA8NXOZn1m5eULD/exec';
+
+// REEMPLAZAR SOLO LA FUNCIÓN DE CONTEO
+SheetConnector.prototype.countVotesForSheet = async function(sheetName) {
+    try {
+        console.log(`🔍 Contando votos REALES para: ${sheetName}`);
+        
+        const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const voteCount = parseInt(await response.text());
+        console.log(`✅ ${sheetName}: ${voteCount} votos REALES`);
+        
+        return voteCount;
+        
+    } catch (error) {
+        console.error(`❌ Error contando votos para ${sheetName}:`, error);
+        
+        // Fallback al método antiguo si falla
+        try {
+            const range = `${sheetName}!A8:H`;
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
+            
+            const response = await fetch(url);
+            const text = await response.text();
+            const json = JSON.parse(text.substring(47).slice(0, -2));
+            
+            const fallbackCount = json.table?.rows?.length || 0;
+            console.log(`🔄 ${sheetName}: ${fallbackCount} votos (fallback)`);
+            return fallbackCount;
+        } catch (fallbackError) {
+            return 0;
+        }
+    }
+};
+
+// Forzar recarga completa
+setTimeout(() => {
+    if (window.sheetConnector) {
+        console.log('🔄 INICIANDO CONTEO REAL CON APPS SCRIPT...');
+        window.sheetConnector.updateDelegadosFromSheets();
+    }
+}, 2000);
+
+console.log('✅ Apps Script integrado - Conteo completo activado');
+</script>
+            
 </body>
 </html>
 </body>
