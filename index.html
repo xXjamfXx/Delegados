@@ -763,7 +763,18 @@ console.log("=== ✅ FIN DATOS CARGADOS ===");
             // Función para mapear nombres entre GeoJSON y datos
             // Función COMPLETA para mapear nombres de TODOS los departamentos
 // Función COMPLETA para mapear TODOS los departamentos
+// Función COMPLETA que maneja mayúsculas, minúsculas y tildes
 function mapearNombreDepartamento(nombreGeoJSON) {
+    // Función para normalizar texto (quitar tildes, mayúsculas, etc.)
+    function normalizarTexto(texto) {
+        return texto
+            .toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quitar tildes
+            .replace(/[^a-z0-9 ]/g, '') // solo letras y números
+            .replace(/\s+/g, ' ') // espacios múltiples a simple
+            .trim();
+    }
+
     // Mapeo completo de TODOS los departamentos (Mapa -> Sheets)
     const mapeoCompleto = {
         "Amazonas": "Amazonas",
@@ -802,14 +813,14 @@ function mapearNombreDepartamento(nombreGeoJSON) {
         "San Andrés": "ARCHIPIELAGO DE SAN ANDRES PROVIDENCIA Y SANTA CATALINA"
     };
     
-    // Buscar en el mapeo completo
+    // 1. Buscar en el mapeo completo
     if (mapeoCompleto[nombreGeoJSON]) {
         const resultado = mapeoCompleto[nombreGeoJSON];
         console.log(`✅ Mapeo directo: "${nombreGeoJSON}" -> "${resultado}"`);
         return resultado;
     }
     
-    // Si no está en el mapeo, buscar coincidencia exacta en los datos
+    // 2. Si no está en el mapeo, buscar coincidencia exacta en los datos
     const departamentosEnDatos = Object.keys(delegadosPorDepartamento);
     for (const depto of departamentosEnDatos) {
         if (depto === nombreGeoJSON) {
@@ -818,7 +829,7 @@ function mapearNombreDepartamento(nombreGeoJSON) {
         }
     }
     
-    // Si no hay coincidencia exacta, buscar ignorando mayúsculas
+    // 3. Buscar ignorando mayúsculas/minúsculas
     const nombreBuscado = nombreGeoJSON.toUpperCase();
     for (const depto of departamentosEnDatos) {
         if (depto.toUpperCase() === nombreBuscado) {
@@ -827,7 +838,17 @@ function mapearNombreDepartamento(nombreGeoJSON) {
         }
     }
     
-    // Si no encuentra nada, devolver el original
+    // 4. Buscar ignorando tildes y mayúsculas (BÚSQUEDA MÁS AVANZADA)
+    const nombreNormalizado = normalizarTexto(nombreGeoJSON);
+    for (const depto of departamentosEnDatos) {
+        const deptoNormalizado = normalizarTexto(depto);
+        if (deptoNormalizado === nombreNormalizado) {
+            console.log(`✅ Coincidencia por normalización: "${nombreGeoJSON}" -> "${depto}"`);
+            return depto;
+        }
+    }
+    
+    // 5. Si no encuentra nada, devolver el original
     console.log(`❌ No se encontró coincidencia para: "${nombreGeoJSON}"`);
     return nombreGeoJSON;
 }
