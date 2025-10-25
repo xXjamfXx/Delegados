@@ -2424,6 +2424,136 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('✅ Sistema de sincronización activado');
 });
+
+// ============================================
+// 🔢 CONTADOR TOTAL DE VOTOS (MANUAL)
+// ============================================
+
+function calcularTotalVotos() {
+    let totalVotos = 0;
+    
+    // 1. Sumar votos de delegados por departamento
+    Object.values(delegadosPorDepartamento).forEach(delegados => {
+        delegados.forEach(delegado => {
+            totalVotos += delegado.votos || 0;
+        });
+    });
+    
+    // 2. Sumar votos de focales (se calculan automáticamente)
+    const focalesCards = document.querySelectorAll('.focal-card');
+    focalesCards.forEach(card => {
+        const votosElements = card.querySelectorAll('.delegado-votos');
+        votosElements.forEach(element => {
+            const textoVotos = element.textContent;
+            const votos = parseInt(textoVotos.replace(/\D/g, '')) || 0;
+            totalVotos += votos;
+        });
+    });
+    
+    // 3. Sumar votos de líderes (se calculan automáticamente)
+    const lideresCards = document.querySelectorAll('.lider-card');
+    lideresCards.forEach(card => {
+        const votosElements = card.querySelectorAll('.delegado-votos');
+        votosElements.forEach(element => {
+            const textoVotos = element.textContent;
+            const votos = parseInt(textoVotos.replace(/\D/g, '')) || 0;
+            totalVotos += votos;
+        });
+    });
+    
+    return totalVotos;
+}
+
+function actualizarContadorTotal() {
+    const total = calcularTotalVotos();
+    
+    let counter = document.getElementById('total-votes-counter');
+    if (!counter) {
+        counter = document.createElement('div');
+        counter.id = 'total-votes-counter';
+        counter.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #003366, #004d99);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10000;
+            font-size: 14px;
+            font-weight: bold;
+            border: 3px solid #ffd700;
+            text-align: center;
+            min-width: 180px;
+        `;
+        document.body.appendChild(counter);
+    }
+    
+    const ahora = new Date();
+    const hora = ahora.getHours().toString().padStart(2, '0');
+    const minuto = ahora.getMinutes().toString().padStart(2, '0');
+    
+    counter.innerHTML = `
+        <div style="font-size: 11px; opacity: 0.9;">TOTAL VOTOS</div>
+        <div style="font-size: 22px; margin: 5px 0; color: #ffd700;">${total.toLocaleString()}</div>
+        <div style="font-size: 10px; opacity: 0.7;">Actualizado: ${hora}:${minuto}</div>
+    `;
+}
+
+// ============================================
+// 🔄 ACTUALIZAR AUTOMÁTICAMENTE
+// ============================================
+
+// Función para forzar actualización manual
+function actualizarVotos() {
+    actualizarContadorTotal();
+    console.log('✅ Votos actualizados manualmente');
+}
+
+// Botón para actualizar manualmente (opcional)
+function agregarBotonActualizar() {
+    const boton = document.createElement('button');
+    boton.textContent = '🔄 Actualizar Votos';
+    boton.style.cssText = `
+        position: fixed;
+        top: 120px;
+        right: 20px;
+        background: #ffd700;
+        color: #003366;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    `;
+    boton.onclick = actualizarVotos;
+    document.body.appendChild(boton);
+}
+
+// ============================================
+// 🚀 INICIALIZAR AL CARGAR LA PÁGINA
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar contador inmediatamente
+    setTimeout(() => {
+        actualizarContadorTotal();
+        agregarBotonActualizar(); // Opcional: quita esta línea si no quieres el botón
+    }, 1000);
+    
+    // Actualizar cada 30 segundos
+    setInterval(actualizarContadorTotal, 30000);
+    
+    console.log('✅ Contador de votos manual activado');
+});
+
+// Función global para actualizar desde la consola
+window.actualizarVotos = actualizarVotos;
+
+                
             </script>
 </body>
 </html>
