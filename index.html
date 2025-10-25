@@ -951,52 +951,43 @@ function mapearNombreDepartamento(nombreGeoJSON) {
             }
 
             // Mostrar delegados en modal
-            function mostrarDelegados(nombreDepartamento) {
-                const departamentoFinal = mapearNombreDepartamento(nombreDepartamento);
-                const delegados = delegadosPorDepartamento[departamentoFinal] || [];
+            // Mostrar delegados en modal - VERSIÓN CORREGIDA
+function mostrarDelegados(nombreDepartamento) {
+    const departamentoFinal = mapearNombreDepartamento(nombreDepartamento);
+    const delegados = delegadosPorDepartamento[departamentoFinal] || [];
 
-                const searchTerm = searchInput.value.toLowerCase();
-                const comisionSeleccionada = comisionFilter.value;
-                const departamentoSeleccionado = departamentoFilter.value;
+    // QUITAR los filtros para el modal - mostrar TODOS los delegados del departamento
+    const delegadosFiltrados = delegados; // Mostrar todos, sin filtros
 
-                // Filtrar delegados según los filtros activos
-                const delegadosFiltrados = delegados.filter(delegado => {
-                    const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
-                    const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                    const coincideDepartamento = !departamentoSeleccionado || nombreDepartamento === departamentoSeleccionado;
-                    
-                    return coincideNombre && coincideComision && coincideDepartamento;
-                });
+    modalTitulo.textContent = `Delegados - ${nombreDepartamento} (${delegadosFiltrados.length})`;
+    listaDelegados.innerHTML = '';
 
-                modalTitulo.textContent = `Delegados - ${nombreDepartamento} (${delegadosFiltrados.length})`;
-                listaDelegados.innerHTML = '';
+    if (delegadosFiltrados.length === 0) {
+        listaDelegados.innerHTML = `
+            <div class="no-results">
+                <p>No hay delegados en este departamento</p>
+                <p><small>Departamento: ${nombreDepartamento}</small></p>
+            </div>
+        `;
+    } else {
+        delegadosFiltrados.forEach(delegado => {
+            const delegadoElement = document.createElement('div');
+            delegadoElement.className = 'delegado-item';
+            delegadoElement.innerHTML = `
+                <div class="delegado-nombre">${delegado.nombre}</div>
+                <div class="delegado-info">
+                    <span class="delegado-comision">${delegado.comision}</span>
+                    <span class="delegado-votos">
+                        ${delegado.votos.toLocaleString()} votos
+                    </span>
+                </div>
+            `;
+            listaDelegados.appendChild(delegadoElement);
+        });
+    }
 
-                if (delegadosFiltrados.length === 0) {
-                    listaDelegados.innerHTML = `
-                        <div class="no-results">
-                            <p>No hay delegados que coincidan con los filtros aplicados.</p>
-                            <p><small>Departamento: ${nombreDepartamento}</small></p>
-                        </div>
-                    `;
-                } else {
-                    delegadosFiltrados.forEach(delegado => {
-                        const delegadoElement = document.createElement('div');
-                        delegadoElement.className = 'delegado-item';
-                        delegadoElement.innerHTML = `
-                            <div class="delegado-nombre">${delegado.nombre}</div>
-                            <div class="delegado-info">
-                                <span class="delegado-comision">${delegado.comision}</span>
-                                <span class="delegado-votos">
-                                    ${delegado.votos.toLocaleString()} votos
-                                </span>
-                            </div>
-                        `;
-                        listaDelegados.appendChild(delegadoElement);
-                    });
-                }
-
-                modal.style.display = 'block';
-            }
+    modal.style.display = 'block';
+}
 
             function cerrarModal() {
                 modal.style.display = 'none';
