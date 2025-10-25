@@ -2254,20 +2254,21 @@
                 `;
             }
         }
-
         // ============================================
-        // 🎯 SISTEMA PARA AGREGAR NUEVOS DELEGADOS
+        // 🎯 SISTEMA MEJORADO PARA AGREGAR NUEVOS DELEGADOS
         // ============================================
 
         class GestorDelegados {
             constructor() {
                 this.sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
+                this.scriptUrl = 'https://script.google.com/macros/s/AKfycbz-JI7iYEpXMMMs1Pi3BAAz5C6iPIbtA-wUwdX_1gLqiWdPEPEJNjQm539ux98aaQoF/exec'; // ← REEMPLAZA ESTO CON TU URL
                 this.init();
             }
 
             init() {
                 this.agregarEventListenersFormulario();
                 this.cargarOpcionesDepartamentos();
+                this.cargarDelegadosTemporales(); // Cargar delegados pendientes de guardar
             }
 
             agregarEventListenersFormulario() {
@@ -2357,10 +2358,18 @@
                 btnSubmit.textContent = 'Guardando...';
 
                 try {
-                    this.guardarEnLocalStorage(nombre, departamento, comision);
+                    // Intentar guardar en Google Sheets primero
+                    const exitoGoogleSheets = await this.guardarEnGoogleSheets(nombre, departamento, comision);
                     
-                    this.mostrarAlerta('✅ Delegado guardado exitosamente', 'success');
+                    if (exitoGoogleSheets) {
+                        this.mostrarAlerta('✅ Delegado guardado exitosamente en Google Sheets', 'success');
+                    } else {
+                        // Fallback a localStorage
+                        this.guardarEnLocalStorage(nombre, departamento, comision);
+                        this.mostrarAlerta('✅ Delegado guardado localmente. Se sincronizará después.', 'success');
+                    }
                     
+                    // Actualizar la interfaz localmente
                     this.agregarDelegadoLocal(nombre, departamento, comision);
                     
                     setTimeout(() => {
@@ -2368,6 +2377,7 @@
                         if (modalForm) modalForm.style.display = 'none';
                         this.limpiarFormulario();
                         
+                        // Recargar votos para actualizar la interfaz
                         if (window.conexionInteligente) {
                             window.conexionInteligente.cargarTodosLosVotos();
                         }
@@ -2379,6 +2389,42 @@
                     btnSubmit.disabled = false;
                     btnSubmit.classList.remove('loading');
                     btnSubmit.textContent = 'Guardar Delegado';
+                }
+            }
+
+            async guardarEnGoogleSheets(nombre, departamento, comision) {
+                const datos = {
+                    nombre: nombre,
+                    departamento: departamento,
+                    comision: comision,
+                    fecha: new Date().toISOString(),
+                    votos: 0,
+                    enlace: `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
+                };
+
+                try {
+                    console.log('📤 Enviando datos a Google Sheets:', datos);
+                    
+                    // Usamos un proxy para evitar problemas CORS
+                    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                    const response = await fetch(proxyUrl + this.scriptUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(datos)
+                    });
+
+                    if (response.ok) {
+                        console.log('✅ Delegado guardado en Google Sheets');
+                        return true;
+                    } else {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error enviando a Google Sheets:', error);
+                    return false;
                 }
             }
 
@@ -2396,6 +2442,33 @@
                 delegadosTemporales.push(datos);
                 localStorage.setItem('delegados_temporales', JSON.stringify(delegadosTemporales));
                 console.log('📝 Delegado guardado temporalmente en localStorage:', datos);
+            }
+
+            // Función para cargar delegados pendientes de guardar
+            cargarDelegadosTemporales() {
+                const delegadosTemporales = JSON.parse(localStorage.getItem('delegados_temporales') || '[]');
+                
+                if (delegadosTemporales.length > 0) {
+                    console.log(`📝 Cargando ${delegadosTemporales.length} delegados temporales`);
+                    
+                    // Intentar re-enviar los delegados pendientes
+                    delegadosTemporales.forEach(async (delegado, index) => {
+                        setTimeout(async () => {
+                            const exito = await this.guardarEnGoogleSheets(
+                                delegado.nombre, 
+                                delegado.departamento, 
+                                delegado.comision
+                            );
+                            
+                            if (exito) {
+                                // Remover del localStorage si se guardó exitosamente
+                                const nuevosTemporales = delegadosTemporales.filter((_, i) => i !== index);
+                                localStorage.setItem('delegados_temporales', JSON.stringify(nuevosTemporales));
+                                console.log('✅ Delegado temporal sincronizado con Google Sheets');
+                            }
+                        }, index * 1000); // Esperar 1 segundo entre cada envío
+                    });
+                }
             }
 
             agregarDelegadoLocal(nombre, departamento, comision) {
