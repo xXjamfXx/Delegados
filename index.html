@@ -115,6 +115,67 @@
         }
 
         /* =============================== */
+        /* 🎯 SISTEMA DE FILTROS */
+        /* =============================== */
+        .filters-section {
+            background: white;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .filters-section h2 {
+            color: #003366;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e6f2ff;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #004d99;
+        }
+
+        .filter-select {
+            padding: 0.8rem 1rem;
+            border: 2px solid #e6f2ff;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            min-width: 200px;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #004d99;
+        }
+
+        .filter-info {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* =============================== */
         /* 🗺️ MAPA DE COLOMBIA */
         /* =============================== */
         .map-section {
@@ -159,6 +220,11 @@
             stroke-width: 2;
         }
 
+        .department-path.filtrado {
+            opacity: 0.3 !important;
+            fill: #cccccc !important;
+        }
+
         .department-label {
             font-size: 12px;
             font-weight: bold;
@@ -180,6 +246,109 @@
             z-index: 1000;
         }
 
+        /* =============================== */
+        /* 🎯 MODAL DE DELEGADOS */
+        /* =============================== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 1.5rem;
+            top: 1rem;
+            font-size: 2rem;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #003366;
+        }
+
+        #modal-titulo {
+            color: #003366;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #004d99;
+            padding-bottom: 0.5rem;
+        }
+
+        .delegado-item {
+            background: #f8fbff;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #004d99;
+            transition: transform 0.2s ease;
+        }
+
+        .delegado-item:hover {
+            transform: translateX(5px);
+            background: #e6f2ff;
+        }
+
+        .delegado-nombre {
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .delegado-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .delegado-comision {
+            background: #003366;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .delegado-votos {
+            background: #004d99;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .delegado-votos:hover {
+            background: #003366;
+            transform: scale(1.05);
+        }
+
         footer {
             background: linear-gradient(135deg, #003366 0%, #002244 100%);
             color: white;
@@ -188,9 +357,45 @@
             margin-top: 3rem;
         }
 
+        .no-results {
+            text-align: center;
+            color: #666;
+            padding: 2rem;
+            font-style: italic;
+        }
+
+        .sync-status {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .sync-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .sync-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .sync-loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
             h2 { font-size: 1.5rem; }
+            .modal-content { margin: 10% auto; width: 95%; }
+            .search-container { flex-direction: column; }
+            .search-box, .filter-select { min-width: 100%; }
             #colombia-map { height: 500px !important; }
             .department-label { font-size: 8px !important; }
             .map-tooltip { font-size: 12px !important; }
@@ -217,12 +422,45 @@
         </section>
 
         <!-- =============================== -->
+        <!-- 🎯 SISTEMA DE FILTROS -->
+        <!-- =============================== -->
+        <section class="filters-section">
+            <h2>Delegados por Departamento</h2>
+            <div id="sync-status" class="sync-status sync-loading">
+                🔄 Cargando datos desde Google Sheets...
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-box" placeholder="🔍 Buscar delegado por nombre...">
+                <select id="comision-filter" class="filter-select">
+                    <option value="">Todas las comisiones</option>
+                </select>
+                <select id="departamento-filter" class="filter-select">
+                    <option value="">Todos los departamentos</option>
+                </select>
+            </div>
+            <div class="filter-info">
+                <p id="filter-results">Mostrando todos los delegados</p>
+            </div>
+        </section>
+
+        <!-- =============================== -->
         <!-- 🗺️ MAPA DE COLOMBIA -->
         <!-- =============================== -->
         <section class="map-section">
             <h2>Departamentos de Colombia</h2>
             <div id="colombia-map"></div>
         </section>
+    </div>
+
+    <!-- =============================== -->
+    <!-- 🎯 MODAL DE DELEGADOS -->
+    <!-- =============================== -->
+    <div id="modal-delegados" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="modal-titulo">Delegados - Departamento</h3>
+            <div id="lista-delegados"></div>
+        </div>
     </div>
 
     <footer>
@@ -234,17 +472,108 @@
 
     <script>
         // ============================================
-        // 🗺️ CÓDIGO DEL MAPA
+        // 🔗 CONFIGURACIÓN - TU GOOGLE SHEETS
+        // ============================================
+        const SHEET_ID = '1EMWCl1lWkDncMpNxj7NnsnXMd9JoTmhw-FfbXa_J7QM';
+        const SHEET_NAME = 'Sheet1'; // Cambia esto si usas otra hoja
+
+        // Variable global para almacenar los delegados
+        let delegadosPorDepartamento = {};
+
+        // ============================================
+        // 🗺️ CÓDIGO DEL MAPA Y FUNCIONALIDAD
         // ============================================
         
         document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('modal-delegados');
+            const modalTitulo = document.getElementById('modal-titulo');
+            const listaDelegados = document.getElementById('lista-delegados');
+            const closeModal = document.querySelector('.close-modal');
+            const searchInput = document.getElementById('search-input');
+            const comisionFilter = document.getElementById('comision-filter');
+            const departamentoFilter = document.getElementById('departamento-filter');
+            const filterResults = document.getElementById('filter-results');
             const mapContainer = document.getElementById('colombia-map');
+            const syncStatus = document.getElementById('sync-status');
+
             let mapaCargado = false;
 
             // Inicializar la aplicación
-            function inicializar() {
+            async function inicializar() {
+                await cargarDatosDesdeSheets();
+                cargarFiltros();
                 cargarMapaColombia();
                 agregarEventListeners();
+                actualizarResultados();
+                
+                // Programar actualización automática cada 60 segundos
+                setInterval(async () => {
+                    await cargarDatosDesdeSheets();
+                    cargarFiltros();
+                    actualizarResultados();
+                    actualizarMapaConFiltros();
+                }, 60000);
+            }
+
+            // ============================================
+            // 🔗 CONEXIÓN CON GOOGLE SHEETS
+            // ============================================
+            async function cargarDatosDesdeSheets() {
+                try {
+                    syncStatus.className = 'sync-status sync-loading';
+                    syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
+
+                    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error('Error al cargar el Google Sheets');
+                    }
+                    
+                    const text = await response.text();
+                    const json = JSON.parse(text.substring(47).slice(0, -2));
+                    const filas = json.table.rows || [];
+
+                    // Reiniciar datos
+                    delegadosPorDepartamento = {};
+
+                    // Procesar filas (empezando desde la fila 1 para saltar encabezados)
+                    for (let i = 1; i < filas.length; i++) {
+                        const fila = filas[i];
+                        const celdas = fila.c || [];
+                        
+                        // Asumir columnas: [Departamento, Nombre, Comisión, Votos]
+                        const departamento = celdas[0]?.v || '';
+                        const nombre = celdas[1]?.v || '';
+                        const comision = celdas[2]?.v || '';
+                        const votos = parseInt(celdas[3]?.v) || 0;
+
+                        // Solo procesar si tiene datos básicos
+                        if (departamento && nombre) {
+                            if (!delegadosPorDepartamento[departamento]) {
+                                delegadosPorDepartamento[departamento] = [];
+                            }
+                            
+                            delegadosPorDepartamento[departamento].push({
+                                nombre: nombre,
+                                comision: comision,
+                                votos: votos,
+                                enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
+                            });
+                        }
+                    }
+
+                    syncStatus.className = 'sync-status sync-success';
+                    const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
+                    syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados cargados - Próxima actualización en 60 segundos`;
+
+                    console.log('📊 Datos cargados:', delegadosPorDepartamento);
+
+                } catch (error) {
+                    console.error('❌ Error cargando datos:', error);
+                    syncStatus.className = 'sync-status sync-error';
+                    syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
+                }
             }
 
             // Cargar el mapa de Colombia
@@ -270,14 +599,13 @@
                     .then(function(colombia) {
                         console.log("✅ GeoJSON cargado:", colombia);
                         
-                        // Proyección más simple
+                        // Proyección
                         const isMobile = window.innerWidth < 768;
                         const baseScale = isMobile ? 2000 : 3000;
 
                         let center = [-74, 4.5];
                         let translate = [width / 2, height / 2];
 
-                        // 📱 SOLO PARA MÓVILES - ajustar posición
                         if (isMobile) {
                             translate = [width / 2, height / 1.8];
                         }
@@ -286,8 +614,6 @@
                             .center(center)
                             .scale(baseScale)
                             .translate(translate);
-                        
-                        console.log("📱 Dispositivo:", isMobile ? "Móvil" : "Computadora", "Scale:", baseScale);
 
                         const path = d3.geoPath().projection(projection);
 
@@ -301,9 +627,12 @@
                             .attr("data-depto", d => d.properties.NOMBRE_DPT)
                             .on("mouseover", function(event, d) {
                                 const deptoMapa = d.properties.NOMBRE_DPT;
+                                const departamentoEnDatos = mapearNombreDepartamento(deptoMapa);
+                                const delegados = delegadosPorDepartamento[departamentoEnDatos] || [];
+                                const cantidad = delegados.length;
                                 
                                 tooltip.transition().duration(200).style("opacity", .9);
-                                tooltip.html(`<strong>${deptoMapa}</strong>`)
+                                tooltip.html(`<strong>${deptoMapa}</strong><br/>${cantidad} delegado${cantidad !== 1 ? 's' : ''}`)
                                     .style("left", (event.pageX + 10) + "px")
                                     .style("top", (event.pageY - 28) + "px");
 
@@ -315,12 +644,11 @@
                             })
                             .on("click", function(event, d) {
                                 const depto = d.properties.NOMBRE_DPT;
+                                mostrarDelegados(depto);
                                 
-                                // Solo resaltar, sin mostrar delegados
+                                // Resaltar selección
                                 g.selectAll(".department-path").style("fill", "#ff9c03");
                                 d3.select(this).style("fill", "#cc7d02");
-                                
-                                console.log("Departamento seleccionado:", depto);
                             });
 
                         // LUEGO ETIQUETAS
@@ -352,15 +680,261 @@
                     });
             }
 
+            // Función para mapear nombres entre GeoJSON y datos
+            function mapearNombreDepartamento(nombreGeoJSON) {
+                const mapeo = {
+                    "Amazonas": "Amazonas",
+                    "Antioquia": "Antioquia", 
+                    "Arauca": "Arauca",
+                    "Atlántico": "Atlántico",
+                    "Bogotá": "Bogotá D.C.",
+                    "Bolívar": "Bolívar",
+                    "Boyacá": "Boyacá",
+                    "Caldas": "Caldas",
+                    "Caquetá": "Caquetá", 
+                    "Casanare": "Casanare",
+                    "Cauca": "Cauca",
+                    "Cesar": "Cesar",
+                    "Chocó": "Chocó",
+                    "Córdoba": "Córdoba",
+                    "Cundinamarca": "Cundinamarca",
+                    "Guainía": "Guainía",
+                    "Guaviare": "Guaviare",
+                    "Huila": "Huila", 
+                    "La Guajira": "La Guajira",
+                    "Magdalena": "Magdalena",
+                    "Meta": "Meta",
+                    "Nariño": "Nariño",
+                    "Norte de Santander": "Norte de Santander",
+                    "Putumayo": "Putumayo",
+                    "Quindío": "Quindío",
+                    "Risaralda": "Risaralda", 
+                    "Santander": "Santander",
+                    "Sucre": "Sucre",
+                    "Tolima": "Tolima",
+                    "Valle del Cauca": "Valle del Cauca",
+                    "Vaupés": "Vaupés",
+                    "Vichada": "Vichada",
+                    "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés"
+                };
+                
+                return mapeo[nombreGeoJSON] || nombreGeoJSON;
+            }
+
+            // Cargar opciones de filtros
+            function cargarFiltros() {
+                const departamentosData = Object.keys(delegadosPorDepartamento).sort();
+                let comisionesUnicas = new Set();
+
+                // Cargar comisiones únicas
+                Object.values(delegadosPorDepartamento).forEach(delegados => {
+                    delegados.forEach(delegado => {
+                        if (delegado.comision) {
+                            comisionesUnicas.add(delegado.comision);
+                        }
+                    });
+                });
+
+                // Agregar opciones de comisión al select
+                comisionFilter.innerHTML = '<option value="">Todas las comisiones</option>';
+                [...comisionesUnicas].sort().forEach(comision => {
+                    const option = document.createElement('option');
+                    option.value = comision;
+                    option.textContent = comision;
+                    comisionFilter.appendChild(option);
+                });
+
+                // Agregar opciones de departamento al select
+                departamentoFilter.innerHTML = '<option value="">Todos los departamentos</option>';
+                departamentosData.forEach(depto => {
+                    const option = document.createElement('option');
+                    option.value = depto;
+                    option.textContent = depto;
+                    departamentoFilter.appendChild(option);
+                });
+            }
+
+            // Actualizar mapa basado en filtros
+            function actualizarMapaConFiltros() {
+                if (!mapaCargado) return;
+
+                const searchTerm = searchInput.value.toLowerCase();
+                const comisionSeleccionada = comisionFilter.value;
+                const departamentoSeleccionado = departamentoFilter.value;
+
+                const mapeoDepartamentos = {
+                    "Amazonas": "Amazonas",
+                    "Antioquia": "Antioquia", 
+                    "Arauca": "Arauca",
+                    "Atlántico": "Atlántico",
+                    "Bogotá": "Bogotá D.C.", 
+                    "Bolívar": "Bolívar",
+                    "Boyacá": "Boyacá",
+                    "Caldas": "Caldas",
+                    "Caquetá": "Caquetá", 
+                    "Casanare": "Casanare",
+                    "Cauca": "Cauca",
+                    "Cesar": "Cesar",
+                    "Chocó": "Chocó",
+                    "Córdoba": "Córdoba",
+                    "Cundinamarca": "Cundinamarca",
+                    "Guainía": "Guainía",
+                    "Guaviare": "Guaviare",
+                    "Huila": "Huila", 
+                    "La Guajira": "La Guajira",
+                    "Magdalena": "Magdalena",
+                    "Meta": "Meta",
+                    "Nariño": "Nariño",
+                    "Norte de Santander": "Norte de Santander",
+                    "Putumayo": "Putumayo",
+                    "Quindío": "Quindío",
+                    "Risaralda": "Risaralda", 
+                    "Santander": "Santander",
+                    "Sucre": "Sucre",
+                    "Tolima": "Tolima",
+                    "Valle del Cauca": "Valle del Cauca",
+                    "Vaupés": "Vaupés",
+                    "Vichada": "Vichada",
+                    "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés"
+                };
+
+                d3.selectAll(".department-path")
+                    .classed("filtrado", function(d) {
+                        const deptoMapa = d.properties.NOMBRE_DPT;
+                        const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
+                        const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
+                        
+                        // Si no hay delegados en este departamento, mostrar tenue
+                        if (delegadosDelDepto.length === 0) {
+                            return true;
+                        }
+                        
+                        // Aplicar filtros
+                        const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
+                            const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
+                            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+                            const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
+                            
+                            return coincideNombre && coincideComision && coincideDepartamento;
+                        });
+                        
+                        return !tieneDelegadosFiltrados;
+                    });
+            }
+
             // Agregar event listeners
             function agregarEventListeners() {
+                closeModal.addEventListener('click', cerrarModal);
+                window.addEventListener('click', (event) => {
+                    if (event.target === modal) cerrarModal();
+                });
+                searchInput.addEventListener('input', function() {
+                    actualizarResultados();
+                    actualizarMapaConFiltros();
+                });
+                comisionFilter.addEventListener('change', function() {
+                    actualizarResultados();
+                    actualizarMapaConFiltros();
+                });
+                departamentoFilter.addEventListener('change', function() {
+                    actualizarResultados();
+                    actualizarMapaConFiltros();
+                });
+
                 // Redimensionar mapa cuando cambie el tamaño de la ventana
                 window.addEventListener('resize', function() {
                     if (mapaCargado) {
-                        console.log("🔄 Redimensionando ventana...");
                         cargarMapaColombia();
                     }
                 });
+            }
+
+            // Actualizar resultados basados en filtros
+            function actualizarResultados() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const comisionSeleccionada = comisionFilter.value;
+                const departamentoSeleccionado = departamentoFilter.value;
+
+                let delegadosFiltrados = 0;
+                let departamentosConResultados = 0;
+
+                Object.keys(delegadosPorDepartamento).forEach(depto => {
+                    const delegados = delegadosPorDepartamento[depto] || [];
+                    const delegadosFiltradosEnDepto = delegados.filter(delegado => {
+                        const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
+                        const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+                        const coincideDepartamento = !departamentoSeleccionado || depto === departamentoSeleccionado;
+                        
+                        return coincideNombre && coincideComision && coincideDepartamento;
+                    });
+
+                    if (delegadosFiltradosEnDepto.length > 0) {
+                        delegadosFiltrados += delegadosFiltradosEnDepto.length;
+                        departamentosConResultados++;
+                    }
+                });
+
+                // Actualizar texto de resultados
+                let resultadosTexto = `Mostrando ${delegadosFiltrados} delegado${delegadosFiltrados !== 1 ? 's' : ''}`;
+                if (comisionSeleccionada) resultadosTexto += ` en ${comisionSeleccionada}`;
+                if (departamentoSeleccionado) resultadosTexto += ` de ${departamentoSeleccionado}`;
+                if (searchTerm) resultadosTexto += ` que coinciden con "${searchTerm}"`;
+                
+                filterResults.textContent = resultadosTexto;
+            }
+
+            // Mostrar delegados en modal
+            function mostrarDelegados(nombreDepartamento) {
+                const departamentoFinal = mapearNombreDepartamento(nombreDepartamento);
+                const delegados = delegadosPorDepartamento[departamentoFinal] || [];
+
+                const searchTerm = searchInput.value.toLowerCase();
+                const comisionSeleccionada = comisionFilter.value;
+                const departamentoSeleccionado = departamentoFilter.value;
+
+                // Filtrar delegados según los filtros activos
+                const delegadosFiltrados = delegados.filter(delegado => {
+                    const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
+                    const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+                    const coincideDepartamento = !departamentoSeleccionado || nombreDepartamento === departamentoSeleccionado;
+                    
+                    return coincideNombre && coincideComision && coincideDepartamento;
+                });
+
+                modalTitulo.textContent = `Delegados - ${nombreDepartamento} (${delegadosFiltrados.length})`;
+                listaDelegados.innerHTML = '';
+
+                if (delegadosFiltrados.length === 0) {
+                    listaDelegados.innerHTML = `
+                        <div class="no-results">
+                            <p>No hay delegados que coincidan con los filtros aplicados.</p>
+                            <p><small>Departamento: ${nombreDepartamento}</small></p>
+                        </div>
+                    `;
+                } else {
+                    delegadosFiltrados.forEach(delegado => {
+                        const delegadoElement = document.createElement('div');
+                        delegadoElement.className = 'delegado-item';
+                        delegadoElement.innerHTML = `
+                            <div class="delegado-nombre">${delegado.nombre}</div>
+                            <div class="delegado-info">
+                                <span class="delegado-comision">${delegado.comision}</span>
+                                <span class="delegado-votos">
+                                    ${delegado.votos.toLocaleString()} votos
+                                </span>
+                            </div>
+                        `;
+                        listaDelegados.appendChild(delegadoElement);
+                    });
+                }
+
+                modal.style.display = 'block';
+            }
+
+            function cerrarModal() {
+                modal.style.display = 'none';
+                // Limpiar selección del mapa
+                d3.selectAll(".department-path").classed("seleccionado", false);
             }
 
             // Inicializar la aplicación
