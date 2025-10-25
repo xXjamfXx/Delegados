@@ -1711,51 +1711,17 @@ console.log("Centro:", projection.center());
   .on("mouseover", function(event, d) {
     const deptoMapa = d.properties.NOMBRE_DPT;
     
-    // BUSCAR COINCIDENCIA INTELIGENTE
     let cantidadDelegados = 0;
     let cantidadFocales = 0;
     let cantidadLideres = 0;
-    let departamentoEncontrado = "";
     
-    // Normalizar nombre del mapa (minúsculas, sin tildes)
-    const nombreNormalizado = deptoMapa
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
-        .replace(/[^a-z0-9 ]/g, '') // solo letras y números
-        .replace(/\s+/g, ' ') // espacios múltiples a simple
-        .trim();
+    // BUSCAR DELEGADOS
+    cantidadDelegados = delegadosPorDepartamento[deptoMapa]?.length || 0;
     
-    // Buscar en todos los departamentos
-    Object.keys(delegadosPorDepartamento).forEach(nombreDepto => {
-        // Normalizar nombre del departamento en datos
-        const nombreDeptoNormalizado = nombreDepto
-            .toLowerCase()
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9 ]/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-        
-        // Verificar coincidencia
-        if (nombreNormalizado === nombreDeptoNormalizado || 
-            nombreNormalizado.includes(nombreDeptoNormalizado) ||
-            nombreDeptoNormalizado.includes(nombreNormalizado)) {
-            departamentoEncontrado = nombreDepto;
-            cantidadDelegados = delegadosPorDepartamento[nombreDepto].length;
-            
-            // BUSCAR FOCALES Y LÍDERES
-            const focales = focalesPorDepartamento[nombreDepto] || focalesPorDepartamento[deptoMapa] || [];
-            cantidadFocales = focales.filter(f => !f.grupo.includes("Lider")).length;
-            cantidadLideres = focales.filter(f => f.grupo.includes("Lider")).length;
-        }
-    });
-    
-    // Si no encontró por normalización, buscar directamente
-    if (cantidadDelegados === 0 && cantidadFocales === 0 && cantidadLideres === 0) {
-        cantidadDelegados = delegadosPorDepartamento[deptoMapa]?.length || 0;
-        const focales = focalesPorDepartamento[deptoMapa] || [];
-        cantidadFocales = focales.filter(f => !f.grupo.includes("Lider")).length;
-        cantidadLideres = focales.filter(f => f.grupo.includes("Lider")).length;
-    }
+    // BUSCAR FOCALES Y LÍDERES
+    const focales = focalesPorDepartamento[deptoMapa] || [];
+    cantidadFocales = focales.filter(f => !f.grupo.includes("Lider")).length;
+    cantidadLideres = focales.filter(f => f.grupo.includes("Lider")).length;
     
     console.log("🔍 Mapa:", deptoMapa, "| 👥 Delegados:", cantidadDelegados, "| 🎯 Focales:", cantidadFocales, "| 👑 Líderes:", cantidadLideres);
     
