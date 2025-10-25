@@ -761,19 +761,11 @@
 // Función COMPLETA para TODOS los departamentos
 // Función COMPLETA con mayúsculas, tildes y todo
 // Función COMPLETA con todos los departamentos + mayúsculas + tildes
+function mapearNombreDepartamento(nombreGeoJSON) {// Función COMPLETA con TODOS los departamentos de Colombia
 function mapearNombreDepartamento(nombreGeoJSON) {
-    // Función para normalizar texto (quita tildes, mayúsculas, etc.)
-    function normalizarTexto(texto) {
-        return texto
-            .toLowerCase()
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9 ]/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-    }
-
-    // Mapeo completo de TODOS los departamentos
+    // MAPEO COMPLETO DE LOS 32 DEPARTAMENTOS + DC
     const mapeoCompleto = {
+        // Nombres del MAPA -> Nombres del GOOGLE SHEETS
         "Amazonas": "Amazonas",
         "Antioquia": "Antioquia", 
         "Arauca": "Arauca",
@@ -807,28 +799,46 @@ function mapearNombreDepartamento(nombreGeoJSON) {
         "Vaupés": "Vaupés",
         "Vichada": "Vichada",
         "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés",
-        "San Andrés": "San Andrés"
+        "San Andrés": "San Andrés",
+        
+        // También manejar nombres en MAYÚSCULAS del mapa
+        "AMAZONAS": "Amazonas",
+        "ANTIOQUIA": "Antioquia", 
+        "ARAUCA": "Arauca", 
+        "ATLÁNTICO": "Atlántico",
+        "BOGOTÁ": "Bogotá D.C.",
+        "BOLÍVAR": "Bolívar",
+        "BOYACÁ": "Boyacá",
+        "CALDAS": "Caldas",
+        "CAQUETÁ": "Caquetá",
+        "CASANARE": "Casanare",
+        "CAUCA": "Cauca", 
+        "CESAR": "Cesar",
+        "CHOCÓ": "Chocó",
+        "CÓRDOBA": "Córdoba",
+        "CUNDINAMARCA": "Cundinamarca",
+        "GUAINÍA": "Guainía",
+        "GUAVIARE": "Guaviare",
+        "HUILA": "Huila",
+        "LA GUAJIRA": "La Guajira", 
+        "MAGDALENA": "Magdalena",
+        "META": "Meta",
+        "NARIÑO": "Nariño",
+        "NORTE DE SANTANDER": "Norte de Santander", 
+        "PUTUMAYO": "Putumayo",
+        "QUINDÍO": "Quindío",
+        "RISARALDA": "Risaralda",
+        "SANTANDER": "Santander",
+        "SUCRE": "Sucre", 
+        "TOLIMA": "Tolima",
+        "VALLE DEL CAUCA": "Valle del Cauca",
+        "VAUPÉS": "Vaupés",
+        "VICHADA": "Vichada",
+        "ARCHIPIÉLAGO DE SAN ANDRÉS, PROVIDENCIA Y SANTA CATALINA": "San Andrés",
+        "SAN ANDRÉS": "San Andrés"
     };
     
-    // 1. PRIMERO buscar en el mapeo completo
-    if (mapeoCompleto[nombreGeoJSON]) {
-        return mapeoCompleto[nombreGeoJSON];
-    }
-    
-    // 2. Si no está en el mapeo, buscar con normalización (tildes, mayúsculas)
-    const nombreNormalizado = normalizarTexto(nombreGeoJSON);
-    const departamentosEnDatos = Object.keys(delegadosPorDepartamento);
-    
-    for (const depto of departamentosEnDatos) {
-        const deptoNormalizado = normalizarTexto(depto);
-        if (deptoNormalizado === nombreNormalizado) {
-            console.log(`✅ Coincidencia normalizada: "${nombreGeoJSON}" -> "${depto}"`);
-            return depto;
-        }
-    }
-    
-    // 3. Si no encuentra, devolver el original
-    return nombreGeoJSON;
+    return mapeoCompleto[nombreGeoJSON] || nombreGeoJSON;
 }
 
             // Cargar opciones de filtros
