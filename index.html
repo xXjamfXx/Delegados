@@ -579,92 +579,51 @@
             // ============================================
             // 🔗 CONEXIÓN CON GOOGLE SHEETS - VERSIÓN ESTABLE
             // ============================================
-            async function cargarDatosDesdeSheets() {
+           async function cargarDatosDesdeSheets() {
     const loadingOverlay = document.getElementById('loading-overlay');
     
     try {
         syncStatus.className = 'sync-status sync-loading';
         syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
 
-        console.log("🔗 Intentando conectar con Google Sheets...");
-        
         const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
-        console.log("📡 URL:", url);
-        
         const response = await fetch(url);
-        console.log("📞 Respuesta HTTP:", response.status, response.statusText);
         
         if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+            throw new Error('Error al cargar el Google Sheets');
         }
         
         const text = await response.text();
-        console.log("📄 Texto recibido (primeros 200 chars):", text.substring(0, 200));
-        
         const json = JSON.parse(text.substring(47).slice(0, -2));
-        console.log("📊 Estructura JSON recibida:", json);
-        
         const filas = json.table.rows || [];
-        console.log("📋 Total filas en Sheets:", filas.length);
 
-        // NUEVA ESTRUCTURA TEMPORAL
+        // NUEVA ESTRUCTURA para datos en COLUMNAS
         const nuevosDatos = {};
 
-        // Si solo hay 1 fila, probablemente los datos están en columnas
-        if (filas.length === 1) {
-            console.log("🔄 Detectado formato horizontal - procesando columnas...");
-            const primeraFila = filas[0];
-            const celdas = primeraFila.c || [];
+        // Procesar CADA COLUMNA como un departamento
+        for (let col = 0; col < filas.length; col++) {
+            const fila = filas[col];
+            const celdas = fila.c || [];
             
-            // Procesar cada columna como un departamento
-            for (let i = 0; i < celdas.length; i++) {
-                const celda = celdas[i];
-                if (celda && celda.v) {
-                    const valor = celda.v.toString().trim();
-                    console.log(`📝 Columna ${i}: "${valor}"`);
-                    
-                    // Asumir que la primera columna es el encabezado "Departamento"
-                    if (i === 0 && valor === "Departamento") {
-                        console.log("✅ Encabezado 'Departamento' encontrado");
-                        continue;
-                    }
-                    
-                    // Aquí deberías procesar los datos según tu estructura real
-                    // Por ahora, solo para debug
-                    if (valor && valor !== "Departamento") {
-                        nuevosDatos[valor] = [{nombre: "Delegado de prueba", comision: "Comisión", votos: 0}];
-                    }
+            // La PRIMERA CELDA de cada fila es el NOMBRE DEL DEPARTAMENTO
+            const nombreDepartamento = (celdas[0]?.v || '').toString().trim();
+            
+            if (nombreDepartamento && nombreDepartamento !== "Departamento") {
+                if (!nuevosDatos[nombreDepartamento]) {
+                    nuevosDatos[nombreDepartamento] = [];
                 }
-            }
-        } else {
-            // Formato vertical tradicional (filas)
-            console.log("🔄 Procesando formato vertical...");
-            for (let i = 1; i < filas.length; i++) {
-                const fila = filas[i];
-                const celdas = fila.c || [];
                 
-                console.log(`📝 Procesando fila ${i}:`, celdas);
-                
-                const departamento = (celdas[0]?.v || '').toString().trim();
-                const nombre = (celdas[1]?.v || '').toString().trim();
-                const comision = (celdas[2]?.v || '').toString().trim();
-                const votos = parseInt(celdas[3]?.v) || 0;
-
-                console.log(`   📍 Departamento: "${departamento}", Nombre: "${nombre}"`);
-
-                if (departamento && nombre) {
-                    if (!nuevosDatos[departamento]) {
-                        nuevosDatos[departamento] = [];
+                // Las CELDAS 1, 2, 3... son los NOMBRES DE DELEGADOS
+                for (let i = 1; i < celdas.length; i++) {
+                    const nombreDelegado = (celdas[i]?.v || '').toString().trim();
+                    if (nombreDelegado) {
+                        nuevosDatos[nombreDepartamento].push({
+                            nombre: nombreDelegado,
+                            comision: "COMISIÓN", // Por defecto - puedes ajustar esto
+                            votos: 0, // Por defecto - puedes ajustar esto
+                            enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
+                        });
                     }
-                    
-                    nuevosDatos[departamento].push({
-                        nombre: nombre,
-                        comision: comision,
-                        votos: votos,
-                        enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
-                    });
-                    
-                    console.log(`   ✅ Agregado delegado: ${nombre} a ${departamento}`);
                 }
             }
         }
@@ -673,17 +632,16 @@
         delegadosPorDepartamento = nuevosDatos;
 
         // VERIFICACIÓN DE DATOS
-        console.log("=== 📊 DATOS CARGADOS ===");
+        console.log("=== 📊 DATOS CARGADOS DESDE COLUMNAS ===");
         console.log("Total departamentos:", Object.keys(delegadosPorDepartamento).length);
         console.log("Total delegados:", Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0));
         
-        if (Object.keys(delegadosPorDepartamento).length === 0) {
-            console.log("🚨 ALERTA: NO SE CARGÓ NINGÚN DEPARTAMENTO");
-        } else {
-            Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
-                console.log(`${depto}: ${delegadosPorDepartamento[depto].length} delegados`);
+        Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
+            console.log(`${depto}: ${delegadosPorDepartamento[depto].length} delegados`);
+            delegadosPorDepartamento[depto].forEach(delegado => {
+                console.log(`   👤 ${delegado.nombre}`);
             });
-        }
+        });
         console.log("=== FIN DATOS ===");
 
         syncStatus.className = 'sync-status sync-success';
@@ -698,7 +656,6 @@
         loadingOverlay.style.display = 'none';
     }
 }
-
             // ============================================
             // 🗺️ FUNCIÓN DE MAPEO COMPLETA
             // ============================================
