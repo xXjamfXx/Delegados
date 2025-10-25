@@ -2258,93 +2258,272 @@
         // 🎯 SISTEMA MEJORADO PARA AGREGAR NUEVOS DELEGADOS
         // ============================================
 
-        class GestorDelegados {
-        
-            constructor() {
-                this.sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
-                this.scriptUrl = 'https://script.google.com/macros/s/AKfycbz-JI7iYEpXMMMs1Pi3BAAz5C6iPIbtA-wUwdX_1gLqiWdPEPEJNjQm539ux98aaQoF/exec'; // ← REEMPLAZA ESTO CON TU URL
-                this.init();
-            }
+        class GestorDelegados {class GestorDelegados {
+    constructor() {
+        this.sheetId = '1MPNF48GRsvsg5xc19RE40-c-rekYDBm9oxG42_9BOys';
+        this.scriptUrl = 'https://script.google.com/macros/s/AKfycbz-JI7iYEpXMMMs1Pi3BAAz5C6iPIbtA-wUwdX_1gLqiWdPEPEJNjQm539ux98aaQoF/exec';
+        this.init();
+    }
 
-            init() {
-                this.agregarEventListenersFormulario();
-                this.cargarOpcionesDepartamentos();
-                this.cargarDelegadosGuardados();
-                this.cargarDelegadosTemporales(); // Cargar delegados pendientes de guardar
-            }
-// Agrega esta función a tu clase GestorDelegados
-cargarDelegadosGuardados() {
-    const delegadosTemporales = JSON.parse(localStorage.getItem('delegados_temporales') || '[]');
-    
-    if (delegadosTemporales.length > 0) {
-        console.log(`📂 Cargando ${delegadosTemporales.length} delegados guardados en localStorage`);
+    init() {
+        this.agregarEventListenersFormulario();
+        this.cargarOpcionesDepartamentos();
+        this.cargarDelegadosGuardados();
+        this.cargarDelegadosTemporales();
+    }
+
+    cargarDelegadosGuardados() {
+        const delegadosTemporales = JSON.parse(localStorage.getItem('delegados_temporales') || '[]');
         
-        delegadosTemporales.forEach(delegado => {
-            // Agregar cada delegado a la estructura de datos
-            if (!delegadosPorDepartamento[delegado.departamento]) {
-                delegadosPorDepartamento[delegado.departamento] = [];
-            }
+        if (delegadosTemporales.length > 0) {
+            console.log(`📂 Cargando ${delegadosTemporales.length} delegados guardados en localStorage`);
             
-            // Verificar si el delegado ya existe para no duplicar
-            const existe = delegadosPorDepartamento[delegado.departamento].some(
-                d => d.nombre === delegado.nombre && d.comision === delegado.comision
-            );
-            
-            if (!existe) {
-                delegadosPorDepartamento[delegado.departamento].push({
-                    nombre: delegado.nombre,
-                    comision: delegado.comision,
-                    votos: delegado.votos || 0,
-                    enlace: delegado.enlace || `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
-                });
+            delegadosTemporales.forEach(delegado => {
+                if (!delegadosPorDepartamento[delegado.departamento]) {
+                    delegadosPorDepartamento[delegado.departamento] = [];
+                }
                 
-                console.log('✅ Delegado cargado desde localStorage:', delegado.nombre);
+                const existe = delegadosPorDepartamento[delegado.departamento].some(
+                    d => d.nombre === delegado.nombre && d.comision === delegado.comision
+                );
+                
+                if (!existe) {
+                    delegadosPorDepartamento[delegado.departamento].push({
+                        nombre: delegado.nombre,
+                        comision: delegado.comision,
+                        votos: delegado.votos || 0,
+                        enlace: delegado.enlace || `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
+                    });
+                    
+                    console.log('✅ Delegado cargado desde localStorage:', delegado.nombre);
+                }
+            });
+            
+            this.actualizarFiltros();
+        }
+    }
+
+    agregarEventListenersFormulario() {
+        const btnAgregar = document.getElementById('btn-agregar-delegado');
+        const modalForm = document.getElementById('modal-formulario');
+        const closeModalForm = document.querySelector('.close-modal-form');
+        const form = document.getElementById('form-delegado');
+
+        if (btnAgregar) {
+            btnAgregar.addEventListener('click', () => {
+                modalForm.style.display = 'block';
+            });
+        }
+
+        if (closeModalForm) {
+            closeModalForm.addEventListener('click', () => {
+                modalForm.style.display = 'none';
+                this.limpiarFormulario();
+            });
+        }
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modalForm) {
+                modalForm.style.display = 'none';
+                this.limpiarFormulario();
             }
         });
-        
-        // Actualizar filtros después de cargar
-        this.actualizarFiltros();
+
+        if (form) {
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                this.guardarDelegado();
+            });
+        }
     }
-}
-            agregarEventListenersFormulario() {
-                const btnAgregar = document.getElementById('btn-agregar-delegado');
+
+    cargarOpcionesDepartamentos() {
+        const select = document.getElementById('departamento-delegado');
+        if (!select) return;
+        
+        const departamentos = Object.keys(delegadosPorDepartamento).sort();
+        
+        departamentos.forEach(depto => {
+            const option = document.createElement('option');
+            option.value = depto;
+            option.textContent = depto;
+            select.appendChild(option);
+        });
+    }
+
+    limpiarFormulario() {
+        const form = document.getElementById('form-delegado');
+        const btnSubmit = document.getElementById('btn-submit');
+        const alertDiv = document.getElementById('form-alert');
+        
+        if (form) form.reset();
+        if (alertDiv) alertDiv.innerHTML = '';
+        if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.classList.remove('loading');
+            btnSubmit.textContent = 'Guardar Delegado';
+        }
+    }
+
+    async guardarDelegado() {
+        const nombreInput = document.getElementById('nombre-delegado');
+        const departamentoSelect = document.getElementById('departamento-delegado');
+        const comisionSelect = document.getElementById('comision-delegado');
+        const btnSubmit = document.getElementById('btn-submit');
+
+        if (!nombreInput || !departamentoSelect || !comisionSelect || !btnSubmit) {
+            console.error('❌ Elementos del formulario no encontrados');
+            return;
+        }
+
+        const nombre = nombreInput.value.trim();
+        const departamento = departamentoSelect.value;
+        const comision = comisionSelect.value;
+
+        if (!nombre || !departamento || !comision) {
+            this.mostrarAlerta('Por favor completa todos los campos', 'error');
+            return;
+        }
+
+        btnSubmit.disabled = true;
+        btnSubmit.classList.add('loading');
+        btnSubmit.textContent = 'Guardando en Google Sheets...';
+
+        try {
+            const exitoGoogleSheets = await this.guardarEnGoogleSheets(nombre, departamento, comision);
+            this.agregarDelegadoLocal(nombre, departamento, comision);
+            
+            setTimeout(() => {
                 const modalForm = document.getElementById('modal-formulario');
-                const closeModalForm = document.querySelector('.close-modal-form');
-                const form = document.getElementById('form-delegado');
-
-                if (btnAgregar) {
-                    btnAgregar.addEventListener('click', () => {
-                        modalForm.style.display = 'block';
-                    });
-                }
-
-                if (closeModalForm) {
-                    closeModalForm.addEventListener('click', () => {
-                        modalForm.style.display = 'none';
-                        this.limpiarFormulario();
-                    });
-                }
-
-                window.addEventListener('click', (event) => {
-                    if (event.target === modalForm) {
-                        modalForm.style.display = 'none';
-                        this.limpiarFormulario();
-                    }
-                });
-
-                if (form) {
-                    form.addEventListener('submit', (event) => {
-                        event.preventDefault();
-                        this.guardarDelegado();
-                    });
-                }
-            }
-
-            cargarOpcionesDepartamentos() {
-                const select = document.getElementById('departamento-delegado');
-                if (!select) return;
+                if (modalForm) modalForm.style.display = 'none';
+                this.limpiarFormulario();
                 
-                const departamentos = Object.keys(delegadosPorDepartamento).sort();
+                if (window.conexionInteligente) {
+                    window.conexionInteligente.cargarTodosLosVotos();
+                }
+            }, 3000);
+            
+        } catch (error) {
+            console.error('Error guardando delegado:', error);
+            this.mostrarAlerta('❌ Error inesperado. Intenta nuevamente.', 'error');
+            btnSubmit.disabled = false;
+            btnSubmit.classList.remove('loading');
+            btnSubmit.textContent = 'Guardar Delegado';
+        }
+    }
+
+    async guardarEnGoogleSheets(nombre, departamento, comision) {
+        const datos = {
+            nombre: nombre,
+            departamento: departamento,
+            comision: comision,
+            votos: 0,
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            console.log('📤 Enviando a Google Sheets...', datos);
+            console.log('URL del script:', this.scriptUrl);
+            
+            const response = await fetch(this.scriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(datos)
+            });
+
+            console.log('📨 Status de respuesta:', response.status);
+            console.log('Respuesta OK:', response.ok);
+            
+            if (response.ok) {
+                const resultado = await response.json();
+                console.log('✅ ÉXITO - Guardado en Google Sheets:', resultado);
+                this.mostrarAlerta('✅ Delegado guardado EXITOSAMENTE en Google Sheets: ' + nombre, 'success');
+                return true;
+            } else {
+                const errorText = await response.text();
+                console.log('❌ Error del servidor:', errorText);
+                this.guardarEnLocalStorage(nombre, departamento, comision);
+                this.mostrarAlerta('📝 Guardado localmente (se sincronizará después): ' + nombre, 'success');
+                return false;
+            }
+            
+        } catch (error) {
+            console.log('❌ Error de conexión:', error);
+            this.guardarEnLocalStorage(nombre, departamento, comision);
+            this.mostrarAlerta('📝 Guardado localmente (error de conexión): ' + nombre, 'success');
+            return false;
+        }
+    }
+
+    guardarEnLocalStorage(nombre, departamento, comision) {
+        const datos = {
+            nombre: nombre,
+            departamento: departamento,
+            comision: comision,
+            fecha: new Date().toISOString(),
+            votos: 0,
+            enlace: `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
+        };
+
+        const delegadosTemporales = JSON.parse(localStorage.getItem('delegados_temporales') || '[]');
+        delegadosTemporales.push(datos);
+        localStorage.setItem('delegados_temporales', JSON.stringify(delegadosTemporales));
+        console.log('📝 Delegado guardado en localStorage:', datos);
+    }
+
+    cargarDelegadosTemporales() {
+        const delegadosTemporales = JSON.parse(localStorage.getItem('delegados_temporales') || '[]');
+        
+        if (delegadosTemporales.length > 0) {
+            console.log(`📝 Cargando ${delegadosTemporales.length} delegados temporales`);
+            
+            delegadosTemporales.forEach(async (delegado, index) => {
+                setTimeout(async () => {
+                    const exito = await this.guardarEnGoogleSheets(
+                        delegado.nombre, 
+                        delegado.departamento, 
+                        delegado.comision
+                    );
+                    
+                    if (exito) {
+                        const nuevosTemporales = delegadosTemporales.filter((_, i) => i !== index);
+                        localStorage.setItem('delegados_temporales', JSON.stringify(nuevosTemporales));
+                        console.log('✅ Delegado temporal sincronizado con Google Sheets');
+                    }
+                }, index * 1000);
+            });
+        }
+    }
+
+    agregarDelegadoLocal(nombre, departamento, comision) {
+        if (!delegadosPorDepartamento[departamento]) {
+            delegadosPorDepartamento[departamento] = [];
+        }
+
+        const nuevoDelegado = {
+            nombre: nombre,
+            comision: comision,
+            votos: 0,
+            enlace: `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
+        };
+
+        delegadosPorDepartamento[departamento].push(nuevoDelegado);
+        this.actualizarFiltros();
+        console.log('✅ Delegado agregado localmente:', nuevoDelegado);
+    }
+
+    actualizarFiltros() {
+        const selectFiltro = document.getElementById('departamento-filter');
+        const selectForm = document.getElementById('departamento-delegado');
+        
+        const departamentos = Object.keys(delegadosPorDepartamento).sort();
+        
+        [selectFiltro, selectForm].forEach(select => {
+            if (select) {
+                const optionsExistentes = Array.from(select.options).slice(1);
+                optionsExistentes.forEach(opt => opt.remove());
                 
                 departamentos.forEach(depto => {
                     const option = document.createElement('option');
@@ -2353,225 +2532,20 @@ cargarDelegadosGuardados() {
                     select.appendChild(option);
                 });
             }
-
-            limpiarFormulario() {
-                const form = document.getElementById('form-delegado');
-                const btnSubmit = document.getElementById('btn-submit');
-                const alertDiv = document.getElementById('form-alert');
-                
-                if (form) form.reset();
-                if (alertDiv) alertDiv.innerHTML = '';
-                if (btnSubmit) {
-                    btnSubmit.disabled = false;
-                    btnSubmit.classList.remove('loading');
-                    btnSubmit.textContent = 'Guardar Delegado';
-                }
-            }
-
-            async guardarDelegado() {
-    const nombreInput = document.getElementById('nombre-delegado');
-    const departamentoSelect = document.getElementById('departamento-delegado');
-    const comisionSelect = document.getElementById('comision-delegado');
-    const btnSubmit = document.getElementById('btn-submit');
-
-    if (!nombreInput || !departamentoSelect || !comisionSelect || !btnSubmit) {
-        console.error('❌ Elementos del formulario no encontrados');
-        return;
-    }
-
-    const nombre = nombreInput.value.trim();
-    const departamento = departamentoSelect.value;
-    const comision = comisionSelect.value;
-
-    if (!nombre || !departamento || !comision) {
-        this.mostrarAlerta('Por favor completa todos los campos', 'error');
-        return;
-    }
-
-    btnSubmit.disabled = true;
-    btnSubmit.classList.add('loading');
-    btnSubmit.textContent = 'Guardando en Google Sheets...';
-
-    try {
-        // Intentar guardar en Google Sheets
-        const exitoGoogleSheets = await this.guardarEnGoogleSheets(nombre, departamento, comision);
-        
-        // SIEMPRE agregar a la interfaz localmente
-        this.agregarDelegadoLocal(nombre, departamento, comision);
-        
-        setTimeout(() => {
-            const modalForm = document.getElementById('modal-formulario');
-            if (modalForm) modalForm.style.display = 'none';
-            this.limpiarFormulario();
-            
-            // Recargar votos para actualizar la interfaz
-            if (window.conexionInteligente) {
-                window.conexionInteligente.cargarTodosLosVotos();
-            }
-        }, 3000);
-        
-    } catch (error) {
-        console.error('Error guardando delegado:', error);
-        this.mostrarAlerta('❌ Error inesperado. Intenta nuevamente.', 'error');
-        btnSubmit.disabled = false;
-        btnSubmit.classList.remove('loading');
-        btnSubmit.textContent = 'Guardar Delegado';
-    }
-}
-
-            async guardarEnGoogleSheets(nombre, departamento, comision) {
-    const datos = {
-        nombre: nombre,
-        departamento: departamento,
-        comision: comision,
-        votos: 0,
-        timestamp: new Date().toISOString()
-    };
-
-    try {
-        console.log('📤 Enviando a Google Sheets...', datos);
-        console.log('URL del script:', this.scriptUrl);
-        
-        const response = await fetch(this.scriptUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(datos)
         });
+    }
 
-        console.log('📨 Status de respuesta:', response.status);
-        console.log('Respuesta OK:', response.ok);
-        
-        if (response.ok) {
-            const resultado = await response.json();
-            console.log('✅ ÉXITO - Guardado en Google Sheets:', resultado);
-            
-            // MOSTRAR MENSAJE DE ÉXITO REAL
-            this.mostrarAlerta('✅ Delegado guardado EXITOSAMENTE en Google Sheets: ' + nombre, 'success');
-            
-            return true;
-        } else {
-            const errorText = await response.text();
-            console.log('❌ Error del servidor:', errorText);
-            
-            // Fallback a localStorage
-            this.guardarEnLocalStorage(nombre, departamento, comision);
-            this.mostrarAlerta('📝 Guardado localmente (se sincronizará después): ' + nombre, 'success');
-            
-            return false;
+    mostrarAlerta(mensaje, tipo) {
+        const alertDiv = document.getElementById('form-alert');
+        if (alertDiv) {
+            alertDiv.innerHTML = `
+                <div class="alert alert-${tipo}">
+                    ${mensaje}
+                </div>
+            `;
         }
-        
-    } catch (error) {
-        console.log('❌ Error de conexión:', error);
-        
-        // Fallback a localStorage
-        this.guardarEnLocalStorage(nombre, departamento, comision);
-        this.mostrarAlerta('📝 Guardado localmente (error de conexión): ' + nombre, 'success');
-        
-        return false;
     }
 }
-        
-     catch (error) {
-        console.error('❌ Error enviando a Google Sheets:', error);
-        return false;
-    }
-}
-            guardarEnLocalStorage(nombre, departamento, comision) {
-                const datos = {
-                    nombre: nombre,
-                    departamento: departamento,
-                    comision: comision,
-                    fecha: new Date().toISOString(),
-                    votos: 0,
-                    enlace: `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
-                };
-
-                const delegadosTemporales = JSON.parse(localStorage.getItem('delegados_temporales') || '[]');
-                delegadosTemporales.push(datos);
-                localStorage.setItem('delegados_temporales', JSON.stringify(delegadosTemporales));
-                console.log('📝 Delegado guardado temporalmente en localStorage:', datos);
-            }
-
-            // Función para cargar delegados pendientes de guardar
-            cargarDelegadosTemporales() {
-                const delegadosTemporales = JSON.parse(localStorage.getItem('delegados_temporales') || '[]');
-                
-                if (delegadosTemporales.length > 0) {
-                    console.log(`📝 Cargando ${delegadosTemporales.length} delegados temporales`);
-                    
-                    // Intentar re-enviar los delegados pendientes
-                    delegadosTemporales.forEach(async (delegado, index) => {
-                        setTimeout(async () => {
-                            const exito = await this.guardarEnGoogleSheets(
-                                delegado.nombre, 
-                                delegado.departamento, 
-                                delegado.comision
-                            );
-                            
-                            if (exito) {
-                                // Remover del localStorage si se guardó exitosamente
-                                const nuevosTemporales = delegadosTemporales.filter((_, i) => i !== index);
-                                localStorage.setItem('delegados_temporales', JSON.stringify(nuevosTemporales));
-                                console.log('✅ Delegado temporal sincronizado con Google Sheets');
-                            }
-                        }, index * 1000); // Esperar 1 segundo entre cada envío
-                    });
-                }
-            }
-
-            agregarDelegadoLocal(nombre, departamento, comision) {
-                if (!delegadosPorDepartamento[departamento]) {
-                    delegadosPorDepartamento[departamento] = [];
-                }
-
-                const nuevoDelegado = {
-                    nombre: nombre,
-                    comision: comision,
-                    votos: 0,
-                    enlace: `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
-                };
-
-                delegadosPorDepartamento[departamento].push(nuevoDelegado);
-                
-                this.actualizarFiltros();
-                
-                console.log('✅ Delegado agregado localmente:', nuevoDelegado);
-            }
-
-            actualizarFiltros() {
-                const selectFiltro = document.getElementById('departamento-filter');
-                const selectForm = document.getElementById('departamento-delegado');
-                
-                const departamentos = Object.keys(delegadosPorDepartamento).sort();
-                
-                [selectFiltro, selectForm].forEach(select => {
-                    if (select) {
-                        const optionsExistentes = Array.from(select.options).slice(1);
-                        optionsExistentes.forEach(opt => opt.remove());
-                        
-                        departamentos.forEach(depto => {
-                            const option = document.createElement('option');
-                            option.value = depto;
-                            option.textContent = depto;
-                            select.appendChild(option);
-                        });
-                    }
-                });
-            }
-
-            mostrarAlerta(mensaje, tipo) {
-                const alertDiv = document.getElementById('form-alert');
-                if (alertDiv) {
-                    alertDiv.innerHTML = `
-                        <div class="alert alert-${tipo}">
-                            ${mensaje}
-                        </div>
-                    `;
-                }
-            }
-        }
 
         // 🚀 INICIALIZAR TODO
         document.addEventListener('DOMContentLoaded', function() {
