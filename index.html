@@ -2259,6 +2259,7 @@
         // ============================================
 
         class GestorDelegados {
+        
             constructor() {
                 this.sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
                 this.scriptUrl = 'https://script.google.com/macros/s/AKfycbz-JI7iYEpXMMMs1Pi3BAAz5C6iPIbtA-wUwdX_1gLqiWdPEPEJNjQm539ux98aaQoF/exec'; // ← REEMPLAZA ESTO CON TU URL
@@ -2268,9 +2269,43 @@
             init() {
                 this.agregarEventListenersFormulario();
                 this.cargarOpcionesDepartamentos();
+                this.cargarDelegadosGuardados();
                 this.cargarDelegadosTemporales(); // Cargar delegados pendientes de guardar
             }
-
+// Agrega esta función a tu clase GestorDelegados
+cargarDelegadosGuardados() {
+    const delegadosTemporales = JSON.parse(localStorage.getItem('delegados_temporales') || '[]');
+    
+    if (delegadosTemporales.length > 0) {
+        console.log(`📂 Cargando ${delegadosTemporales.length} delegados guardados en localStorage`);
+        
+        delegadosTemporales.forEach(delegado => {
+            // Agregar cada delegado a la estructura de datos
+            if (!delegadosPorDepartamento[delegado.departamento]) {
+                delegadosPorDepartamento[delegado.departamento] = [];
+            }
+            
+            // Verificar si el delegado ya existe para no duplicar
+            const existe = delegadosPorDepartamento[delegado.departamento].some(
+                d => d.nombre === delegado.nombre && d.comision === delegado.comision
+            );
+            
+            if (!existe) {
+                delegadosPorDepartamento[delegado.departamento].push({
+                    nombre: delegado.nombre,
+                    comision: delegado.comision,
+                    votos: delegado.votos || 0,
+                    enlace: delegado.enlace || `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
+                });
+                
+                console.log('✅ Delegado cargado desde localStorage:', delegado.nombre);
+            }
+        });
+        
+        // Actualizar filtros después de cargar
+        this.actualizarFiltros();
+    }
+}
             agregarEventListenersFormulario() {
                 const btnAgregar = document.getElementById('btn-agregar-delegado');
                 const modalForm = document.getElementById('modal-formulario');
