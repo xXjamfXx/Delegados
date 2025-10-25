@@ -2166,61 +2166,66 @@ function mostrarDelegados(nombreDepartamento) {
                     // ============================================
         // 🔗 CONEXIÓN CON GOOGLE SHEETS - CREAR HOJAS
         // ============================================
-                        async function crearHojaEnSheets(nombreDelegado) {
-            try {
-                console.log('🤖 Creando hoja AUTOMÁTICA para:', nombreDelegado);
-                
-                // Nombre limpio para la hoja
-                const nombreHojaLimpio = nombreDelegado
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                    .replace(/[^a-zA-Z0-9 ]/g, '')
-                    .substring(0, 30)
-                    .trim();
-
-                const sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
-                
-                // ✅ TU GOOGLE APPS SCRIPT
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbxGpScTcjjHcuzKpQrpK6FhAHEjJl5fwmN-jNMZLZ8wbXezn83aShLbc2nFS2k96VPh/exec';
-                
-                console.log('🔗 Conectando con Google Apps Script...');
-                
-                const response = await fetch(scriptUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'createSheet',
-                        sheetName: nombreHojaLimpio,
-                        sourceSheetId: sheetId
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error en la conexión con Google Apps Script');
-                }
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    console.log('✅ Hoja creada automáticamente:', nombreHojaLimpio);
-                    return nombreHojaLimpio;
-                } else {
-                    throw new Error(result.error || 'Error desconocido al crear hoja');
-                }
-                
-            } catch (error) {
-                console.error('❌ Error creando hoja automáticamente:', error);
-                
-                // Fallback: instrucciones para crear manualmente
-                const nombreHojaLimpio = nombreDelegado
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                    .replace(/[^a-zA-Z0-9 ]/g, '')
-                    .substring(0, 30)
-                    .trim();
+                 async function crearHojaEnSheets(nombreDelegado) {
+            return new Promise((resolve, reject) => {
+                try {
+                    console.log('🤖 Creando hoja AUTOMÁTICA para:', nombreDelegado);
                     
-                throw new Error(`No se pudo crear la hoja automáticamente. Error: ${error.message}. Crea manualmente una hoja llamada: "${nombreHojaLimpio}"`);
-            }
+                    // Nombre limpio para la hoja
+                    const nombreHojaLimpio = nombreDelegado
+                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                        .replace(/[^a-zA-Z0-9 ]/g, '')
+                        .substring(0, 30)
+                        .trim();
+
+                    const sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
+                    
+                    // ✅ USAR JSONP para evitar CORS
+                    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzAVB05Nqinybe5UWREMQpo3sP6U-JHlGezqZNgzexh4KfcA54r9_huUDyd-rudi-Wt/exec';
+                    
+                    // Crear callback único
+                    const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2);
+                    
+                    // Configurar callback global
+                    window[callbackName] = function(response) {
+                        // Limpiar
+                        delete window[callbackName];
+                        document.getElementById('jsonpScript')?.remove();
+                        
+                        if (response && response.success) {
+                            console.log('✅ Hoja creada automáticamente:', nombreHojaLimpio);
+                            resolve(nombreHojaLimpio);
+                        } else {
+                            reject(new Error(response?.error || 'Error desconocido al crear hoja'));
+                        }
+                    };
+                    
+                    // Crear script JSONP
+                    const script = document.createElement('script');
+                    script.id = 'jsonpScript';
+                    script.src = `${scriptUrl}?callback=${callbackName}&action=createSheet&sheetName=${encodeURIComponent(nombreHojaLimpio)}&sourceSheetId=${sheetId}`;
+                    
+                    script.onerror = function() {
+                        delete window[callbackName];
+                        document.getElementById('jsonpScript')?.remove();
+                        reject(new Error('Error de conexión con Google Apps Script'));
+                    };
+                    
+                    // Agregar timeout
+                    setTimeout(() => {
+                        if (window[callbackName]) {
+                            delete window[callbackName];
+                            document.getElementById('jsonpScript')?.remove();
+                            reject(new Error('Timeout en la conexión'));
+                        }
+                    }, 10000);
+                    
+                    document.head.appendChild(script);
+                    
+                } catch (error) {
+                    reject(new Error(`Error: ${error.message}`));
+                }
+            });
         }
 
                 function agregarDelegadoADatos(nombre, departamento, comision, nombreHoja) {
