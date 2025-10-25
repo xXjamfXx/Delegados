@@ -1642,7 +1642,8 @@ console.log("Centro:", projection.center());
     const deptoMapa = d.properties.NOMBRE_DPT;
     
     // BUSCAR COINCIDENCIA INTELIGENTE
-    let cantidad = 0;
+    let cantidadDelegados = 0;
+    let cantidadFocales = 0;
     let departamentoEncontrado = "";
     
     // Normalizar nombre del mapa (minúsculas, sin tildes)
@@ -1668,14 +1669,39 @@ console.log("Centro:", projection.center());
             nombreNormalizado.includes(nombreDeptoNormalizado) ||
             nombreDeptoNormalizado.includes(nombreNormalizado)) {
             departamentoEncontrado = nombreDepto;
-            cantidad = delegadosPorDepartamento[nombreDepto].length;
+            cantidadDelegados = delegadosPorDepartamento[nombreDepto].length;
+            
+            // BUSCAR TAMBIÉN FOCALES
+            const focales = focalesPorDepartamento[nombreDepto] || focalesPorDepartamento[deptoMapa] || [];
+            cantidadFocales = focales.length;
         }
     });
     
-    console.log("🔍 Mapa:", deptoMapa, "| 📊 Datos:", departamentoEncontrado, "| 👥 Cantidad:", cantidad);
+    // Si no encontró por normalización, buscar directamente
+    if (cantidadDelegados === 0 && cantidadFocales === 0) {
+        cantidadDelegados = delegadosPorDepartamento[deptoMapa]?.length || 0;
+        cantidadFocales = focalesPorDepartamento[deptoMapa]?.length || 0;
+    }
+    
+    console.log("🔍 Mapa:", deptoMapa, "| 👥 Delegados:", cantidadDelegados, "| 🎯 Focales:", cantidadFocales);
+    
+    // CONSTRUIR TEXTO DEL TOOLTIP
+    let tooltipText = `<strong>${deptoMapa}</strong>`;
+    
+    if (cantidadDelegados > 0) {
+        tooltipText += `<br/>${cantidadDelegados} delegado${cantidadDelegados !== 1 ? 's' : ''}`;
+    }
+    
+    if (cantidadFocales > 0) {
+        tooltipText += `<br/>${cantidadFocales} focal${cantidadFocales !== 1 ? 'es' : ''}`;
+    }
+    
+    if (cantidadDelegados === 0 && cantidadFocales === 0) {
+        tooltipText += `<br/>Sin delegados ni focales`;
+    }
     
     tooltip.transition().duration(200).style("opacity", .9);
-    tooltip.html(`<strong>${deptoMapa}</strong><br/>${cantidad} delegado${cantidad !== 1 ? 's' : ''}`)
+    tooltip.html(tooltipText)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 28) + "px");
 
