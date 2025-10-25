@@ -610,32 +610,62 @@
         // NUEVA ESTRUCTURA TEMPORAL
         const nuevosDatos = {};
 
-        for (let i = 1; i < filas.length; i++) {
-            const fila = filas[i];
-            const celdas = fila.c || [];
+        // Si solo hay 1 fila, probablemente los datos están en columnas
+        if (filas.length === 1) {
+            console.log("🔄 Detectado formato horizontal - procesando columnas...");
+            const primeraFila = filas[0];
+            const celdas = primeraFila.c || [];
             
-            console.log(`📝 Procesando fila ${i}:`, celdas);
-            
-            const departamento = (celdas[0]?.v || '').toString().trim();
-            const nombre = (celdas[1]?.v || '').toString().trim();
-            const comision = (celdas[2]?.v || '').toString().trim();
-            const votos = parseInt(celdas[3]?.v) || 0;
-
-            console.log(`   📍 Departamento: "${departamento}", Nombre: "${nombre}"`);
-
-            if (departamento && nombre) {
-                if (!nuevosDatos[departamento]) {
-                    nuevosDatos[departamento] = [];
+            // Procesar cada columna como un departamento
+            for (let i = 0; i < celdas.length; i++) {
+                const celda = celdas[i];
+                if (celda && celda.v) {
+                    const valor = celda.v.toString().trim();
+                    console.log(`📝 Columna ${i}: "${valor}"`);
+                    
+                    // Asumir que la primera columna es el encabezado "Departamento"
+                    if (i === 0 && valor === "Departamento") {
+                        console.log("✅ Encabezado 'Departamento' encontrado");
+                        continue;
+                    }
+                    
+                    // Aquí deberías procesar los datos según tu estructura real
+                    // Por ahora, solo para debug
+                    if (valor && valor !== "Departamento") {
+                        nuevosDatos[valor] = [{nombre: "Delegado de prueba", comision: "Comisión", votos: 0}];
+                    }
                 }
+            }
+        } else {
+            // Formato vertical tradicional (filas)
+            console.log("🔄 Procesando formato vertical...");
+            for (let i = 1; i < filas.length; i++) {
+                const fila = filas[i];
+                const celdas = fila.c || [];
                 
-                nuevosDatos[departamento].push({
-                    nombre: nombre,
-                    comision: comision,
-                    votos: votos,
-                    enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
-                });
+                console.log(`📝 Procesando fila ${i}:`, celdas);
                 
-                console.log(`   ✅ Agregado delegado: ${nombre} a ${departamento}`);
+                const departamento = (celdas[0]?.v || '').toString().trim();
+                const nombre = (celdas[1]?.v || '').toString().trim();
+                const comision = (celdas[2]?.v || '').toString().trim();
+                const votos = parseInt(celdas[3]?.v) || 0;
+
+                console.log(`   📍 Departamento: "${departamento}", Nombre: "${nombre}"`);
+
+                if (departamento && nombre) {
+                    if (!nuevosDatos[departamento]) {
+                        nuevosDatos[departamento] = [];
+                    }
+                    
+                    nuevosDatos[departamento].push({
+                        nombre: nombre,
+                        comision: comision,
+                        votos: votos,
+                        enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
+                    });
+                    
+                    console.log(`   ✅ Agregado delegado: ${nombre} a ${departamento}`);
+                }
             }
         }
 
@@ -649,10 +679,6 @@
         
         if (Object.keys(delegadosPorDepartamento).length === 0) {
             console.log("🚨 ALERTA: NO SE CARGÓ NINGÚN DEPARTAMENTO");
-            console.log("Posibles causas:");
-            console.log("1. El Sheets está vacío");
-            console.log("2. Las columnas tienen nombres diferentes");
-            console.log("3. Problema de permisos del Sheets");
         } else {
             Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
                 console.log(`${depto}: ${delegadosPorDepartamento[depto].length} delegados`);
