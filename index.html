@@ -583,77 +583,71 @@
             // 🔗 CONEXIÓN CON GOOGLE SHEETS
             // ============================================
             async function cargarDatosDesdeSheets() {
-                try {
-                    syncStatus.className = 'sync-status sync-loading';
-                    syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
+    const loadingOverlay = document.getElementById('loading-overlay');
+    
+    try {
+        loadingOverlay.style.display = 'flex';
+        syncStatus.className = 'sync-status sync-loading';
+        syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
 
-                    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) {
-                        throw new Error('Error al cargar el Google Sheets');
-                    }
-                    
-                    const text = await response.text();
-                    const json = JSON.parse(text.substring(47).slice(0, -2));
-                    const filas = json.table.rows || [];
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error('Error al cargar el Google Sheets');
+        }
+        
+        const text = await response.text();
+        const json = JSON.parse(text.substring(47).slice(0, -2));
+        const filas = json.table.rows || [];
 
-                    // Reiniciar datos
-                    delegadosPorDepartamento = {};
+        // Crear NUEVO objeto para evitar problemas
+        const nuevosDatos = {};
 
-                    // Procesar filas (empezando desde la fila 1 para saltar encabezados)
-                    for (let i = 1; i < filas.length; i++) {
-                        const fila = filas[i];
-                        const celdas = fila.c || [];
-                        
-                        // Asumir columnas: [Departamento, Nombre, Comisión, Votos]
-                        const departamento = celdas[0]?.v || '';
-                        const nombre = celdas[1]?.v || '';
-                        const comision = celdas[2]?.v || '';
-                        const votos = parseInt(celdas[3]?.v) || 0;
+        // Procesar filas (empezando desde la fila 1 para saltar encabezados)
+        for (let i = 1; i < filas.length; i++) {
+            const fila = filas[i];
+            const celdas = fila.c || [];
+            
+            // Asumir columnas: [Departamento, Nombre, Comisión, Votos]
+            const departamento = celdas[0]?.v || '';
+            const nombre = celdas[1]?.v || '';
+            const comision = celdas[2]?.v || '';
+            const votos = parseInt(celdas[3]?.v) || 0;
 
-                        // Solo procesar si tiene datos básicos
-                        if (departamento && nombre) {
-                            if (!delegadosPorDepartamento[departamento]) {
-                                delegadosPorDepartamento[departamento] = [];
-                            }
-                            
-                            delegadosPorDepartamento[departamento].push({
-                                nombre: nombre,
-                                comision: comision,
-                                votos: votos,
-                                enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
-                            });
-                        }
-                    }
-
-                    syncStatus.className = 'sync-status sync-success';
-const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
-syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados cargados - Próxima actualización en 60 segundos`;
-
-// DEBUG COMPLETO de datos cargados
-console.log("=== 📊 DATOS CARGADOS DESDE SHEETS ===");
-console.log("Total delegados:", totalDelegados);
-console.log("Total departamentos con datos:", Object.keys(delegadosPorDepartamento).length);
-
-Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
-    const delegados = delegadosPorDepartamento[depto];
-    console.log(`🏛️ ${depto}: ${delegados.length} delegados`);
-    delegados.forEach(delegado => {
-        console.log(`   👤 ${delegado.nombre} - ${delegado.comision} - ${delegado.votos} votos`);
-    });
-});
-console.log("=== ✅ FIN DATOS CARGADOS ===");
-
-                } catch (error) {
-                    console.error('❌ Error cargando datos:', error);
-                    syncStatus.className = 'sync-status sync-error';
-                    syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
-                } finally {
-                    // OCULTAR LOADING (siempre se ejecuta)
-                    loadingOverlay.style.display = 'none';
+            // Solo procesar si tiene datos básicos
+            if (departamento && nombre) {
+                if (!nuevosDatos[departamento]) {
+                    nuevosDatos[departamento] = [];
                 }
+                
+                nuevosDatos[departamento].push({
+                    nombre: nombre,
+                    comision: comision,
+                    votos: votos,
+                    enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
+                });
             }
+        }
+
+        // ACTUALIZAR los datos globales DE UNA VEZ
+        delegadosPorDepartamento = nuevosDatos;
+
+        syncStatus.className = 'sync-status sync-success';
+        const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
+        syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados cargados - Próxima actualización en 60 segundos`;
+
+        console.log('📊 Datos cargados correctamente');
+
+    } catch (error) {
+        console.error('❌ Error cargando datos:', error);
+        syncStatus.className = 'sync-status sync-error';
+        syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
+    } finally {
+        // OCULTAR LOADING (siempre se ejecuta)
+        loadingOverlay.style.display = 'none';
+    }
+}
 
             // Cargar el mapa de Colombia
             function cargarMapaColombia() {
@@ -764,24 +758,16 @@ console.log("=== ✅ FIN DATOS CARGADOS ===");
             // Función COMPLETA para mapear nombres de TODOS los departamentos
 // Función COMPLETA para mapear TODOS los departamentos
 // Función COMPLETA que maneja mayúsculas, minúsculas y tildes
+// Función COMPLETA para TODOS los departamentos
 function mapearNombreDepartamento(nombreGeoJSON) {
-    // Función para normalizar texto (quitar tildes, mayúsculas, etc.)
-    function normalizarTexto(texto) {
-        return texto
-            .toLowerCase()
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quitar tildes
-            .replace(/[^a-z0-9 ]/g, '') // solo letras y números
-            .replace(/\s+/g, ' ') // espacios múltiples a simple
-            .trim();
-    }
-
-    // Mapeo completo de TODOS los departamentos (Mapa -> Sheets)
-    const mapeoCompleto = {
+    // MAPEO COMPLETO Y DEFINITIVO
+    const mapeoDefinitivo = {
+        // Mapa Físico -> Google Sheets
         "Amazonas": "Amazonas",
-        "Antioquia": "ANTIOQUIA", 
+        "Antioquia": "Antioquia", 
         "Arauca": "Arauca",
         "Atlántico": "Atlántico",
-        "Bogotá": "SANTAFE DE BOGOTA D.C",
+        "Bogotá": "Bogotá D.C.",
         "Bolívar": "Bolívar",
         "Boyacá": "Boyacá",
         "Caldas": "Caldas",
@@ -809,48 +795,11 @@ function mapearNombreDepartamento(nombreGeoJSON) {
         "Valle del Cauca": "Valle del Cauca",
         "Vaupés": "Vaupés",
         "Vichada": "Vichada",
-        "Archipiélago de San Andrés, Providencia y Santa Catalina": "ARCHIPIELAGO DE SAN ANDRES PROVIDENCIA Y SANTA CATALINA",
-        "San Andrés": "ARCHIPIELAGO DE SAN ANDRES PROVIDENCIA Y SANTA CATALINA"
+        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés",
+        "San Andrés": "San Andrés"
     };
     
-    // 1. Buscar en el mapeo completo
-    if (mapeoCompleto[nombreGeoJSON]) {
-        const resultado = mapeoCompleto[nombreGeoJSON];
-        console.log(`✅ Mapeo directo: "${nombreGeoJSON}" -> "${resultado}"`);
-        return resultado;
-    }
-    
-    // 2. Si no está en el mapeo, buscar coincidencia exacta en los datos
-    const departamentosEnDatos = Object.keys(delegadosPorDepartamento);
-    for (const depto of departamentosEnDatos) {
-        if (depto === nombreGeoJSON) {
-            console.log(`✅ Coincidencia exacta: "${nombreGeoJSON}" -> "${depto}"`);
-            return depto;
-        }
-    }
-    
-    // 3. Buscar ignorando mayúsculas/minúsculas
-    const nombreBuscado = nombreGeoJSON.toUpperCase();
-    for (const depto of departamentosEnDatos) {
-        if (depto.toUpperCase() === nombreBuscado) {
-            console.log(`✅ Coincidencia por mayúsculas: "${nombreGeoJSON}" -> "${depto}"`);
-            return depto;
-        }
-    }
-    
-    // 4. Buscar ignorando tildes y mayúsculas (BÚSQUEDA MÁS AVANZADA)
-    const nombreNormalizado = normalizarTexto(nombreGeoJSON);
-    for (const depto of departamentosEnDatos) {
-        const deptoNormalizado = normalizarTexto(depto);
-        if (deptoNormalizado === nombreNormalizado) {
-            console.log(`✅ Coincidencia por normalización: "${nombreGeoJSON}" -> "${depto}"`);
-            return depto;
-        }
-    }
-    
-    // 5. Si no encuentra nada, devolver el original
-    console.log(`❌ No se encontró coincidencia para: "${nombreGeoJSON}"`);
-    return nombreGeoJSON;
+    return mapeoDefinitivo[nombreGeoJSON] || nombreGeoJSON;
 }
 
             // Cargar opciones de filtros
