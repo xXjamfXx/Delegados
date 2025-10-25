@@ -2463,46 +2463,8 @@ function calcularTotalVotos() {
 
 function actualizarContadorTotal() {
     const total = calcularTotalVotos();
-    
-    let counter = document.getElementById('total-votes-counter');
-    if (!counter) {
-        counter = document.createElement('div');
-        counter.id = 'total-votes-counter';
-        counter.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #003366, #004d99);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 10000;
-            font-size: 14px;
-            font-weight: bold;
-            border: 3px solid #ffd700;
-            text-align: center;
-            min-width: 180px;
-        `;
-        document.body.appendChild(counter);
-    }
-    
-    const ahora = new Date();
-    const hora = ahora.getHours().toString().padStart(2, '0');
-    const minuto = ahora.getMinutes().toString().padStart(2, '0');
-    
-    counter.innerHTML = `
-        <div style="font-size: 11px; opacity: 0.9;">TOTAL VOTOS</div>
-        <div style="font-size: 22px; margin: 5px 0; color: #ffd700;">${total.toLocaleString()}</div>
-        <div style="font-size: 10px; opacity: 0.7;">Actualizado: ${hora}:${minuto}</div>
-        <div style="font-size: 9px; opacity: 0.6; margin-top: 5px;">Haz clic para detalles</div>
-    `;
-    
-    // Agregar click para ver detalles en consola
-    counter.onclick = function() {
-        console.log("🔍 Detalles del conteo - Abre la consola (F12)");
-        calcularTotalVotos();
-    };
+    console.log("🎯 Total de votos calculado:", total, "votos");
+    // Solo muestra en consola, no en pantalla
 }
 
 // Función para DEBUG - mostrar todos los elementos con votos
