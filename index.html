@@ -1711,41 +1711,37 @@ console.log("Centro:", projection.center());
   .on("mouseover", function(event, d) {
     const deptoMapa = d.properties.NOMBRE_DPT;
     
-    let cantidadDelegados = 0;
+    // CONTADORES DIRECTOS - MÁS SIMPLE
+    const delegados = delegadosPorDepartamento[deptoMapa] || [];
+    const focales = focalesPorDepartamento[deptoMapa] || [];
+    
+    const cantidadDelegados = delegados.length;
     let cantidadFocales = 0;
     let cantidadLideres = 0;
     
-    // BUSCAR DELEGADOS
-    cantidadDelegados = delegadosPorDepartamento[deptoMapa]?.length || 0;
+    // CONTAR FOCALES VS LÍDERES
+    focales.forEach(focal => {
+        if (focal.grupo && focal.grupo.includes("Lider")) {
+            cantidadLideres++;
+        } else {
+            cantidadFocales++;
+        }
+    });
     
-    // BUSCAR FOCALES Y LÍDERES
-    const focales = focalesPorDepartamento[deptoMapa] || [];
-    cantidadFocales = focales.filter(f => !f.grupo.includes("Lider")).length;
-    cantidadLideres = focales.filter(f => f.grupo.includes("Lider")).length;
+    console.log("📍", deptoMapa, "| 👥 Delegados:", cantidadDelegados, "| 🎯 Focales:", cantidadFocales, "| 👑 Líderes:", cantidadLideres);
     
-    console.log("🔍 Mapa:", deptoMapa, "| 👥 Delegados:", cantidadDelegados, "| 🎯 Focales:", cantidadFocales, "| 👑 Líderes:", cantidadLideres);
+    // TOOLTIP MEJORADO
+    let tooltipHTML = `<strong>${deptoMapa}</strong>`;
     
-    // CONSTRUIR TEXTO DEL TOOLTIP
-    let tooltipText = `<strong>${deptoMapa}</strong>`;
-    
-    if (cantidadDelegados > 0) {
-        tooltipText += `<br/>${cantidadDelegados} delegado${cantidadDelegados !== 1 ? 's' : ''}`;
-    }
-    
-    if (cantidadFocales > 0) {
-        tooltipText += `<br/>${cantidadFocales} focal${cantidadFocales !== 1 ? 'es' : ''}`;
-    }
-    
-    if (cantidadLideres > 0) {
-        tooltipText += `<br/>${cantidadLideres} líder${cantidadLideres !== 1 ? 'es' : ''}`;
-    }
-    
+    if (cantidadDelegados > 0) tooltipHTML += `<br/>${cantidadDelegados} delegado${cantidadDelegados !== 1 ? 's' : ''}`;
+    if (cantidadFocales > 0) tooltipHTML += `<br/>${cantidadFocales} focal${cantidadFocales !== 1 ? 'es' : ''}`;
+    if (cantidadLideres > 0) tooltipHTML += `<br/>${cantidadLideres} líder${cantidadLideres !== 1 ? 'es' : ''}`;
     if (cantidadDelegados === 0 && cantidadFocales === 0 && cantidadLideres === 0) {
-        tooltipText += `<br/>Sin delegados, focales ni líderes`;
+        tooltipHTML += `<br/>Sin delegados, focales ni líderes`;
     }
     
     tooltip.transition().duration(200).style("opacity", .9);
-    tooltip.html(tooltipText)
+    tooltip.html(tooltipHTML)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 28) + "px");
 
