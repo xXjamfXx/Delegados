@@ -472,7 +472,7 @@
         <!-- 🎯 SISTEMA DE FILTROS -->
         <!-- =============================== -->
         <section class="filters-section">
-            <h2>Lideres por Departamento</h2>
+            <h2>Delegados por Departamento</h2>
             <div id="sync-status" class="sync-status sync-loading">
                 🔄 Cargando datos desde Google Sheets...
             </div>
@@ -535,7 +535,7 @@
         // 🔗 CONFIGURACIÓN - TU GOOGLE SHEETS
         // ============================================
         const SHEET_ID = '1EMWCl1lWkDncMpNxj7NnsnXMd9JoTmhw-FfbXa_J7QM';
-        const SHEET_NAME = 'Sheet1'; // Cambia esto si usas otra hoja
+        const SHEET_NAME = 'Sheet1';
 
         // Variable global para almacenar los delegados
         let delegadosPorDepartamento = {};
@@ -561,16 +561,13 @@
 
             // Inicializar la aplicación
             async function inicializar() {
-                // Mostrar loading inmediatamente
                 loadingOverlay.style.display = 'flex';
-                
                 await cargarDatosDesdeSheets();
                 cargarFiltros();
                 cargarMapaColombia();
                 agregarEventListeners();
                 actualizarResultados();
                 
-                // Programar actualización automática cada 60 segundos
                 setInterval(async () => {
                     await cargarDatosDesdeSheets();
                     cargarFiltros();
@@ -580,74 +577,121 @@
             }
 
             // ============================================
-            // 🔗 CONEXIÓN CON GOOGLE SHEETS
+            // 🔗 CONEXIÓN CON GOOGLE SHEETS - VERSIÓN ESTABLE
             // ============================================
             async function cargarDatosDesdeSheets() {
-    const loadingOverlay = document.getElementById('loading-overlay');
-    
-    try {
-        loadingOverlay.style.display = 'flex';
-        syncStatus.className = 'sync-status sync-loading';
-        syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
-
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error('Error al cargar el Google Sheets');
-        }
-        
-        const text = await response.text();
-        const json = JSON.parse(text.substring(47).slice(0, -2));
-        const filas = json.table.rows || [];
-
-        // Crear NUEVO objeto para evitar problemas
-        const nuevosDatos = {};
-
-        // Procesar filas (empezando desde la fila 1 para saltar encabezados)
-        for (let i = 1; i < filas.length; i++) {
-            const fila = filas[i];
-            const celdas = fila.c || [];
-            
-            // Asumir columnas: [Departamento, Nombre, Comisión, Votos]
-            const departamento = celdas[0]?.v || '';
-            const nombre = celdas[1]?.v || '';
-            const comision = celdas[2]?.v || '';
-            const votos = parseInt(celdas[3]?.v) || 0;
-
-            // Solo procesar si tiene datos básicos
-            if (departamento && nombre) {
-                if (!nuevosDatos[departamento]) {
-                    nuevosDatos[departamento] = [];
-                }
+                const loadingOverlay = document.getElementById('loading-overlay');
                 
-                nuevosDatos[departamento].push({
-                    nombre: nombre,
-                    comision: comision,
-                    votos: votos,
-                    enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
-                });
+                try {
+                    syncStatus.className = 'sync-status sync-loading';
+                    syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
+
+                    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error('Error al cargar el Google Sheets');
+                    }
+                    
+                    const text = await response.text();
+                    const json = JSON.parse(text.substring(47).slice(0, -2));
+                    const filas = json.table.rows || [];
+
+                    // NUEVA ESTRUCTURA TEMPORAL
+                    const nuevosDatos = {};
+
+                    for (let i = 1; i < filas.length; i++) {
+                        const fila = filas[i];
+                        const celdas = fila.c || [];
+                        
+                        const departamento = (celdas[0]?.v || '').toString().trim();
+                        const nombre = (celdas[1]?.v || '').toString().trim();
+                        const comision = (celdas[2]?.v || '').toString().trim();
+                        const votos = parseInt(celdas[3]?.v) || 0;
+
+                        if (departamento && nombre) {
+                            if (!nuevosDatos[departamento]) {
+                                nuevosDatos[departamento] = [];
+                            }
+                            
+                            nuevosDatos[departamento].push({
+                                nombre: nombre,
+                                comision: comision,
+                                votos: votos,
+                                enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
+                            });
+                        }
+                    }
+
+                    // ACTUALIZACIÓN ATÓMICA
+                    delegadosPorDepartamento = nuevosDatos;
+
+                    // VERIFICACIÓN DE DATOS
+                    console.log("=== 📊 DATOS CARGADOS ===");
+                    console.log("Total departamentos:", Object.keys(delegadosPorDepartamento).length);
+                    console.log("Total delegados:", Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0));
+                    Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
+                        console.log(`${depto}: ${delegadosPorDepartamento[depto].length} delegados`);
+                    });
+                    console.log("=== FIN DATOS ===");
+
+                    syncStatus.className = 'sync-status sync-success';
+                    const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
+                    syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados - Actualización automática activada`;
+
+                } catch (error) {
+                    console.error('❌ Error cargando datos:', error);
+                    syncStatus.className = 'sync-status sync-error';
+                    syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
+                } finally {
+                    loadingOverlay.style.display = 'none';
+                }
             }
-        }
 
-        // ACTUALIZAR los datos globales DE UNA VEZ
-        delegadosPorDepartamento = nuevosDatos;
-
-        syncStatus.className = 'sync-status sync-success';
-        const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
-        syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados cargados - Próxima actualización en 60 segundos`;
-
-        console.log('📊 Datos cargados correctamente');
-
-    } catch (error) {
-        console.error('❌ Error cargando datos:', error);
-        syncStatus.className = 'sync-status sync-error';
-        syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
-    } finally {
-        // OCULTAR LOADING (siempre se ejecuta)
-        loadingOverlay.style.display = 'none';
-    }
-}
+            // ============================================
+            // 🗺️ FUNCIÓN DE MAPEO COMPLETA
+            // ============================================
+            function mapearNombreDepartamento(nombreGeoJSON) {
+                // MAPEO COMPLETO DE TODOS LOS DEPARTAMENTOS
+                const mapeoCompleto = {
+                    "Amazonas": "Amazonas",
+                    "Antioquia": "Antioquia", 
+                    "Arauca": "Arauca",
+                    "Atlántico": "Atlántico",
+                    "Bogotá": "Bogotá D.C.",
+                    "Bolívar": "Bolívar",
+                    "Boyacá": "Boyacá",
+                    "Caldas": "Caldas",
+                    "Caquetá": "Caquetá", 
+                    "Casanare": "Casanare",
+                    "Cauca": "Cauca",
+                    "Cesar": "Cesar",
+                    "Chocó": "Chocó",
+                    "Córdoba": "Córdoba",
+                    "Cundinamarca": "Cundinamarca",
+                    "Guainía": "Guainía",
+                    "Guaviare": "Guaviare",
+                    "Huila": "Huila", 
+                    "La Guajira": "La Guajira",
+                    "Magdalena": "Magdalena",
+                    "Meta": "Meta",
+                    "Nariño": "Nariño",
+                    "Norte de Santander": "Norte de Santander",
+                    "Putumayo": "Putumayo",
+                    "Quindío": "Quindío",
+                    "Risaralda": "Risaralda", 
+                    "Santander": "Santander",
+                    "Sucre": "Sucre",
+                    "Tolima": "Tolima",
+                    "Valle del Cauca": "Valle del Cauca",
+                    "Vaupés": "Vaupés",
+                    "Vichada": "Vichada",
+                    "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés",
+                    "San Andrés": "San Andrés"
+                };
+                
+                return mapeoCompleto[nombreGeoJSON] || nombreGeoJSON;
+            }
 
             // Cargar el mapa de Colombia
             function cargarMapaColombia() {
@@ -661,18 +705,15 @@
 
                 const g = svg.append("g");
 
-                // Crear tooltip
                 const tooltip = d3.select("body")
                     .append("div")
                     .attr("class", "map-tooltip")
                     .style("opacity", 0);
 
-                // Cargar el GeoJSON
                 d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw/3aadedf47badbdac823b00dbe259f6bc6d9e1899/colombia.geo.json")
                     .then(function(colombia) {
                         console.log("✅ GeoJSON cargado:", colombia);
                         
-                        // Proyección
                         const isMobile = window.innerWidth < 768;
                         const baseScale = isMobile ? 2000 : 3000;
 
@@ -690,7 +731,6 @@
 
                         const path = d3.geoPath().projection(projection);
 
-                        // DIBUJAR FORMAS PRIMERO (paths)
                         g.selectAll("path")
                             .data(colombia.features)
                             .enter()
@@ -703,7 +743,8 @@
                                 const departamentoEnDatos = mapearNombreDepartamento(deptoMapa);
                                 const delegados = delegadosPorDepartamento[departamentoEnDatos] || [];
                                 const cantidad = delegados.length;
-                            console.log(`🖱️ Mouse over: ${deptoMapa} -> ${departamentoEnDatos} -> ${cantidad} delegados`);
+                                
+                                console.log(`🖱️ ${deptoMapa} -> ${departamentoEnDatos}: ${cantidad} delegados`);
                                 
                                 tooltip.transition().duration(200).style("opacity", .9);
                                 tooltip.html(`<strong>${deptoMapa}</strong><br/>${cantidad} delegado${cantidad !== 1 ? 's' : ''}`)
@@ -720,12 +761,10 @@
                                 const depto = d.properties.NOMBRE_DPT;
                                 mostrarDelegados(depto);
                                 
-                                // Resaltar selección
                                 g.selectAll(".department-path").style("fill", "#ff9c03");
                                 d3.select(this).style("fill", "#cc7d02");
                             });
 
-                        // LUEGO ETIQUETAS
                         g.selectAll("text")
                             .data(colombia.features)
                             .enter()
@@ -754,99 +793,11 @@
                     });
             }
 
-            // Función para mapear nombres entre GeoJSON y datos
-            // Función COMPLETA para mapear nombres de TODOS los departamentos
-// Función COMPLETA para mapear TODOS los departamentos
-// Función COMPLETA que maneja mayúsculas, minúsculas y tildes
-// Función COMPLETA para TODOS los departamentos
-// Función COMPLETA con mayúsculas, tildes y todo
-// Función COMPLETA con todos los departamentos + mayúsculas + tildes
-function mapearNombreDepartamento(nombreGeoJSON) {// Función COMPLETA con TODOS los departamentos de Colombia
-function mapearNombreDepartamento(nombreGeoJSON) {
-    // MAPEO COMPLETO DE LOS 32 DEPARTAMENTOS + DC
-    const mapeoCompleto = {
-        // Nombres del MAPA -> Nombres del GOOGLE SHEETS
-        "Amazonas": "Amazonas",
-        "Antioquia": "Antioquia", 
-        "Arauca": "Arauca",
-        "Atlántico": "Atlántico",
-        "Bogotá": "Bogotá D.C.",
-        "Bolívar": "Bolívar",
-        "Boyacá": "Boyacá",
-        "Caldas": "Caldas",
-        "Caquetá": "Caquetá", 
-        "Casanare": "Casanare",
-        "Cauca": "Cauca",
-        "Cesar": "Cesar",
-        "Chocó": "Chocó",
-        "Córdoba": "Córdoba",
-        "Cundinamarca": "Cundinamarca",
-        "Guainía": "Guainía",
-        "Guaviare": "Guaviare",
-        "Huila": "Huila", 
-        "La Guajira": "La Guajira",
-        "Magdalena": "Magdalena",
-        "Meta": "Meta",
-        "Nariño": "Nariño",
-        "Norte de Santander": "Norte de Santander",
-        "Putumayo": "Putumayo",
-        "Quindío": "Quindío",
-        "Risaralda": "Risaralda", 
-        "Santander": "Santander",
-        "Sucre": "Sucre",
-        "Tolima": "Tolima",
-        "Valle del Cauca": "Valle del Cauca",
-        "Vaupés": "Vaupés",
-        "Vichada": "Vichada",
-        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés",
-        "San Andrés": "San Andrés",
-        
-        // También manejar nombres en MAYÚSCULAS del mapa
-        "AMAZONAS": "Amazonas",
-        "ANTIOQUIA": "Antioquia", 
-        "ARAUCA": "Arauca", 
-        "ATLÁNTICO": "Atlántico",
-        "BOGOTÁ": "Bogotá D.C.",
-        "BOLÍVAR": "Bolívar",
-        "BOYACÁ": "Boyacá",
-        "CALDAS": "Caldas",
-        "CAQUETÁ": "Caquetá",
-        "CASANARE": "Casanare",
-        "CAUCA": "Cauca", 
-        "CESAR": "Cesar",
-        "CHOCÓ": "Chocó",
-        "CÓRDOBA": "Córdoba",
-        "CUNDINAMARCA": "Cundinamarca",
-        "GUAINÍA": "Guainía",
-        "GUAVIARE": "Guaviare",
-        "HUILA": "Huila",
-        "LA GUAJIRA": "La Guajira", 
-        "MAGDALENA": "Magdalena",
-        "META": "Meta",
-        "NARIÑO": "Nariño",
-        "NORTE DE SANTANDER": "Norte de Santander", 
-        "PUTUMAYO": "Putumayo",
-        "QUINDÍO": "Quindío",
-        "RISARALDA": "Risaralda",
-        "SANTANDER": "Santander",
-        "SUCRE": "Sucre", 
-        "TOLIMA": "Tolima",
-        "VALLE DEL CAUCA": "Valle del Cauca",
-        "VAUPÉS": "Vaupés",
-        "VICHADA": "Vichada",
-        "ARCHIPIÉLAGO DE SAN ANDRÉS, PROVIDENCIA Y SANTA CATALINA": "San Andrés",
-        "SAN ANDRÉS": "San Andrés"
-    };
-    
-    return mapeoCompleto[nombreGeoJSON] || nombreGeoJSON;
-}
-
             // Cargar opciones de filtros
             function cargarFiltros() {
                 const departamentosData = Object.keys(delegadosPorDepartamento).sort();
                 let comisionesUnicas = new Set();
 
-                // Cargar comisiones únicas
                 Object.values(delegadosPorDepartamento).forEach(delegados => {
                     delegados.forEach(delegado => {
                         if (delegado.comision) {
@@ -855,7 +806,6 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                     });
                 });
 
-                // Agregar opciones de comisión al select
                 comisionFilter.innerHTML = '<option value="">Todas las comisiones</option>';
                 [...comisionesUnicas].sort().forEach(comision => {
                     const option = document.createElement('option');
@@ -864,7 +814,6 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                     comisionFilter.appendChild(option);
                 });
 
-                // Agregar opciones de departamento al select
                 departamentoFilter.innerHTML = '<option value="">Todos los departamentos</option>';
                 departamentosData.forEach(depto => {
                     const option = document.createElement('option');
@@ -876,52 +825,33 @@ function mapearNombreDepartamento(nombreGeoJSON) {
 
             // Actualizar mapa basado en filtros
             function actualizarMapaConFiltros() {
-    if (!mapaCargado) return;
+                if (!mapaCargado) return;
 
-    const searchTerm = searchInput.value.toLowerCase();
-    const comisionSeleccionada = comisionFilter.value;
-    const departamentoSeleccionado = departamentoFilter.value;
+                const searchTerm = searchInput.value.toLowerCase();
+                const comisionSeleccionada = comisionFilter.value;
+                const departamentoSeleccionado = departamentoFilter.value;
 
-    console.log("=== 🔍 ACTUALIZANDO MAPA CON FILTROS ===");
-    console.log("Término búsqueda:", searchTerm);
-    console.log("Comisión seleccionada:", comisionSeleccionada);
-    console.log("Departamento seleccionado:", departamentoSeleccionado);
-
-    d3.selectAll(".department-path")
-        .classed("filtrado", function(d) {
-            const deptoMapa = d.properties.NOMBRE_DPT;
-            const departamentoEnDatos = mapearNombreDepartamento(deptoMapa);
-            const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
-            
-            console.log(`📍 ${deptoMapa} -> ${departamentoEnDatos}: ${delegadosDelDepto.length} delegados`);
-            
-            // Si no hay delegados en este departamento, mostrar tenue
-            if (delegadosDelDepto.length === 0) {
-                console.log(`   ❌ SIN DELEGADOS`);
-                return true;
+                d3.selectAll(".department-path")
+                    .classed("filtrado", function(d) {
+                        const deptoMapa = d.properties.NOMBRE_DPT;
+                        const departamentoEnDatos = mapearNombreDepartamento(deptoMapa);
+                        const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
+                        
+                        if (delegadosDelDepto.length === 0) {
+                            return true;
+                        }
+                        
+                        const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
+                            const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
+                            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+                            const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
+                            
+                            return coincideNombre && coincideComision && coincideDepartamento;
+                        });
+                        
+                        return !tieneDelegadosFiltrados;
+                    });
             }
-            
-            // Aplicar filtros
-            const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
-                const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
-                const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
-                
-                const resultado = coincideNombre && coincideComision && coincideDepartamento;
-                
-                if (resultado) {
-                    console.log(`   ✅ COINCIDE: ${delegado.nombre}`);
-                }
-                
-                return resultado;
-            });
-            
-            console.log(`   📊 FILTRADO: ${!tieneDelegadosFiltrados}`);
-            return !tieneDelegadosFiltrados;
-        });
-    
-    console.log("=== ✅ FIN ACTUALIZACIÓN MAPA ===");
-}
 
             // Agregar event listeners
             function agregarEventListeners() {
@@ -942,7 +872,6 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                     actualizarMapaConFiltros();
                 });
 
-                // Redimensionar mapa cuando cambie el tamaño de la ventana
                 window.addEventListener('resize', function() {
                     if (mapaCargado) {
                         cargarMapaColombia();
@@ -975,7 +904,6 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                     }
                 });
 
-                // Actualizar texto de resultados
                 let resultadosTexto = `Mostrando ${delegadosFiltrados} delegado${delegadosFiltrados !== 1 ? 's' : ''}`;
                 if (comisionSeleccionada) resultadosTexto += ` en ${comisionSeleccionada}`;
                 if (departamentoSeleccionado) resultadosTexto += ` de ${departamentoSeleccionado}`;
@@ -985,58 +913,47 @@ function mapearNombreDepartamento(nombreGeoJSON) {
             }
 
             // Mostrar delegados en modal
-            // Mostrar delegados en modal - VERSIÓN CORREGIDA
-// Mostrar delegados en modal - VERSIÓN SIN FILTROS
-function mostrarDelegados(nombreDepartamento) {
-    console.log("🔍 Mostrando delegados para:", nombreDepartamento);
-    
-    const departamentoFinal = mapearNombreDepartamento(nombreDepartamento);
-    const delegados = delegadosPorDepartamento[departamentoFinal] || [];
-    
-    console.log("📊 Delegados encontrados:", delegados);
-    console.log("🏛️ Departamento en datos:", departamentoFinal);
-    console.log("👥 Cantidad de delegados:", delegados.length);
+            function mostrarDelegados(nombreDepartamento) {
+                const departamentoFinal = mapearNombreDepartamento(nombreDepartamento);
+                const delegados = delegadosPorDepartamento[departamentoFinal] || [];
 
-    // MOSTRAR TODOS LOS DELEGADOS SIN FILTROS
-    const delegadosAMostrar = delegados;
+                console.log("🔍 Mostrando delegados para:", nombreDepartamento, "->", departamentoFinal);
+                console.log("📊 Delegados encontrados:", delegados);
 
-    modalTitulo.textContent = `Delegados - ${nombreDepartamento} (${delegadosAMostrar.length})`;
-    listaDelegados.innerHTML = '';
+                const delegadosAMostrar = delegados;
 
-    if (delegadosAMostrar.length === 0) {
-        listaDelegados.innerHTML = `
-            <div class="no-results">
-                <p>No hay delegados en este departamento</p>
-                <p><small>Departamento: ${nombreDepartamento}</small></p>
-                <p><small>Buscado como: ${departamentoFinal}</small></p>
-            </div>
-        `;
-    } else {
-        delegadosAMostrar.forEach(delegado => {
-            const delegadoElement = document.createElement('div');
-            delegadoElement.className = 'delegado-item';
-            delegadoElement.innerHTML = `
-                <div class="delegado-nombre">${delegado.nombre}</div>
-                <div class="delegado-info">
-                    <span class="delegado-comision">${delegado.comision}</span>
-                    <span class="delegado-votos">
-                        ${delegado.votos.toLocaleString()} votos
-                    </span>
-                </div>
-            `;
-            listaDelegados.appendChild(delegadoElement);
-        });
-    }
+                modalTitulo.textContent = `Delegados - ${nombreDepartamento} (${delegadosAMostrar.length})`;
+                listaDelegados.innerHTML = '';
 
-    modal.style.display = 'block';
-    
-    // DEBUG final
-    console.log("✅ Modal abierto con", delegadosAMostrar.length, "delegados");
-}
+                if (delegadosAMostrar.length === 0) {
+                    listaDelegados.innerHTML = `
+                        <div class="no-results">
+                            <p>No hay delegados en este departamento</p>
+                            <p><small>Departamento: ${nombreDepartamento}</small></p>
+                        </div>
+                    `;
+                } else {
+                    delegadosAMostrar.forEach(delegado => {
+                        const delegadoElement = document.createElement('div');
+                        delegadoElement.className = 'delegado-item';
+                        delegadoElement.innerHTML = `
+                            <div class="delegado-nombre">${delegado.nombre}</div>
+                            <div class="delegado-info">
+                                <span class="delegado-comision">${delegado.comision}</span>
+                                <span class="delegado-votos">
+                                    ${delegado.votos.toLocaleString()} votos
+                                </span>
+                            </div>
+                        `;
+                        listaDelegados.appendChild(delegadoElement);
+                    });
+                }
+
+                modal.style.display = 'block';
+            }
 
             function cerrarModal() {
                 modal.style.display = 'none';
-                // Limpiar selección del mapa
                 d3.selectAll(".department-path").classed("seleccionado", false);
             }
 
