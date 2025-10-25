@@ -422,6 +422,84 @@
             <h2>Departamentos de Colombia</h2>
             <div id="colombia-map"></div>
         </section>
+        <!-- =============================== -->
+<!-- 🎯 BOTÓN FOCALES -->
+<!-- =============================== -->
+<section class="focales-section">
+    <div class="container">
+        <h2>Focales Especiales</h2>
+        <div class="focales-grid">
+            <div class="focal-card">
+                <h3>Víctimas</h3>
+                <div class="focal-info">
+                    <p><strong>Edinson Banguero Palomino</strong></p>
+                    <p>COMISIÓN SEXTA</p>
+                    <a href="https://docs.google.com/spreadsheets/d/ejemplo_victimas" target="_blank" class="delegado-votos">
+                        0 votos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* =============================== */
+/* 🎯 ESTILOS FOCALES */
+/* =============================== */
+.focales-section {
+    background: white;
+    padding: 2rem;
+    margin: 2rem 0;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid #004d99;
+}
+
+.focales-section h2 {
+    color: #003366;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.focales-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.focal-card {
+    background: #f8fbff;
+    padding: 2rem;
+    border-radius: 10px;
+    border-left: 4px solid #004d99;
+    text-align: center;
+    min-width: 300px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.focal-card h3 {
+    color: #003366;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.focal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.focal-info p {
+    margin: 0;
+}
+
+.focal-info strong {
+    color: #003366;
+    font-size: 1.1rem;
+}
+</style>
     </div>
 
     <!-- =============================== -->
@@ -1366,14 +1444,7 @@
         }
     ],
     
-    "Víctimas": [
-        {
-            nombre: "Edinson Banguero Palomino",
-            comision: "COMISIÓN SEXTA",
-            votos: 0,
-            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_victimas"
-        }
-    ]
+    
 };
 
         // ============================================
