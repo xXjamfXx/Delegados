@@ -2220,10 +2220,11 @@ function mostrarDelegados(nombreDepartamento) {
             }
         }
 
-        function agregarDelegadoADatos(nombre, departamento, comision, nombreHoja) {
+                function agregarDelegadoADatos(nombre, departamento, comision, nombreHoja) {
             // Verificar si el departamento existe, si no crearlo
             if (!delegadosPorDepartamento[departamento]) {
                 delegadosPorDepartamento[departamento] = [];
+                console.log('📁 Nuevo departamento creado:', departamento);
             }
             
             // Crear nuevo delegado
@@ -2239,10 +2240,27 @@ function mostrarDelegados(nombreDepartamento) {
             
             console.log('📊 Delegado agregado:', { departamento, nombre, comision });
             
-            // Actualizar filtros
+            // 🔄 ACTUALIZAR TODO EL SISTEMA
             if (typeof cargarFiltros === 'function') {
                 cargarFiltros();
             }
+            
+            // Actualizar departamentos data
+            departamentosData = Object.keys(delegadosPorDepartamento).sort();
+            
+            // Actualizar mapa si está cargado
+            if (typeof actualizarMapaConFiltros === 'function' && mapaCargado) {
+                setTimeout(() => {
+                    actualizarMapaConFiltros();
+                }, 500);
+            }
+            
+            // Forzar actualización de resultados
+            if (typeof actualizarResultados === 'function') {
+                actualizarResultados();
+            }
+            
+            console.log('🔄 Sistema actualizado con nuevo delegado');
             
             return nuevoDelegado;
         }
