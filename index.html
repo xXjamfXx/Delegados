@@ -2056,7 +2056,7 @@
 
         class ConexionInteligente {
             constructor() {
-                this.sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
+                this.sheetId = '1MPNF48GRsvsg5xc19RE40-c-rekYDBm9oxG42_9BOys';
                 this.nombresHojasCache = new Map();
             }
 
@@ -2369,78 +2369,69 @@ cargarDelegadosGuardados() {
             }
 
             async guardarDelegado() {
-                const nombreInput = document.getElementById('nombre-delegado');
-                const departamentoSelect = document.getElementById('departamento-delegado');
-                const comisionSelect = document.getElementById('comision-delegado');
-                const btnSubmit = document.getElementById('btn-submit');
+    const nombreInput = document.getElementById('nombre-delegado');
+    const departamentoSelect = document.getElementById('departamento-delegado');
+    const comisionSelect = document.getElementById('comision-delegado');
+    const btnSubmit = document.getElementById('btn-submit');
 
-                if (!nombreInput || !departamentoSelect || !comisionSelect || !btnSubmit) {
-                    console.error('❌ Elementos del formulario no encontrados');
-                    return;
-                }
+    if (!nombreInput || !departamentoSelect || !comisionSelect || !btnSubmit) {
+        console.error('❌ Elementos del formulario no encontrados');
+        return;
+    }
 
-                const nombre = nombreInput.value.trim();
-                const departamento = departamentoSelect.value;
-                const comision = comisionSelect.value;
+    const nombre = nombreInput.value.trim();
+    const departamento = departamentoSelect.value;
+    const comision = comisionSelect.value;
 
-                if (!nombre || !departamento || !comision) {
-                    this.mostrarAlerta('Por favor completa todos los campos', 'error');
-                    return;
-                }
+    if (!nombre || !departamento || !comision) {
+        this.mostrarAlerta('Por favor completa todos los campos', 'error');
+        return;
+    }
 
-                btnSubmit.disabled = true;
-                btnSubmit.classList.add('loading');
-                btnSubmit.textContent = 'Guardando...';
+    btnSubmit.disabled = true;
+    btnSubmit.classList.add('loading');
+    btnSubmit.textContent = 'Guardando en Google Sheets...';
 
-                try {
-                    // Intentar guardar en Google Sheets primero
-                    const exitoGoogleSheets = await this.guardarEnGoogleSheets(nombre, departamento, comision);
-                    
-                    if (exitoGoogleSheets) {
-                        this.mostrarAlerta('✅ Delegado guardado exitosamente en Google Sheets', 'success');
-                    } else {
-                        // Fallback a localStorage
-                        this.guardarEnLocalStorage(nombre, departamento, comision);
-                        this.mostrarAlerta('✅ Delegado guardado localmente. Se sincronizará después.', 'success');
-                    }
-                    
-                    // Actualizar la interfaz localmente
-                    this.agregarDelegadoLocal(nombre, departamento, comision);
-                    
-                    setTimeout(() => {
-                        const modalForm = document.getElementById('modal-formulario');
-                        if (modalForm) modalForm.style.display = 'none';
-                        this.limpiarFormulario();
-                        
-                        // Recargar votos para actualizar la interfaz
-                        if (window.conexionInteligente) {
-                            window.conexionInteligente.cargarTodosLosVotos();
-                        }
-                    }, 2000);
-                    
-                } catch (error) {
-                    console.error('Error guardando delegado:', error);
-                    this.mostrarAlerta('❌ Error al guardar el delegado. Intenta nuevamente.', 'error');
-                    btnSubmit.disabled = false;
-                    btnSubmit.classList.remove('loading');
-                    btnSubmit.textContent = 'Guardar Delegado';
-                }
+    try {
+        // Intentar guardar en Google Sheets
+        const exitoGoogleSheets = await this.guardarEnGoogleSheets(nombre, departamento, comision);
+        
+        // SIEMPRE agregar a la interfaz localmente
+        this.agregarDelegadoLocal(nombre, departamento, comision);
+        
+        setTimeout(() => {
+            const modalForm = document.getElementById('modal-formulario');
+            if (modalForm) modalForm.style.display = 'none';
+            this.limpiarFormulario();
+            
+            // Recargar votos para actualizar la interfaz
+            if (window.conexionInteligente) {
+                window.conexionInteligente.cargarTodosLosVotos();
             }
+        }, 3000);
+        
+    } catch (error) {
+        console.error('Error guardando delegado:', error);
+        this.mostrarAlerta('❌ Error inesperado. Intenta nuevamente.', 'error');
+        btnSubmit.disabled = false;
+        btnSubmit.classList.remove('loading');
+        btnSubmit.textContent = 'Guardar Delegado';
+    }
+}
 
             async guardarEnGoogleSheets(nombre, departamento, comision) {
     const datos = {
         nombre: nombre,
         departamento: departamento,
         comision: comision,
-        fecha: new Date().toISOString(),
         votos: 0,
-        enlace: `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
+        timestamp: new Date().toISOString()
     };
 
     try {
-        console.log('📤 Enviando datos a Google Sheets:', datos);
+        console.log('📤 Enviando a Google Sheets...', datos);
+        console.log('URL del script:', this.scriptUrl);
         
-        // Método simple usando Google Forms compatible
         const response = await fetch(this.scriptUrl, {
             method: 'POST',
             headers: {
@@ -2449,14 +2440,38 @@ cargarDelegadosGuardados() {
             body: JSON.stringify(datos)
         });
 
+        console.log('📨 Status de respuesta:', response.status);
+        console.log('Respuesta OK:', response.ok);
+        
         if (response.ok) {
             const resultado = await response.json();
-            console.log('✅ Delegado guardado en Google Sheets:', resultado);
+            console.log('✅ ÉXITO - Guardado en Google Sheets:', resultado);
+            
+            // MOSTRAR MENSAJE DE ÉXITO REAL
+            this.mostrarAlerta('✅ Delegado guardado EXITOSAMENTE en Google Sheets: ' + nombre, 'success');
+            
             return true;
         } else {
-            console.error('❌ Error en respuesta:', response.status);
+            const errorText = await response.text();
+            console.log('❌ Error del servidor:', errorText);
+            
+            // Fallback a localStorage
+            this.guardarEnLocalStorage(nombre, departamento, comision);
+            this.mostrarAlerta('📝 Guardado localmente (se sincronizará después): ' + nombre, 'success');
+            
             return false;
         }
+        
+    } catch (error) {
+        console.log('❌ Error de conexión:', error);
+        
+        // Fallback a localStorage
+        this.guardarEnLocalStorage(nombre, departamento, comision);
+        this.mostrarAlerta('📝 Guardado localmente (error de conexión): ' + nombre, 'success');
+        
+        return false;
+    }
+}
         
     } catch (error) {
         console.error('❌ Error enviando a Google Sheets:', error);
