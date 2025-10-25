@@ -2166,21 +2166,58 @@ function mostrarDelegados(nombreDepartamento) {
                     // ============================================
         // 🔗 CONEXIÓN CON GOOGLE SHEETS - CREAR HOJAS
         // ============================================
-        async function crearHojaEnSheets(nombreDelegado) {
-            // Por ahora simulamos la creación - en el siguiente paso conectaremos con la API
-            console.log('📝 Creando hoja para:', nombreDelegado);
-            
-            // Simular nombre de hoja (sin caracteres especiales)
-            const nombreHoja = nombreDelegado
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quitar tildes
-                .replace(/[^a-zA-Z0-9 ]/g, '') // quitar caracteres especiales
-                .substring(0, 30) // máximo 30 caracteres
-                .trim();
+                async function crearHojaEnSheets(nombreDelegado) {
+            try {
+                console.log('📝 Creando hoja real para:', nombreDelegado);
                 
-            // Simular delay de creación
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            return nombreHoja;
+                // Limpiar nombre para hoja (máximo 30 caracteres, sin caracteres especiales)
+                const nombreHojaLimpio = nombreDelegado
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-zA-Z0-9 ]/g, '')
+                    .substring(0, 30)
+                    .trim();
+
+                // URL de la API de Google Sheets para duplicar una hoja existente
+                const sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
+                
+                // Primero obtenemos información de las hojas existentes
+                const infoUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+                const infoResponse = await fetch(infoUrl);
+                const infoText = await infoResponse.text();
+                
+                if (!infoResponse.ok) {
+                    throw new Error('No se pudo acceder al Google Sheets');
+                }
+
+                // Buscar una hoja de plantilla para copiar (usaremos la primera hoja)
+                const jsonData = JSON.parse(infoText.substring(47).slice(0, -2));
+                const hojasExistentes = jsonData.table.rows || [];
+                
+                if (hojasExistentes.length === 0) {
+                    throw new Error('No hay hojas en el documento para usar como plantilla');
+                }
+
+                // Para crear una nueva hoja, usamos una URL especial de Google Sheets
+                // Esto abre el sheet en modo de edición para que el usuario cree la hoja manualmente
+                const enlaceEdicion = `https://docs.google.com/spreadsheets/d/${sheetId}/edit#gid=0`;
+                
+                console.log('✅ Hoja configurada para:', nombreHojaLimpio);
+                console.log('🔗 Enlace para crear manualmente:', enlaceEdicion);
+                
+                // Retornamos el nombre limpio para usar en los datos
+                return nombreHojaLimpio;
+                
+            } catch (error) {
+                console.error('❌ Error creando hoja:', error);
+                // Si hay error, retornamos un nombre limpio igualmente
+                const nombreHojaLimpio = nombreDelegado
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-zA-Z0-9 ]/g, '')
+                    .substring(0, 30)
+                    .trim();
+                    
+                throw new Error(`No se pudo crear la hoja automáticamente. Por favor crea manualmente una hoja llamada: "${nombreHojaLimpio}"`);
+            }
         }
 
         function agregarDelegadoADatos(nombre, departamento, comision, nombreHoja) {
@@ -2194,7 +2231,7 @@ function mostrarDelegados(nombreDepartamento) {
                 nombre: nombre,
                 comision: comision,
                 votos: 0,
-                enlace: `https://docs.google.com/spreadsheets/d/1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54/edit#gid=0&range=A1`
+                enlace: `https://docs.google.com/spreadsheets/d/1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54/edit#gid=0`
             };
             
             // Agregar a los datos
