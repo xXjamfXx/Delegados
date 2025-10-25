@@ -1549,14 +1549,14 @@
             let departamentosData = [];
             let mapaCargado = false;
 
-            // Inicializar la aplicación
-            function inicializar() {
-                cargarFiltros();
-                cargarMapaColombia();
-                agregarEventListeners();
-                actualizarResultados();
-                            inicializarFormularioDelegado();
-            }
+            
+        // Inicializar la aplicación
+        function inicializar() {
+            cargarFiltros();
+            cargarMapaColombia();
+            agregarEventListeners();
+            actualizarResultados(); 
+        }
 
             // Cargar el mapa de Colombia
             function cargarMapaColombia() {
@@ -2155,7 +2155,7 @@ function mostrarDelegados(nombreDepartamento) {
                 // Limpiar selección del mapa
                 d3.selectAll(".department-path").classed("seleccionado", false);
             }
-            // Inicializar la aplicación
+           inicializarFormularioDelegado();
             inicializar();
         });
     </script>
