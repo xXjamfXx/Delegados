@@ -1711,7 +1711,7 @@ console.log("Centro:", projection.center());
   .on("mouseover", function(event, d) {
     const deptoMapa = d.properties.NOMBRE_DPT;
     
-    // CONTADORES DIRECTOS - MÁS SIMPLE
+    // CONTADORES DIRECTOS
     const delegados = delegadosPorDepartamento[deptoMapa] || [];
     const focales = focalesPorDepartamento[deptoMapa] || [];
     
@@ -1721,18 +1721,17 @@ console.log("Centro:", projection.center());
     
     // CONTAR FOCALES VS LÍDERES
     focales.forEach(focal => {
-        if (focal.grupo && focal.grupo.includes("Lider")) {
+        if (focal.grupo && (focal.grupo.includes("Lider") || focal.grupo.includes("Líder"))) {
             cantidadLideres++;
         } else {
             cantidadFocales++;
         }
     });
     
-    console.log("📍", deptoMapa, "| 👥 Delegados:", cantidadDelegados, "| 🎯 Focales:", cantidadFocales, "| 👑 Líderes:", cantidadLideres);
+    console.log("📍", deptoMapa, "| 👥", cantidadDelegados, "| 🎯", cantidadFocales, "| 👑", cantidadLideres);
     
-    // TOOLTIP MEJORADO
+    // TOOLTIP
     let tooltipHTML = `<strong>${deptoMapa}</strong>`;
-    
     if (cantidadDelegados > 0) tooltipHTML += `<br/>${cantidadDelegados} delegado${cantidadDelegados !== 1 ? 's' : ''}`;
     if (cantidadFocales > 0) tooltipHTML += `<br/>${cantidadFocales} focal${cantidadFocales !== 1 ? 'es' : ''}`;
     if (cantidadLideres > 0) tooltipHTML += `<br/>${cantidadLideres} líder${cantidadLideres !== 1 ? 'es' : ''}`;
