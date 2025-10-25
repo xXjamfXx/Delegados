@@ -371,6 +371,40 @@
             border-radius: 10px;
             font-size: 0.9rem;
         }
+        .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+    color: white;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #ff9c03;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    text-align: center;
+}
 
         .sync-success {
             background: #d4edda;
@@ -508,73 +542,79 @@
                 
                 // Programar actualización automática cada 60 segundos
                 setInterval(async () => {
-                    await cargarDatosDesdeSheets();
-                    cargarFiltros();
-                    actualizarResultados();
-                    actualizarMapaConFiltros();
-                }, 60000);
-            }
+    await cargarDatosDesdeSheets();
+    cargarFiltros();
+    actualizarResultados();
+    actualizarMapaConFiltros();
+}, 60000);
 
             // ============================================
             // 🔗 CONEXIÓN CON GOOGLE SHEETS
             // ============================================
             async function cargarDatosDesdeSheets() {
-                try {
-                    syncStatus.className = 'sync-status sync-loading';
-                    syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
+    const loadingOverlay = document.getElementById('loading-overlay');
+    
+    try {
+        // MOSTRAR LOADING
+        loadingOverlay.style.display = 'flex';
+        syncStatus.className = 'sync-status sync-loading';
+        syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
 
-                    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) {
-                        throw new Error('Error al cargar el Google Sheets');
-                    }
-                    
-                    const text = await response.text();
-                    const json = JSON.parse(text.substring(47).slice(0, -2));
-                    const filas = json.table.rows || [];
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error('Error al cargar el Google Sheets');
+        }
+        
+        const text = await response.text();
+        const json = JSON.parse(text.substring(47).slice(0, -2));
+        const filas = json.table.rows || [];
 
-                    // Reiniciar datos
-                    delegadosPorDepartamento = {};
+        // Reiniciar datos
+        delegadosPorDepartamento = {};
 
-                    // Procesar filas (empezando desde la fila 1 para saltar encabezados)
-                    for (let i = 1; i < filas.length; i++) {
-                        const fila = filas[i];
-                        const celdas = fila.c || [];
-                        
-                        // Asumir columnas: [Departamento, Nombre, Comisión, Votos]
-                        const departamento = celdas[0]?.v || '';
-                        const nombre = celdas[1]?.v || '';
-                        const comision = celdas[2]?.v || '';
-                        const votos = parseInt(celdas[3]?.v) || 0;
+        // Procesar filas (empezando desde la fila 1 para saltar encabezados)
+        for (let i = 1; i < filas.length; i++) {
+            const fila = filas[i];
+            const celdas = fila.c || [];
+            
+            // Asumir columnas: [Departamento, Nombre, Comisión, Votos]
+            const departamento = celdas[0]?.v || '';
+            const nombre = celdas[1]?.v || '';
+            const comision = celdas[2]?.v || '';
+            const votos = parseInt(celdas[3]?.v) || 0;
 
-                        // Solo procesar si tiene datos básicos
-                        if (departamento && nombre) {
-                            if (!delegadosPorDepartamento[departamento]) {
-                                delegadosPorDepartamento[departamento] = [];
-                            }
-                            
-                            delegadosPorDepartamento[departamento].push({
-                                nombre: nombre,
-                                comision: comision,
-                                votos: votos,
-                                enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
-                            });
-                        }
-                    }
-
-                    syncStatus.className = 'sync-status sync-success';
-                    const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
-                    syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados cargados - Próxima actualización en 60 segundos`;
-
-                    console.log('📊 Datos cargados:', delegadosPorDepartamento);
-
-                } catch (error) {
-                    console.error('❌ Error cargando datos:', error);
-                    syncStatus.className = 'sync-status sync-error';
-                    syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
+            // Solo procesar si tiene datos básicos
+            if (departamento && nombre) {
+                if (!delegadosPorDepartamento[departamento]) {
+                    delegadosPorDepartamento[departamento] = [];
                 }
+                
+                delegadosPorDepartamento[departamento].push({
+                    nombre: nombre,
+                    comision: comision,
+                    votos: votos,
+                    enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
+                });
             }
+        }
+
+        syncStatus.className = 'sync-status sync-success';
+        const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
+        syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados cargados - Próxima actualización en 60 segundos`;
+
+        console.log('📊 Datos cargados:', delegadosPorDepartamento);
+
+    } catch (error) {
+        console.error('❌ Error cargando datos:', error);
+        syncStatus.className = 'sync-status sync-error';
+        syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
+    } finally {
+        // OCULTAR LOADING (siempre se ejecuta)
+        loadingOverlay.style.display = 'none';
+    }
+}
 
             // Cargar el mapa de Colombia
             function cargarMapaColombia() {
@@ -941,5 +981,15 @@
             inicializar();
         });
     </script>
+            <!-- =============================== -->
+<!-- 🔄 INDICADOR DE CARGA -->
+<!-- =============================== -->
+<div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">
+        <strong>Cargando datos desde Google Sheets...</strong><br>
+        <small>Esto puede tomar unos segundos</small>
+    </div>
+</div>
 </body>
 </html>
