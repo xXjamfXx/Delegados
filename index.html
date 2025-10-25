@@ -471,7 +471,7 @@
         <!-- =============================== -->
         <!-- 🎯 SISTEMA DE FILTROS -->
         <!-- =============================== -->
-        <section class="filters-section">
+     <!--   <section class="filters-section">
             <h2>Lideres por Departamento</h2>
             <div id="sync-status" class="sync-status sync-loading">
                 🔄 Cargando datos desde Google Sheets...
@@ -489,6 +489,7 @@
                 <p id="filter-results">Mostrando todos los delegados</p>
             </div>
         </section>
+        -->
 
         <!-- =============================== -->
         <!-- 🗺️ MAPA DE COLOMBIA -->
@@ -535,7 +536,8 @@
         // 🔗 CONFIGURACIÓN - TU GOOGLE SHEETS
         // ============================================
         const SHEET_ID = '1EMWCl1lWkDncMpNxj7NnsnXMd9JoTmhw-FfbXa_J7QM';
-        const SHEET_NAME = 'Dele';
+const SHEET_NAME = 'Del';
+let delegadosPorDepartamento = {};
 
         // Variable global para almacenar los delegados
         let delegadosPorDepartamento = {};
@@ -561,60 +563,41 @@
 
             // Inicializar la aplicación
             async function inicializar() {
-                loadingOverlay.style.display = 'flex';
-                await cargarDatosDesdeSheets();
-                cargarFiltros();
-                cargarMapaColombia();
-                agregarEventListeners();
-                actualizarResultados();
-                
-                setInterval(async () => {
-                    await cargarDatosDesdeSheets();
-                    cargarFiltros();
-                    actualizarResultados();
-                    actualizarMapaConFiltros();
-                }, 60000);
-            }
+    await cargarDatosDesdeSheets();
+    cargarMapaColombia();
+    
+    // Actualizar cada 30 segundos
+    setInterval(async () => {
+        await cargarDatosDesdeSheets();
+    }, 30000);
+}
 
             // ============================================
             // 🔗 CONEXIÓN CON GOOGLE SHEETS - VERSIÓN ESTABLE
             // ============================================
            async function cargarDatosDesdeSheets() {
-    const loadingOverlay = document.getElementById('loading-overlay');
-    
     try {
-        syncStatus.className = 'sync-status sync-loading';
-        syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
-
+        console.log("🔄 Cargando datos desde Google Sheets...");
+        
         const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
         const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error('Error al cargar el Google Sheets');
-        }
-        
         const text = await response.text();
         const json = JSON.parse(text.substring(47).slice(0, -2));
         const filas = json.table.rows || [];
 
-        console.log("📊 Total filas en Sheets:", filas.length);
+        console.log("📊 Filas encontradas:", filas.length);
 
-        // NUEVA ESTRUCTURA
+        // NUEVOS DATOS
         const nuevosDatos = {};
 
-        // Procesar CADA FILA (empezando desde 1 para saltar encabezados)
         for (let i = 1; i < filas.length; i++) {
             const fila = filas[i];
             const celdas = fila.c || [];
             
-            // COLUMNAS: A=Departamento, B=Nombre, C=Comisión, D=Votos
             const departamento = (celdas[0]?.v || '').toString().trim();
             const nombre = (celdas[1]?.v || '').toString().trim();
-            const comision = (celdas[2]?.v || '').toString().trim();
+            const comision = (celdas[2]?.v || 'COMISIÓN').toString().trim();
             const votos = parseInt(celdas[3]?.v) || 0;
-
-            // DEBUG de cada fila
-            console.log(`📝 Fila ${i}:`, {departamento, nombre, comision, votos});
 
             if (departamento && nombre) {
                 if (!nuevosDatos[departamento]) {
@@ -630,35 +613,17 @@
             }
         }
 
-        // ACTUALIZACIÓN ATÓMICA
+        // ACTUALIZAR
         delegadosPorDepartamento = nuevosDatos;
 
-        // VERIFICACIÓN FINAL
-        console.log("=== ✅ DATOS CARGADOS ===");
-        console.log("Total departamentos:", Object.keys(delegadosPorDepartamento).length);
-        console.log("Total delegados:", Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0));
+        const total = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
+        console.log("✅ CARGADO:", total, "delegados");
         
-        Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
-            console.log(`${depto}: ${delegadosPorDepartamento[depto].length} delegados`);
-        });
-        
-        // VERIFICAR DEPARTAMENTOS ESPECÍFICOS
-        console.log("=== 🔍 VERIFICACIÓN ESPECÍFICA ===");
-        console.log("Antioquia:", delegadosPorDepartamento["Antioquia"]?.length || 0, "delegados");
-        console.log("Arauca:", delegadosPorDepartamento["Arauca"]?.length || 0, "delegados");
-        console.log("Valle del Cauca:", delegadosPorDepartamento["Valle del Cauca"]?.length || 0, "delegados");
-        console.log("=== FIN VERIFICACIÓN ===");
-
-        syncStatus.className = 'sync-status sync-success';
-        const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
-        syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados - Actualización automática activada`;
+        // ACTUALIZAR MAPA
+        actualizarMapa();
 
     } catch (error) {
-        console.error('❌ Error cargando datos:', error);
-        syncStatus.className = 'sync-status sync-error';
-        syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
-    } finally {
-        loadingOverlay.style.display = 'none';
+        console.error('❌ Error:', error);
     }
 }
             // ============================================
@@ -837,34 +802,21 @@
             }
 
             // Actualizar mapa basado en filtros
-            function actualizarMapaConFiltros() {
-                if (!mapaCargado) return;
-
-                const searchTerm = searchInput.value.toLowerCase();
-                const comisionSeleccionada = comisionFilter.value;
-                const departamentoSeleccionado = departamentoFilter.value;
-
-                d3.selectAll(".department-path")
-                    .classed("filtrado", function(d) {
-                        const deptoMapa = d.properties.NOMBRE_DPT;
-                        const departamentoEnDatos = mapearNombreDepartamento(deptoMapa);
-                        const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
-                        
-                        if (delegadosDelDepto.length === 0) {
-                            return true;
-                        }
-                        
-                        const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
-                            const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
-                            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                            const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
-                            
-                            return coincideNombre && coincideComision && coincideDepartamento;
-                        });
-                        
-                        return !tieneDelegadosFiltrados;
-                    });
-            }
+            function actualizarMapa() {
+    if (!mapaCargado) return;
+    
+    console.log("🗺️ Actualizando mapa con datos...");
+    
+    d3.selectAll(".department-path")
+        .each(function(d) {
+            const deptoMapa = d.properties.NOMBRE_DPT;
+            const departamentoEnDatos = mapearNombreDepartamento(deptoMapa);
+            const delegados = delegadosPorDepartamento[departamentoEnDatos] || [];
+            const cantidad = delegados.length;
+            
+            console.log(`📍 ${deptoMapa} -> ${departamentoEnDatos}: ${cantidad} delegados`);
+        });
+}
 
             // Agregar event listeners
             function agregarEventListeners() {
