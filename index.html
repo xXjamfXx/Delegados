@@ -173,7 +173,31 @@
             color: #666;
             font-size: 0.9rem;
         }
+        /* =============================== */
+        /* 🎯 BOTÓN AGREGAR DELEGADO */
+        /* =============================== */
+        .btn-agregar-delegado {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
 
+        .btn-agregar-delegado:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(135deg, #218838 0%, #1e9e8a 100%);
+        }
+
+        .btn-agregar-delegado:active {
+            transform: translateY(0);
+        }
         /* =============================== */
         /* 🗺️ MAPA DE COLOMBIA */
         /* =============================== */
@@ -398,7 +422,12 @@
         <!-- 🎯 SISTEMA DE FILTROS -->
         <!-- =============================== -->
         <section class="filters-section">
-            <h2>Delegados por Departamento</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+    <h2 style="margin: 0;">Delegados por Departamento</h2>
+    <button id="btn-agregar-delegado" class="btn-agregar-delegado">
+        ➕ Agregar Delegado
+    </button>
+</div>
             <div class="search-container">
                 <input type="text" id="search-input" class="search-box" placeholder="🔍 Buscar delegado por nombre...">
                 <select id="comision-filter" class="filter-select">
