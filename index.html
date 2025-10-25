@@ -2166,57 +2166,60 @@ function mostrarDelegados(nombreDepartamento) {
                     // ============================================
         // 🔗 CONEXIÓN CON GOOGLE SHEETS - CREAR HOJAS
         // ============================================
-                async function crearHojaEnSheets(nombreDelegado) {
+                        async function crearHojaEnSheets(nombreDelegado) {
             try {
-                console.log('📝 Creando hoja real para:', nombreDelegado);
+                console.log('🤖 Creando hoja AUTOMÁTICA para:', nombreDelegado);
                 
-                // Limpiar nombre para hoja (máximo 30 caracteres, sin caracteres especiales)
+                // Nombre limpio para la hoja
                 const nombreHojaLimpio = nombreDelegado
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                     .replace(/[^a-zA-Z0-9 ]/g, '')
                     .substring(0, 30)
                     .trim();
 
-                // URL de la API de Google Sheets para duplicar una hoja existente
                 const sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
                 
-                // Primero obtenemos información de las hojas existentes
-                const infoUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
-                const infoResponse = await fetch(infoUrl);
-                const infoText = await infoResponse.text();
+                // ✅ TU GOOGLE APPS SCRIPT
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbxBaiBe1KcyNejxVNkxzyW0E9UAh6nTC5cBDORkN3soFPtJ7A-LPtPLjrVh0Z6cIUDk/exec';
                 
-                if (!infoResponse.ok) {
-                    throw new Error('No se pudo acceder al Google Sheets');
+                console.log('🔗 Conectando con Google Apps Script...');
+                
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'createSheet',
+                        sheetName: nombreHojaLimpio,
+                        sourceSheetId: sheetId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error en la conexión con Google Apps Script');
                 }
 
-                // Buscar una hoja de plantilla para copiar (usaremos la primera hoja)
-                const jsonData = JSON.parse(infoText.substring(47).slice(0, -2));
-                const hojasExistentes = jsonData.table.rows || [];
+                const result = await response.json();
                 
-                if (hojasExistentes.length === 0) {
-                    throw new Error('No hay hojas en el documento para usar como plantilla');
+                if (result.success) {
+                    console.log('✅ Hoja creada automáticamente:', nombreHojaLimpio);
+                    return nombreHojaLimpio;
+                } else {
+                    throw new Error(result.error || 'Error desconocido al crear hoja');
                 }
-
-                // Para crear una nueva hoja, usamos una URL especial de Google Sheets
-                // Esto abre el sheet en modo de edición para que el usuario cree la hoja manualmente
-                const enlaceEdicion = `https://docs.google.com/spreadsheets/d/${sheetId}/edit#gid=0`;
-                
-                console.log('✅ Hoja configurada para:', nombreHojaLimpio);
-                console.log('🔗 Enlace para crear manualmente:', enlaceEdicion);
-                
-                // Retornamos el nombre limpio para usar en los datos
-                return nombreHojaLimpio;
                 
             } catch (error) {
-                console.error('❌ Error creando hoja:', error);
-                // Si hay error, retornamos un nombre limpio igualmente
+                console.error('❌ Error creando hoja automáticamente:', error);
+                
+                // Fallback: instrucciones para crear manualmente
                 const nombreHojaLimpio = nombreDelegado
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                     .replace(/[^a-zA-Z0-9 ]/g, '')
                     .substring(0, 30)
                     .trim();
                     
-                throw new Error(`No se pudo crear la hoja automáticamente. Por favor crea manualmente una hoja llamada: "${nombreHojaLimpio}"`);
+                throw new Error(`No se pudo crear la hoja automáticamente. Error: ${error.message}. Crea manualmente una hoja llamada: "${nombreHojaLimpio}"`);
             }
         }
 
