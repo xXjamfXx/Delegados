@@ -2393,41 +2393,41 @@
             }
 
             async guardarEnGoogleSheets(nombre, departamento, comision) {
-                const datos = {
-                    nombre: nombre,
-                    departamento: departamento,
-                    comision: comision,
-                    fecha: new Date().toISOString(),
-                    votos: 0,
-                    enlace: `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
-                };
+    const datos = {
+        nombre: nombre,
+        departamento: departamento,
+        comision: comision,
+        fecha: new Date().toISOString(),
+        votos: 0,
+        enlace: `https://docs.google.com/spreadsheets/d/${this.sheetId}/edit#gid=0`
+    };
 
-                try {
-                    console.log('📤 Enviando datos a Google Sheets:', datos);
-                    
-                    // Usamos un proxy para evitar problemas CORS
-                    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                    const response = await fetch(proxyUrl + this.scriptUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(datos)
-                    });
+    try {
+        console.log('📤 Enviando datos a Google Sheets:', datos);
+        
+        // Método simple usando Google Forms compatible
+        const response = await fetch(this.scriptUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(datos)
+        });
 
-                    if (response.ok) {
-                        console.log('✅ Delegado guardado en Google Sheets');
-                        return true;
-                    } else {
-                        throw new Error('Error en la respuesta del servidor');
-                    }
-                    
-                } catch (error) {
-                    console.error('❌ Error enviando a Google Sheets:', error);
-                    return false;
-                }
-            }
-
+        if (response.ok) {
+            const resultado = await response.json();
+            console.log('✅ Delegado guardado en Google Sheets:', resultado);
+            return true;
+        } else {
+            console.error('❌ Error en respuesta:', response.status);
+            return false;
+        }
+        
+    } catch (error) {
+        console.error('❌ Error enviando a Google Sheets:', error);
+        return false;
+    }
+}
             guardarEnLocalStorage(nombre, departamento, comision) {
                 const datos = {
                     nombre: nombre,
