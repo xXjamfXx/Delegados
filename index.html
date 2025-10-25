@@ -597,52 +597,57 @@
         const json = JSON.parse(text.substring(47).slice(0, -2));
         const filas = json.table.rows || [];
 
-        // NUEVA ESTRUCTURA para datos en COLUMNAS
+        console.log("📊 Total filas en Sheets:", filas.length);
+
+        // NUEVA ESTRUCTURA
         const nuevosDatos = {};
 
-        // Procesar CADA COLUMNA como un departamento
-        for (let col = 0; col < filas.length; col++) {
-            const fila = filas[col];
+        // Procesar CADA FILA (empezando desde 1 para saltar encabezados)
+        for (let i = 1; i < filas.length; i++) {
+            const fila = filas[i];
             const celdas = fila.c || [];
             
-            // La PRIMERA CELDA de cada fila es el NOMBRE DEL DEPARTAMENTO
-            const nombreDepartamento = (celdas[0]?.v || '').toString().trim();
-            
-            if (nombreDepartamento && nombreDepartamento !== "Departamento") {
-                if (!nuevosDatos[nombreDepartamento]) {
-                    nuevosDatos[nombreDepartamento] = [];
+            // COLUMNAS: A=Departamento, B=Nombre, C=Comisión, D=Votos
+            const departamento = (celdas[0]?.v || '').toString().trim();
+            const nombre = (celdas[1]?.v || '').toString().trim();
+            const comision = (celdas[2]?.v || '').toString().trim();
+            const votos = parseInt(celdas[3]?.v) || 0;
+
+            // DEBUG de cada fila
+            console.log(`📝 Fila ${i}:`, {departamento, nombre, comision, votos});
+
+            if (departamento && nombre) {
+                if (!nuevosDatos[departamento]) {
+                    nuevosDatos[departamento] = [];
                 }
                 
-                // Las CELDAS 1, 2, 3... son los NOMBRES DE DELEGADOS
-                for (let i = 1; i < celdas.length; i++) {
-                    const nombreDelegado = (celdas[i]?.v || '').toString().trim();
-                    if (nombreDelegado) {
-                        nuevosDatos[nombreDepartamento].push({
-                            nombre: nombreDelegado,
-                            comision: "COMISIÓN", // Por defecto - puedes ajustar esto
-                            votos: 0, // Por defecto - puedes ajustar esto
-                            enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
-                        });
-                    }
-                }
+                nuevosDatos[departamento].push({
+                    nombre: nombre,
+                    comision: comision,
+                    votos: votos,
+                    enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
+                });
             }
         }
 
         // ACTUALIZACIÓN ATÓMICA
         delegadosPorDepartamento = nuevosDatos;
 
-        // VERIFICACIÓN DE DATOS
-        console.log("=== 📊 DATOS CARGADOS DESDE COLUMNAS ===");
+        // VERIFICACIÓN FINAL
+        console.log("=== ✅ DATOS CARGADOS ===");
         console.log("Total departamentos:", Object.keys(delegadosPorDepartamento).length);
         console.log("Total delegados:", Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0));
         
         Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
             console.log(`${depto}: ${delegadosPorDepartamento[depto].length} delegados`);
-            delegadosPorDepartamento[depto].forEach(delegado => {
-                console.log(`   👤 ${delegado.nombre}`);
-            });
         });
-        console.log("=== FIN DATOS ===");
+        
+        // VERIFICAR DEPARTAMENTOS ESPECÍFICOS
+        console.log("=== 🔍 VERIFICACIÓN ESPECÍFICA ===");
+        console.log("Antioquia:", delegadosPorDepartamento["Antioquia"]?.length || 0, "delegados");
+        console.log("Arauca:", delegadosPorDepartamento["Arauca"]?.length || 0, "delegados");
+        console.log("Valle del Cauca:", delegadosPorDepartamento["Valle del Cauca"]?.length || 0, "delegados");
+        console.log("=== FIN VERIFICACIÓN ===");
 
         syncStatus.className = 'sync-status sync-success';
         const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
