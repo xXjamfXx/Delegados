@@ -759,47 +759,50 @@
 // Función COMPLETA para mapear TODOS los departamentos
 // Función COMPLETA que maneja mayúsculas, minúsculas y tildes
 // Función COMPLETA para TODOS los departamentos
+// Función COMPLETA con mayúsculas, tildes y todo
 function mapearNombreDepartamento(nombreGeoJSON) {
-    // MAPEO COMPLETO Y DEFINITIVO
-    const mapeoDefinitivo = {
-        // Mapa Físico -> Google Sheets
-        "Amazonas": "Amazonas",
-        "Antioquia": "Antioquia", 
-        "Arauca": "Arauca",
-        "Atlántico": "Atlántico",
+    // Función para normalizar texto
+    function normalizarTexto(texto) {
+        return texto
+            .toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9 ]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    // 1. PRIMERO: Convertir mayúsculas a formato normal
+    if (nombreGeoJSON === nombreGeoJSON.toUpperCase()) {
+        const convertido = nombreGeoJSON.charAt(0) + nombreGeoJSON.slice(1).toLowerCase();
+        console.log(`🔄 Convertido mayúsculas: "${nombreGeoJSON}" -> "${convertido}"`);
+        nombreGeoJSON = convertido;
+    }
+
+    // 2. MAPEO MANUAL para casos especiales
+    const mapeoEspecial = {
         "Bogotá": "Bogotá D.C.",
-        "Bolívar": "Bolívar",
-        "Boyacá": "Boyacá",
-        "Caldas": "Caldas",
-        "Caquetá": "Caquetá", 
-        "Casanare": "Casanare",
-        "Cauca": "Cauca",
-        "Cesar": "Cesar",
-        "Chocó": "Chocó",
-        "Córdoba": "Córdoba",
-        "Cundinamarca": "Cundinamarca",
-        "Guainía": "Guainía",
-        "Guaviare": "Guaviare",
-        "Huila": "Huila", 
-        "La Guajira": "La Guajira",
-        "Magdalena": "Magdalena",
-        "Meta": "Meta",
-        "Nariño": "Nariño",
-        "Norte de Santander": "Norte de Santander",
-        "Putumayo": "Putumayo",
-        "Quindío": "Quindío",
-        "Risaralda": "Risaralda", 
-        "Santander": "Santander",
-        "Sucre": "Sucre",
-        "Tolima": "Tolima",
-        "Valle del Cauca": "Valle del Cauca",
-        "Vaupés": "Vaupés",
-        "Vichada": "Vichada",
-        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés",
+        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés", 
         "San Andrés": "San Andrés"
     };
     
-    return mapeoDefinitivo[nombreGeoJSON] || nombreGeoJSON;
+    if (mapeoEspecial[nombreGeoJSON]) {
+        return mapeoEspecial[nombreGeoJSON];
+    }
+
+    // 3. BUSCAR en datos existentes con normalización
+    const nombreNormalizado = normalizarTexto(nombreGeoJSON);
+    const departamentosEnDatos = Object.keys(delegadosPorDepartamento);
+    
+    for (const depto of departamentosEnDatos) {
+        const deptoNormalizado = normalizarTexto(depto);
+        if (deptoNormalizado === nombreNormalizado) {
+            console.log(`✅ Coincidencia normalizada: "${nombreGeoJSON}" -> "${depto}"`);
+            return depto;
+        }
+    }
+
+    // 4. Si no encuentra, devolver el original
+    return nombreGeoJSON;
 }
 
             // Cargar opciones de filtros
