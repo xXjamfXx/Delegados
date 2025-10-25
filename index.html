@@ -472,7 +472,7 @@
         <!-- 🎯 SISTEMA DE FILTROS -->
         <!-- =============================== -->
         <section class="filters-section">
-            <h2>Delegados por Departamento</h2>
+            <h2>Lideres por Departamento</h2>
             <div id="sync-status" class="sync-status sync-loading">
                 🔄 Cargando datos desde Google Sheets...
             </div>
@@ -580,73 +580,98 @@
             // 🔗 CONEXIÓN CON GOOGLE SHEETS - VERSIÓN ESTABLE
             // ============================================
             async function cargarDatosDesdeSheets() {
-                const loadingOverlay = document.getElementById('loading-overlay');
-                
-                try {
-                    syncStatus.className = 'sync-status sync-loading';
-                    syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
+    const loadingOverlay = document.getElementById('loading-overlay');
+    
+    try {
+        syncStatus.className = 'sync-status sync-loading';
+        syncStatus.innerHTML = '🔄 Sincronizando con Google Sheets...';
 
-                    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) {
-                        throw new Error('Error al cargar el Google Sheets');
-                    }
-                    
-                    const text = await response.text();
-                    const json = JSON.parse(text.substring(47).slice(0, -2));
-                    const filas = json.table.rows || [];
+        console.log("🔗 Intentando conectar con Google Sheets...");
+        
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+        console.log("📡 URL:", url);
+        
+        const response = await fetch(url);
+        console.log("📞 Respuesta HTTP:", response.status, response.statusText);
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+        }
+        
+        const text = await response.text();
+        console.log("📄 Texto recibido (primeros 200 chars):", text.substring(0, 200));
+        
+        const json = JSON.parse(text.substring(47).slice(0, -2));
+        console.log("📊 Estructura JSON recibida:", json);
+        
+        const filas = json.table.rows || [];
+        console.log("📋 Total filas en Sheets:", filas.length);
 
-                    // NUEVA ESTRUCTURA TEMPORAL
-                    const nuevosDatos = {};
+        // NUEVA ESTRUCTURA TEMPORAL
+        const nuevosDatos = {};
 
-                    for (let i = 1; i < filas.length; i++) {
-                        const fila = filas[i];
-                        const celdas = fila.c || [];
-                        
-                        const departamento = (celdas[0]?.v || '').toString().trim();
-                        const nombre = (celdas[1]?.v || '').toString().trim();
-                        const comision = (celdas[2]?.v || '').toString().trim();
-                        const votos = parseInt(celdas[3]?.v) || 0;
+        for (let i = 1; i < filas.length; i++) {
+            const fila = filas[i];
+            const celdas = fila.c || [];
+            
+            console.log(`📝 Procesando fila ${i}:`, celdas);
+            
+            const departamento = (celdas[0]?.v || '').toString().trim();
+            const nombre = (celdas[1]?.v || '').toString().trim();
+            const comision = (celdas[2]?.v || '').toString().trim();
+            const votos = parseInt(celdas[3]?.v) || 0;
 
-                        if (departamento && nombre) {
-                            if (!nuevosDatos[departamento]) {
-                                nuevosDatos[departamento] = [];
-                            }
-                            
-                            nuevosDatos[departamento].push({
-                                nombre: nombre,
-                                comision: comision,
-                                votos: votos,
-                                enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
-                            });
-                        }
-                    }
+            console.log(`   📍 Departamento: "${departamento}", Nombre: "${nombre}"`);
 
-                    // ACTUALIZACIÓN ATÓMICA
-                    delegadosPorDepartamento = nuevosDatos;
-
-                    // VERIFICACIÓN DE DATOS
-                    console.log("=== 📊 DATOS CARGADOS ===");
-                    console.log("Total departamentos:", Object.keys(delegadosPorDepartamento).length);
-                    console.log("Total delegados:", Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0));
-                    Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
-                        console.log(`${depto}: ${delegadosPorDepartamento[depto].length} delegados`);
-                    });
-                    console.log("=== FIN DATOS ===");
-
-                    syncStatus.className = 'sync-status sync-success';
-                    const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
-                    syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados - Actualización automática activada`;
-
-                } catch (error) {
-                    console.error('❌ Error cargando datos:', error);
-                    syncStatus.className = 'sync-status sync-error';
-                    syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
-                } finally {
-                    loadingOverlay.style.display = 'none';
+            if (departamento && nombre) {
+                if (!nuevosDatos[departamento]) {
+                    nuevosDatos[departamento] = [];
                 }
+                
+                nuevosDatos[departamento].push({
+                    nombre: nombre,
+                    comision: comision,
+                    votos: votos,
+                    enlace: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`
+                });
+                
+                console.log(`   ✅ Agregado delegado: ${nombre} a ${departamento}`);
             }
+        }
+
+        // ACTUALIZACIÓN ATÓMICA
+        delegadosPorDepartamento = nuevosDatos;
+
+        // VERIFICACIÓN DE DATOS
+        console.log("=== 📊 DATOS CARGADOS ===");
+        console.log("Total departamentos:", Object.keys(delegadosPorDepartamento).length);
+        console.log("Total delegados:", Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0));
+        
+        if (Object.keys(delegadosPorDepartamento).length === 0) {
+            console.log("🚨 ALERTA: NO SE CARGÓ NINGÚN DEPARTAMENTO");
+            console.log("Posibles causas:");
+            console.log("1. El Sheets está vacío");
+            console.log("2. Las columnas tienen nombres diferentes");
+            console.log("3. Problema de permisos del Sheets");
+        } else {
+            Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
+                console.log(`${depto}: ${delegadosPorDepartamento[depto].length} delegados`);
+            });
+        }
+        console.log("=== FIN DATOS ===");
+
+        syncStatus.className = 'sync-status sync-success';
+        const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
+        syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados - Actualización automática activada`;
+
+    } catch (error) {
+        console.error('❌ Error cargando datos:', error);
+        syncStatus.className = 'sync-status sync-error';
+        syncStatus.innerHTML = `❌ Error sincronizando: ${error.message}`;
+    } finally {
+        loadingOverlay.style.display = 'none';
+    }
+}
 
             // ============================================
             // 🗺️ FUNCIÓN DE MAPEO COMPLETA
