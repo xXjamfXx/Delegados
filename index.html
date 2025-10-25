@@ -2254,13 +2254,11 @@
                 `;
             }
             }
-        
-        
         // ============================================
-        // 🎯 SISTEMA MEJORADO PARA AGREGAR NUEVOS DELEGADOS
-        // ============================================
+// 🎯 SISTEMA MEJORADO PARA AGREGAR NUEVOS DELEGADOS
+// ============================================
 
-        class GestorDelegados {class GestorDelegados {
+class GestorDelegados {
     constructor() {
         this.sheetId = '1MPNF48GRsvsg5xc19RE40-c-rekYDBm9oxG42_9BOys';
         this.scriptUrl = 'https://script.google.com/macros/s/AKfycbz-JI7iYEpXMMMs1Pi3BAAz5C6iPIbtA-wUwdX_1gLqiWdPEPEJNjQm539ux98aaQoF/exec';
@@ -2549,29 +2547,31 @@
     }
 }
 
-        // 🚀 INICIALIZAR TODO
-        document.addEventListener('DOMContentLoaded', function() {
-            window.conexionInteligente = new ConexionInteligente();
-            window.gestorDelegados = new GestorDelegados();
+// 🚀 INICIALIZAR TODO
+document.addEventListener('DOMContentLoaded', function() {
+    window.conexionInteligente = new ConexionInteligente();
+    window.gestorDelegados = new GestorDelegados();
+    
+    console.log('✅ Sistema de agregar delegados activado');
+    
+    const esperarMapa = setInterval(() => {
+        if (window.mapaCargado) {
+            clearInterval(esperarMapa);
             
-            console.log('✅ Sistema de agregar delegados activado');
+            setTimeout(() => {
+                window.conexionInteligente.cargarTodosLosVotos();
+            }, 3000);
             
-            const esperarMapa = setInterval(() => {
-                if (window.mapaCargado) {
-                    clearInterval(esperarMapa);
-                    
-                    setTimeout(() => {
-                        window.conexionInteligente.cargarTodosLosVotos();
-                    }, 3000);
-                    
-                    setInterval(() => {
-                        window.conexionInteligente.cargarTodosLosVotos();
-                    }, 45000);
-                }
-            }, 500);
-            
-            console.log('✅ Sistema de sincronización activado');
-        });
+            setInterval(() => {
+                window.conexionInteligente.cargarTodosLosVotos();
+            }, 45000);
+        }
+    }, 500);
+    
+    console.log('✅ Sistema de sincronización activado');
+});
+        
+        
     </script>
 </body>
 </html>
