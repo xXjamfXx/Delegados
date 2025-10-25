@@ -762,12 +762,12 @@ console.log("=== ✅ FIN DATOS CARGADOS ===");
 
             // Función para mapear nombres entre GeoJSON y datos
             // Función COMPLETA para mapear nombres de TODOS los departamentos
+// Función COMPLETA para mapear TODOS los departamentos
 function mapearNombreDepartamento(nombreGeoJSON) {
-    // Mapeo completo de todos los departamentos
+    // Mapeo completo de TODOS los departamentos (Mapa -> Sheets)
     const mapeoCompleto = {
-        // Nombres del MAPA -> Nombres del SHEETS
         "Amazonas": "Amazonas",
-        "Antioquia": "Antioquia", 
+        "Antioquia": "ANTIOQUIA", 
         "Arauca": "Arauca",
         "Atlántico": "Atlántico",
         "Bogotá": "SANTAFE DE BOGOTA D.C",
@@ -802,9 +802,34 @@ function mapearNombreDepartamento(nombreGeoJSON) {
         "San Andrés": "ARCHIPIELAGO DE SAN ANDRES PROVIDENCIA Y SANTA CATALINA"
     };
     
-    const resultado = mapeoCompleto[nombreGeoJSON] || nombreGeoJSON;
-    console.log(`🗺️ Mapeo: "${nombreGeoJSON}" -> "${resultado}"`);
-    return resultado;
+    // Buscar en el mapeo completo
+    if (mapeoCompleto[nombreGeoJSON]) {
+        const resultado = mapeoCompleto[nombreGeoJSON];
+        console.log(`✅ Mapeo directo: "${nombreGeoJSON}" -> "${resultado}"`);
+        return resultado;
+    }
+    
+    // Si no está en el mapeo, buscar coincidencia exacta en los datos
+    const departamentosEnDatos = Object.keys(delegadosPorDepartamento);
+    for (const depto of departamentosEnDatos) {
+        if (depto === nombreGeoJSON) {
+            console.log(`✅ Coincidencia exacta: "${nombreGeoJSON}" -> "${depto}"`);
+            return depto;
+        }
+    }
+    
+    // Si no hay coincidencia exacta, buscar ignorando mayúsculas
+    const nombreBuscado = nombreGeoJSON.toUpperCase();
+    for (const depto of departamentosEnDatos) {
+        if (depto.toUpperCase() === nombreBuscado) {
+            console.log(`✅ Coincidencia por mayúsculas: "${nombreGeoJSON}" -> "${depto}"`);
+            return depto;
+        }
+    }
+    
+    // Si no encuentra nada, devolver el original
+    console.log(`❌ No se encontró coincidencia para: "${nombreGeoJSON}"`);
+    return nombreGeoJSON;
 }
 
             // Cargar opciones de filtros
