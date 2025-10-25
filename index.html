@@ -2258,54 +2258,56 @@
 // 🎯 SISTEMA MEJORADO PARA AGREGAR NUEVOS DELEGADOS
 // ============================================
 
+// ============================================
+// 🎯 SISTEMA MEJORADO PARA AGREGAR NUEVOS DELEGADOS
+// ============================================
+
 class GestorDelegados {
     constructor() {
         this.sheetId = '1MPNF48GRsvsg5xc19RE40-c-rekYDBm9oxG42_9BOys';
         this.scriptUrl = 'https://script.google.com/macros/s/AKfycbxvZqT-TYSrlbDdOlcuWkiID0cp3vYWpcBSFbI5TieDsF0OkAZPRNIYmchPtDank1Uh/exec';
         this.init();
     }
-// Función para probar CORS
-async probarCORS() {
-    try {
-        const testData = {
-            nombre: 'Test CORS',
-            departamento: 'Test',
-            comision: 'COMISIÓN TEST'
-        };
 
-        const response = await fetch(this.scriptUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(testData)
-        });
-
-        if (response.ok) {
-            const resultado = await response.json();
-            console.log('✅ CORS FUNCIONANDO:', resultado);
-            return true;
-        } else {
-            console.log('❌ Error en respuesta:', response.status);
-            return false;
-        }
-    } catch (error) {
-        console.log('❌ Error CORS:', error);
-        return false;
-    }
-}
-
-// Ejecutar prueba al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        window.gestorDelegados.probarCORS();
-    }, 2000);
-});
     init() {
         this.agregarEventListenersFormulario();
         this.cargarOpcionesDepartamentos();
         this.cargarDelegadosGuardados();
         this.cargarDelegadosTemporales();
+        
+        // Probar CORS después de 2 segundos
+        setTimeout(() => this.probarCORS(), 2000);
+    }
+
+    // 🧪 FUNCIÓN PARA PROBAR CORS - DENTRO DE LA CLASE
+    async probarCORS() {
+        try {
+            const testData = {
+                nombre: 'Test CORS',
+                departamento: 'Test',
+                comision: 'COMISIÓN TEST'
+            };
+
+            const response = await fetch(this.scriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(testData)
+            });
+
+            if (response.ok) {
+                const resultado = await response.json();
+                console.log('✅ CORS FUNCIONANDO:', resultado);
+                return true;
+            } else {
+                console.log('❌ Error en respuesta:', response.status);
+                return false;
+            }
+        } catch (error) {
+            console.log('❌ Error CORS:', error);
+            return false;
+        }
     }
 
     cargarDelegadosGuardados() {
