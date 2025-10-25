@@ -952,25 +952,33 @@ function mapearNombreDepartamento(nombreGeoJSON) {
 
             // Mostrar delegados en modal
             // Mostrar delegados en modal - VERSIÓN CORREGIDA
+// Mostrar delegados en modal - VERSIÓN SIN FILTROS
 function mostrarDelegados(nombreDepartamento) {
+    console.log("🔍 Mostrando delegados para:", nombreDepartamento);
+    
     const departamentoFinal = mapearNombreDepartamento(nombreDepartamento);
     const delegados = delegadosPorDepartamento[departamentoFinal] || [];
+    
+    console.log("📊 Delegados encontrados:", delegados);
+    console.log("🏛️ Departamento en datos:", departamentoFinal);
+    console.log("👥 Cantidad de delegados:", delegados.length);
 
-    // QUITAR los filtros para el modal - mostrar TODOS los delegados del departamento
-    const delegadosFiltrados = delegados; // Mostrar todos, sin filtros
+    // MOSTRAR TODOS LOS DELEGADOS SIN FILTROS
+    const delegadosAMostrar = delegados;
 
-    modalTitulo.textContent = `Delegados - ${nombreDepartamento} (${delegadosFiltrados.length})`;
+    modalTitulo.textContent = `Delegados - ${nombreDepartamento} (${delegadosAMostrar.length})`;
     listaDelegados.innerHTML = '';
 
-    if (delegadosFiltrados.length === 0) {
+    if (delegadosAMostrar.length === 0) {
         listaDelegados.innerHTML = `
             <div class="no-results">
                 <p>No hay delegados en este departamento</p>
                 <p><small>Departamento: ${nombreDepartamento}</small></p>
+                <p><small>Buscado como: ${departamentoFinal}</small></p>
             </div>
         `;
     } else {
-        delegadosFiltrados.forEach(delegado => {
+        delegadosAMostrar.forEach(delegado => {
             const delegadoElement = document.createElement('div');
             delegadoElement.className = 'delegado-item';
             delegadoElement.innerHTML = `
@@ -987,6 +995,9 @@ function mostrarDelegados(nombreDepartamento) {
     }
 
     modal.style.display = 'block';
+    
+    // DEBUG final
+    console.log("✅ Modal abierto con", delegadosAMostrar.length, "delegados");
 }
 
             function cerrarModal() {
