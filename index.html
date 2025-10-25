@@ -113,7 +113,6 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
             border-left: 5px solid #004d99;
         }
-        
         /* =============================== */
         /* 🎯 SISTEMA DE FILTROS */
         /* =============================== */
@@ -169,33 +168,6 @@
             border-color: #004d99;
         }
 
-        /* =============================== */
-        /* 🎯 BOTÓN AGREGAR DELEGADO */
-        /* =============================== */
-        .btn-agregar {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-            min-width: 180px;
-        }
-
-        .btn-agregar:hover {
-            background: linear-gradient(135deg, #218838, #1e9e8a);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-
-        .btn-agregar:active {
-            transform: translateY(0);
-        }
-
         .filter-info {
             text-align: center;
             color: #666;
@@ -219,17 +191,17 @@
             text-align: center;
         }
 
-        #colombia-map {
-            width: 100%;
-            height: 1000px;
-            background: #f8fbff;
+       #colombia-map {
+    width: 100%;
+    height: 1000px;
+    background: #f8fbff;
             border-radius: 10px;
             overflow: hidden;
         }
 
         .department-path {
             fill: #ff9c03;
-            stroke: #cc7d02;
+    stroke: #cc7d02;
             stroke-width: 1;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -237,20 +209,20 @@
 
         .department-path:hover {
             fill: #e68a00;
-            stroke: #b36b00;
-            stroke-width: 2;
-        }
-
-        .department-path.seleccionado {
-            fill: #cc7d02;
-            stroke: #ff9c03;
+    stroke: #b36b00;
             stroke-width: 2;
         }
         
-        .department-path.filtrado {
-            opacity: 0.3 !important;
-            fill: #cccccc !important;
+
+        .department-path.seleccionado {
+            fill: #cc7d02;
+    stroke: #ff9c03;
+            stroke-width: 2;
         }
+        .department-path.filtrado {
+    opacity: 0.3 !important;
+    fill: #cccccc !important;
+}
 
         .department-label {
             font-size: 12px;
@@ -313,107 +285,6 @@
 
         .close-modal:hover {
             color: #003366;
-        }
-
-        /* =============================== */
-        /* 🎯 MODAL FORMULARIO */
-        /* =============================== */
-        .modal-formulario {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-form-content {
-            background: white;
-            margin: 5% auto;
-            padding: 2.5rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #003366;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid #e6f2ff;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #004d99;
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, #003366, #004d99);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-        }
-
-        .btn-submit:hover {
-            background: linear-gradient(135deg, #002244, #003366);
-            transform: translateY(-2px);
-        }
-
-        .btn-submit:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
         }
 
         #modal-titulo {
@@ -500,7 +371,7 @@
             .search-box, .filter-select { min-width: 100%; }
             #colombia-map { height: 500px !important; }
             .department-label { font-size: 8px !important; }
-            .map-tooltip { font-size: 12px !important; }
+.map-tooltip { font-size: 12px !important; }
         }
     </style>
 </head>
@@ -538,9 +409,6 @@
                     <option value="">Todos los departamentos</option>
                     <!-- Las opciones se generan automáticamente desde JavaScript -->
                 </select>
-                <button id="btn-agregar-delegado" class="btn-agregar">
-                    ➕ Agregar Delegado
-                </button>
             </div>
             <div class="filter-info">
                 <p id="filter-results">Mostrando todos los delegados</p>
@@ -567,55 +435,6 @@
         </div>
     </div>
 
-    <!-- =============================== -->
-    <!-- 🎯 MODAL FORMULARIO AGREGAR DELEGADO -->
-    <!-- =============================== -->
-    <div id="modal-formulario" class="modal-formulario">
-        <div class="modal-form-content">
-            <span class="close-modal-form">&times;</span>
-            <h3 style="color: #003366; margin-bottom: 1.5rem; text-align: center;">
-                ➕ Agregar Nuevo Delegado
-            </h3>
-            
-            <div id="form-alert"></div>
-            
-            <form id="form-delegado">
-                <div class="form-group">
-                    <label for="nombre-delegado">Nombre Completo:</label>
-                    <input type="text" id="nombre-delegado" class="form-control" 
-                           placeholder="Ej: María García López" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="departamento-delegado">Departamento:</label>
-                    <select id="departamento-delegado" class="form-control" required>
-                        <option value="">Selecciona un departamento</option>
-                        <!-- Se llena automáticamente con JavaScript -->
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="comision-delegado">Comisión:</label>
-                    <select id="comision-delegado" class="form-control" required>
-                        <option value="">Selecciona una comisión</option>
-                        <option value="COMISIÓN PRIMERA">COMISIÓN PRIMERA</option>
-                        <option value="COMISIÓN SEGUNDA">COMISIÓN SEGUNDA</option>
-                        <option value="COMISIÓN TERCERA">COMISIÓN TERCERA</option>
-                        <option value="COMISIÓN CUARTA">COMISIÓN CUARTA</option>
-                        <option value="COMISIÓN QUINTA">COMISIÓN QUINTA</option>
-                        <option value="COMISIÓN SEXTA">COMISIÓN SEXTA</option>
-                        <option value="COMISIÓN SÉPTIMA">COMISIÓN SÉPTIMA</option>
-                        <option value="ALIADO">ALIADO</option>
-                    </select>
-                </div>
-                
-                <button type="submit" id="btn-submit" class="btn-submit">
-                    Guardar Delegado
-                </button>
-            </form>
-        </div>
-    </div>
-
     <footer>
         <div class="container">
             <p>&copy; 2025 Martin Carabalí. Todos los derechos reservados.</p>
@@ -625,19 +444,940 @@
 
     <script>
         // ============================================
-        // 🔧 DATOS DE DELEGADOS
+        // 🔧 DATOS DE DELEGADOS - EDITAR AQUÍ
         // ============================================
+
         const delegadosPorDepartamento = {
-            "Amazonas": [{ nombre: "Hernando Mosquera Gamboa", comision: "COMISIÓN QUINTA", votos: 0, enlace: "#" }],
-            "Antioquia": [
-                { nombre: "Beatriz Elena Quesada Cuesta", comision: "COMISIÓN QUINTA", votos: 0, enlace: "#" },
-                { nombre: "Fulgencia Serna Chaverra", comision: "COMISIÓN SEGUNDA", votos: 0, enlace: "#" }
-            ],
-            // ... TUS DATOS COMPLETOS AQUÍ ...
-        };
+    "Amazonas": [
+        {
+            nombre: "Hernando Mosquera Gamboa",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_amazonas"
+        }
+    ],
+    
+    "Antioquia": [
+        {
+            nombre: "Beatriz Elena Quesada Cuesta",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_antioquia1"
+        },
+        {
+            nombre: "Fulgencia Serna Chaverra",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_antioquia2"
+        },
+        {
+            nombre: "Maria Cristina Lloreda Mena",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_antioquia3"
+        }
+    ],
+    
+    "Arauca": [
+        {
+            nombre: "Jhon Jairo Hurtado Hurtado",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_arauca1"
+        },
+        {
+            nombre: "Walberto Berdugo Arellanos",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_arauca2"
+        }
+    ],
+    
+    "Atlántico": [
+        {
+            nombre: "Luis Cassiani Amador",
+            comision: "COMISIÓN TERCERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_atlantico1"
+        },
+        {
+            nombre: "Marco Casiani Cañate",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_atlantico2"
+        },
+        {
+            nombre: "Gilberto Lemos Sanchez",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_atlantico3"
+        },
+        {
+            nombre: "Deibys Enrique Hernandez Cardona",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_atlantico4"
+        },
+        {
+            nombre: "Ronald Jose Valdes Padilla",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_atlantico5"
+        }
+    ],
+    
+    "SANTAFE DE BOGOTA D.C": [
+        {
+            nombre: "Anyela María Guanga Marquinez",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bogota1"
+        },
+        {
+            nombre: "Nieves Mercedes Lemos Garcia",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bogota2"
+        },
+        {
+            nombre: "Ricardo Hurtado Bravo",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bogota3"
+        },
+        {
+            nombre: "Alejandrina Vernaza Quiñones",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bogota4"
+        },
+        {
+            nombre: "Luz Aida Angulo Angulo",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bogota5"
+        },
+        {
+            nombre: "Aduer Anibal Quiñones Tenorio",
+            comision: "COMISIÓN CUARTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bogota6"
+        }
+    ],
+    
+    "Bolívar": [
+        {
+            nombre: "Keinel Yoel Simarra Cassiani",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bolivar1"
+        },
+        {
+            nombre: "Arnulfo Cardosi Julio",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bolivar2"
+        },
+        {
+            nombre: "Henry Martín Guizamano Vivas",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bolivar3"
+        },
+        {
+            nombre: "Williams Hernandes Graus",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bolivar4"
+        },
+        {
+            nombre: "Miguel Ángel Cassiani Chico",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_bolivar5"
+        }
+    ],
+    
+    "Boyacá": [
+        {
+            nombre: "Bárbara Machado Nagles",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_boyaca1"
+        },
+        {
+            nombre: "Lucelly Cordoba",
+            comision: "COMISIÓN CUARTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_boyaca2"
+        }
+    ],
+    
+    "Caldas": [
+        {
+            nombre: "Alonso Moreno Hernandez",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_caldas1"
+        },
+        {
+            nombre: "Liseth Barbosa Rojas",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_caldas2"
+        }
+    ],
+    
+    "Caquetá": [
+        {
+            nombre: "Juan Alexy Rodriguez Quiñones",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_caqueta"
+        }
+    ],
+    
+    "Casanare": [
+        {
+            nombre: "Sugeirys Milena Camacho Blandon",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_casanare1"
+        },
+        {
+            nombre: "Gener Nazarit Díaz",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_casanare2"
+        },
+        {
+            nombre: "Yasmid Banguero",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_casanare3"
+        }
+    ],
+    
+    "Cauca": [
+        {
+            nombre: "Roque Alfredo Riascos",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca1"
+        },
+        {
+            nombre: "Yaneth Mosquera Rivera",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca2"
+        },
+        {
+            nombre: "Jhon Jairo Melecio",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca3"
+        },
+        {
+            nombre: "Luis David Velasco",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca4"
+        },
+        {
+            nombre: "Wilson Osvaldo Gonzalez",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca5"
+        },
+        {
+            nombre: "Paola Andrea Ararat Nzary",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca6"
+        },
+        {
+            nombre: "Lisifrey Ararat",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca7"
+        },
+        {
+            nombre: "Carlos Marino Valencia",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca8"
+        },
+        {
+            nombre: "Rosa Maria Montaño Colorado",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca9"
+        },
+        {
+            nombre: "Dionisio Rodriguez Paz",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca10"
+        },
+        {
+            nombre: "Nestor Segundo Hurtado Hurtado",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca11"
+        },
+        {
+            nombre: "Wilner Perlaza Ortis",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca12"
+        },
+        {
+            nombre: "Nielsen Saac Nuñez",
+            comision: "ALIADO",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cauca13"
+        }
+    ],
+    
+    "Cesar": [
+        {
+            nombre: "Elvis Pardo Piñeres",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cesar1"
+        },
+        {
+            nombre: "Jose Tomas Marquez Fragozo",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cesar2"
+        },
+        {
+            nombre: "Indra Nuñez Anaya",
+            comision: "COMISIÓN CUARTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cesar3"
+        }
+    ],
+    
+    "Chocó": [
+        {
+            nombre: "Emilce Perea Cuesta",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco1"
+        },
+        {
+            nombre: "Elizabet Moreno Barco",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco2"
+        },
+        {
+            nombre: "Francisco Valerio Murillo Reyes",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco3"
+        },
+        {
+            nombre: "Jose Aristarco Mosquera",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco4"
+        },
+        {
+            nombre: "Pedro Julio Rivas Mena",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco5"
+        },
+        {
+            nombre: "Jose Americo Mosquera Berrio",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco6"
+        },
+        {
+            nombre: "Valerio Santos Andrades Mosquera",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco7"
+        },
+        {
+            nombre: "Francisco Javier Mosquera Caicedo",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco8"
+        },
+        {
+            nombre: "Deyler Mosquera Martinez",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco9"
+        },
+        {
+            nombre: "German Antonio Marmolejo Renteria",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco10"
+        },
+        {
+            nombre: "Jose Ramiro Rodriguez Correa",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_choco11"
+        }
+    ],
+    
+    "Córdoba": [
+        {
+            nombre: "Mirna Luz Lloreda Cordoba",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cordoba1"
+        },
+        {
+            nombre: "Miguel Angel Rentería Córdoba",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cordoba2"
+        },
+        {
+            nombre: "Ricardo Martínez Cantillo",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cordoba3"
+        }
+    ],
+    
+    "Cundinamarca": [
+        {
+            nombre: "Carlos Hernan Palacios Moreno",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cundinamarca1"
+        },
+        {
+            nombre: "Carmen Castro Córdoba",
+            comision: "COMISIÓN PRIMERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cundinamarca2"
+        },
+        {
+            nombre: "Edwin José Guerrero Mosquera",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cundinamarca3"
+        },
+        {
+            nombre: "Mirla del Carmen Lloreda Gracia",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_cundinamarca4"
+        }
+    ],
+    
+    "Guainía": [
+        {
+            nombre: "Bisneyder Martínez Rentería",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guainia1"
+        },
+        {
+            nombre: "Carmen Idalia Cetre Mosquera",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guainia2"
+        }
+    ],
+    
+    "La Guajira": [
+        {
+            nombre: "Kendrys Paola Reyes Torres",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guajira1"
+        },
+        {
+            nombre: "Nelson Solano Duarte",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guajira2"
+        },
+        {
+            nombre: "Evaristo De Arma Cordoba",
+            comision: "COMISIÓN TERCERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guajira3"
+        },
+        {
+            nombre: "Eber Joaquin Ramos Aregoces",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guajira4"
+        },
+        {
+            nombre: "Amilcar Hernando Gomez Toro",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guajira5"
+        }
+    ],
+    
+    "Guaviare": [
+        {
+            nombre: "Nelly Murillo López",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guaviare1"
+        },
+        {
+            nombre: "Dennis Juseth Atuesta Ibarguen",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guaviare2"
+        },
+        {
+            nombre: "Cristian Andrés Montaño Gómez",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_guaviare3"
+        }
+    ],
+    
+    "Huila": [
+        {
+            nombre: "Victor Vladimir Vallecilla Góngora",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_huila1"
+        },
+        {
+            nombre: "Francisco Alexis Arce Arango",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_huila2"
+        }
+    ],
+    
+    "Magdalena": [
+        {
+            nombre: "Sandra Chiquillo Julio",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_magdalena1"
+        },
+        {
+            nombre: "Jorge Emilio Montenegro Esquea",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_magdalena2"
+        },
+        {
+            nombre: "Matilde Ester Maestre Rivera",
+            comision: "COMISIÓN CUARTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_magdalena3"
+        },
+        {
+            nombre: "Yomaira Olivo Pérez",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_magdalena4"
+        }
+    ],
+    
+    "Meta": [
+        {
+            nombre: "Kelly Moran",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_meta1"
+        },
+        {
+            nombre: "Debangio Valencia Chara",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_meta2"
+        },
+        {
+            nombre: "Marta Yaneth Lloreda Gracia",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_meta3"
+        }
+    ],
+    
+    "Nariño": [
+        {
+            nombre: "Luz Dary Ortiz Bolaños",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño1"
+        },
+        {
+            nombre: "Kenny Fabiano Tapia Acosta",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño2"
+        },
+        {
+            nombre: "Jeison Pineda Olaya",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño3"
+        },
+        {
+            nombre: "Aquileo Mosquera Copete",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño4"
+        },
+        {
+            nombre: "Jonny Ordoñez Salazar",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño5"
+        },
+        {
+            nombre: "Albeiro Sinisterra Segura",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño6"
+        },
+        {
+            nombre: "Elsa Lucia Caldas Gongora",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño7"
+        },
+        {
+            nombre: "Luz Mirley Montaño Ruíz",
+            comision: "COMISIÓN CUARTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño8"
+        },
+        {
+            nombre: "Héctor Pablo Cabezas Cortes",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño9"
+        },
+        {
+            nombre: "Hilda Nayibe Hurtado España",
+            comision: "COMISIÓN PRIMERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño10"
+        },
+        {
+            nombre: "Jairo Rodolfo Torres Montano",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño11"
+        },
+        {
+            nombre: "Cesar Armando Arboleda",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño12"
+        },
+        {
+            nombre: "Marleni Cisnero",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño13"
+        },
+        {
+            nombre: "Marino Antonio Quiñones Angulo",
+            comision: "COMISIÓN CUARTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño14"
+        },
+        {
+            nombre: "Nixon Ortiz",
+            comision: "COMISIÓN TERCERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño15"
+        },
+        {
+            nombre: "Lady Lorena Riasco Sevillano",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño16"
+        },
+        {
+            nombre: "Ivan Rodolfo Valencia Correa",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño17"
+        },
+        {
+            nombre: "Harrison Esneider Vidal",
+            comision: "COMISIÓN TERCERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_nariño18"
+        }
+    ],
+    
+    "Putumayo": [
+        {
+            nombre: "Arley José Quiñones Ortíz",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_putumayo1"
+        },
+        {
+            nombre: "Wilson Moreno Mosquer",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_putumayo2"
+        },
+        {
+            nombre: "Vicente William Castillo Delgado",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_putumayo3"
+        }
+    ],
+    
+    "Quindío": [
+        {
+            nombre: "Bernardo Córdoba Cuesta",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_quindio1"
+        },
+        {
+            nombre: "Luz Aida Ibarra Ibarra",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_quindio2"
+        }
+    ],
+    
+    "Risaralda": [
+        {
+            nombre: "Aristides Pino Mosquera",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_risaralda1"
+        },
+        {
+            nombre: "Juan Bautista Mosquera Lloreda",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_risaralda2"
+        }
+    ],
+    
+    "Archipiélago de San Andrés, Providencia y Santa Catalina": [
+        {
+            nombre: "Jairo Rodriguez Davis",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_san_andres1"
+        },
+        {
+            nombre: "Charles Ronald Cotes Torres",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_san_andres2"
+        },
+        {
+            nombre: "Roylie Eduardo Hawkins Hawkins",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_san_andres3"
+        }
+    ],
+    
+    "Santander": [
+        {
+            nombre: "Wilson Arias Ardila",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_santander"
+        }
+    ],
+    
+    "Sucre": [
+        {
+            nombre: "Juan Carlos Bayter",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_sucre1"
+        },
+        {
+            nombre: "Glorimer Rodriguez Hoyos",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_sucre2"
+        },
+        {
+            nombre: "Guillermo Castro Teheran",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_sucre3"
+        }
+    ],
+    
+    "Tolima": [
+        {
+            nombre: "Andres Felipe Velasquez Mosquera",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_tolima1"
+        },
+        {
+            nombre: "Zandy Zarley Perea",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_tolima2"
+        }
+    ],
+    
+    "Valle del Cauca": [
+        {
+            nombre: "Adriana Damaris Plaza Lourido",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle1"
+        },
+        {
+            nombre: "Erlendi Cuero",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle2"
+        },
+        {
+            nombre: "Angel Eduardo Murillo Mosquera",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle3"
+        },
+        {
+            nombre: "Daniel Jose Obando Carabali",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle4"
+        },
+        {
+            nombre: "Gonzalo Vallecilla Caicedo",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle5"
+        },
+        {
+            nombre: "Hector Didio Mosquera Caicedo",
+            comision: "COMISIÓN PRIMERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle6"
+        },
+        {
+            nombre: "Jairo Andres Rodriguez Palacios",
+            comision: "COMISIÓN TERCERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle7"
+        },
+        {
+            nombre: "Johanna Caicedo Sinisterra",
+            comision: "COMISIÓN SÉPTIMA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle8"
+        },
+        {
+            nombre: "Jose Antonio Hinestroza Mosquera",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle9"
+        },
+        {
+            nombre: "Cesar Augusto Cabezas Riascos",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle10"
+        },
+        {
+            nombre: "Fabio Garces",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle11"
+        },
+        {
+            nombre: "Martha Cecilia Jordán Arroyo",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle12"
+        },
+        {
+            nombre: "Marlenis Hinestroza Sinisterra",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle13"
+        },
+        {
+            nombre: "Oscar Alberto Lenis Ibarguen",
+            comision: "COMISIÓN PRIMERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle14"
+        },
+        {
+            nombre: "Wilson Renteria Riascos",
+            comision: "COMISIÓN PRIMERA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_valle15"
+        }
+    ],
+    
+    "Vaupés": [
+        {
+            nombre: "Gloria Lorena Balanta Mina",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_vaupes1"
+        },
+        {
+            nombre: "James Alexis Mina Orejuela",
+            comision: "COMISIÓN QUINTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_vaupes2"
+        },
+        {
+            nombre: "Luis Fernando Lasso Mina",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_vaupes3"
+        }
+    ],
+    
+    "Vichada": [
+        {
+            nombre: "Willinton Odiel Florez Mena",
+            comision: "COMISIÓN SEGUNDA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_vichada1"
+        },
+        {
+            nombre: "Omar Bonilla Caicedo",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_vichada2"
+        }
+    ],
+    
+    "Víctimas": [
+        {
+            nombre: "Edinson Banguero Palomino",
+            comision: "COMISIÓN SEXTA",
+            votos: 0,
+            enlace: "https://docs.google.com/spreadsheets/d/ejemplo_victimas"
+        }
+    ]
+};
 
         // ============================================
-        // 🗺️ SISTEMA DEL MAPA (ORIGINAL)
+        // 🗺️ CÓDIGO DEL MAPA Y FUNCIONALIDAD
         // ============================================
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -649,7 +1389,7 @@
             const comisionFilter = document.getElementById('comision-filter');
             const departamentoFilter = document.getElementById('departamento-filter');
             const filterResults = document.getElementById('filter-results');
-            const mapContainer = document.getElementById('colombia-map');
+           const mapContainer = document.getElementById('colombia-map');
 
             let comisionesUnicas = new Set();
             let departamentosData = [];
@@ -669,9 +1409,10 @@
                 const height = 1000;
 
                 const svg = d3.select("#colombia-map")
-                    .append("svg")
-                    .attr("width", width)
-                    .attr("height", height);
+                    
+    .append("svg")
+    .attr("width", width)     // ✅ VUELVE A ESTO
+    .attr("height", height);
 
                 const g = svg.append("g");
 
@@ -681,114 +1422,130 @@
                     .attr("class", "map-tooltip")
                     .style("opacity", 0);
 
-                // Cargar el GeoJSON
-                d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw/3aadedf47badbdac823b00dbe259f6bc6d9e1899/colombia.geo.json")
-                    .then(function(colombia) {
-                        console.log("✅ GeoJSON cargado:", colombia);
-                        
-                        const isMobile = window.innerWidth < 768;
-                        const baseScale = isMobile ? 2000 : 3000;
+                // Cargar el GeoJSON - NUEVO ENLACE
+                // Cargar el GeoJSON - ENLACE CONFIRMADO FUNCIONA
+d3.json("https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw/3aadedf47badbdac823b00dbe259f6bc6d9e1899/colombia.geo.json")
+    .then(function(colombia) {
+        console.log("✅ GeoJSON cargado:", colombia);
+        
+        // Proyección más simple
+        const isMobile = window.innerWidth < 768;
+const baseScale = isMobile ? 2000 : 3000;
 
-                        let center = [-74, 4.5];
-                        let translate = [width / 2, height / 2];
+let center = [-74, 4.5];
+let translate = [width / 2, height / 2];
 
-                        if (isMobile) {
-                            translate = [width / 2, height / 1.8];
-                        }
+// 📱 SOLO PARA MÓVILES - ajustar posición
+if (isMobile) {
+    translate = [width / 2, height / 1.8];
+}
 
-                        const projection = d3.geoMercator()
-                            .center(center)
-                            .scale(baseScale)
-                            .translate(translate);
+const projection = d3.geoMercator()
+    .center(center)
+    .scale(baseScale)
+    .translate(translate);
+console.log("📱 Dispositivo:", isMobile ? "Móvil" : "Computadora", "Scale:", baseScale);
+        // 🔥 DEBUG TEMPORAL - AGREGAR ESTO
+console.log("🔍 DEBUG MAPA:");
+console.log("Scale aplicado:", projection.scale());
+console.log("Width:", width, "Height:", height);
+console.log("Centro:", projection.center());
 
-                        const path = d3.geoPath().projection(projection);
+        const path = d3.geoPath().projection(projection);
 
-                        // DIBUJAR FORMAS PRIMERO (paths)
-                        g.selectAll("path")
-                            .data(colombia.features)
-                            .enter()
-                            .append("path")
-                            .attr("class", "department-path")
-                            .attr("d", path)
-                            .attr("data-depto", d => d.properties.NOMBRE_DPT)
-                            .on("mouseover", function(event, d) {
-                                const deptoMapa = d.properties.NOMBRE_DPT;
-                                
-                                let cantidad = 0;
-                                let departamentoEncontrado = "";
-                                
-                                const nombreNormalizado = deptoMapa
-                                    .toLowerCase()
-                                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                                    .replace(/[^a-z0-9 ]/g, '')
-                                    .replace(/\s+/g, ' ')
-                                    .trim();
-                                
-                                Object.keys(delegadosPorDepartamento).forEach(nombreDepto => {
-                                    const nombreDeptoNormalizado = nombreDepto
-                                        .toLowerCase()
-                                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                                        .replace(/[^a-z0-9 ]/g, '')
-                                        .replace(/\s+/g, ' ')
-                                        .trim();
-                                    
-                                    if (nombreNormalizado === nombreDeptoNormalizado || 
-                                        nombreNormalizado.includes(nombreDeptoNormalizado) ||
-                                        nombreDeptoNormalizado.includes(nombreNormalizado)) {
-                                        departamentoEncontrado = nombreDepto;
-                                        cantidad = delegadosPorDepartamento[nombreDepto].length;
-                                    }
-                                });
-                                
-                                tooltip.transition().duration(200).style("opacity", .9);
-                                tooltip.html(`<strong>${deptoMapa}</strong><br/>${cantidad} delegado${cantidad !== 1 ? 's' : ''}`)
-                                    .style("left", (event.pageX + 10) + "px")
-                                    .style("top", (event.pageY - 28) + "px");
+        // DIBUJAR FORMAS PRIMERO (paths)
+        g.selectAll("path")
+            .data(colombia.features)
+            .enter()
+            .append("path")
+            .attr("class", "department-path")
+            .attr("d", path)
+            .attr("data-depto", d => d.properties.NOMBRE_DPT)
+  .on("mouseover", function(event, d) {
+    const deptoMapa = d.properties.NOMBRE_DPT;
+    
+    // BUSCAR COINCIDENCIA INTELIGENTE
+    let cantidad = 0;
+    let departamentoEncontrado = "";
+    
+    // Normalizar nombre del mapa (minúsculas, sin tildes)
+    const nombreNormalizado = deptoMapa
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
+        .replace(/[^a-z0-9 ]/g, '') // solo letras y números
+        .replace(/\s+/g, ' ') // espacios múltiples a simple
+        .trim();
+    
+    // Buscar en todos los departamentos
+    Object.keys(delegadosPorDepartamento).forEach(nombreDepto => {
+        // Normalizar nombre del departamento en datos
+        const nombreDeptoNormalizado = nombreDepto
+            .toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9 ]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        
+        // Verificar coincidencia
+        if (nombreNormalizado === nombreDeptoNormalizado || 
+            nombreNormalizado.includes(nombreDeptoNormalizado) ||
+            nombreDeptoNormalizado.includes(nombreNormalizado)) {
+            departamentoEncontrado = nombreDepto;
+            cantidad = delegadosPorDepartamento[nombreDepto].length;
+        }
+    });
+    
+    console.log("🔍 Mapa:", deptoMapa, "| 📊 Datos:", departamentoEncontrado, "| 👥 Cantidad:", cantidad);
+    
+    tooltip.transition().duration(200).style("opacity", .9);
+    tooltip.html(`<strong>${deptoMapa}</strong><br/>${cantidad} delegado${cantidad !== 1 ? 's' : ''}`)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 28) + "px");
 
-                                d3.select(this).style("fill", "#004d99");
-                            })
-                            .on("mouseout", function(d) {
-                                tooltip.transition().duration(500).style("opacity", 0);
-                                d3.select(this).style("fill", "#ff9c03");
-                            })
-                            .on("click", function(event, d) {
-                                const depto = d.properties.NOMBRE_DPT;
-                                mostrarDelegados(depto);
-                                
-                                g.selectAll(".department-path").style("fill", "#ff9c03");
-                                d3.select(this).style("fill", "#cc7d02");
-                            });
+    d3.select(this).style("fill", "#004d99");
+})
+            .on("mouseout", function(d) {
+    tooltip.transition().duration(500).style("opacity", 0);
+    d3.select(this).style("fill", "#ff9c03");  // ✅ NARANJA BASE
+})
+            .on("click", function(event, d) {
+    const depto = d.properties.NOMBRE_DPT;
+    mostrarDelegados(depto);
+    
+    // Resaltar selección
+    g.selectAll(".department-path").style("fill", "#ff9c03");  // ✅ NARANJA BASE
+    d3.select(this).style("fill", "#cc7d02");  // ✅ NARANJA OSCURO
+})
 
-                        // LUEGO ETIQUETAS
-                        g.selectAll("text")
-                            .data(colombia.features)
-                            .enter()
-                            .append("text")
-                            .attr("class", "department-label")
-                            .attr("transform", d => `translate(${path.centroid(d)})`)
-                            .attr("dy", ".35em")
-                            .text(d => {
-                                const nombre = d.properties.NOMBRE_DPT;
-                                if (nombre === "Norte de Santander") return "N. Santander";
-                                if (nombre === "Archipiélago de San Andrés") return "San Andrés";
-                                if (nombre.length > 8) return nombre.substring(0, 8) + ".";
-                                return nombre;
-                            });
+        // LUEGO ETIQUETAS
+        g.selectAll("text")
+            .data(colombia.features)
+            .enter()
+            .append("text")
+            .attr("class", "department-label")
+            .attr("transform", d => `translate(${path.centroid(d)})`)
+            .attr("dy", ".35em")
+            .text(d => {
+                const nombre = d.properties.NOMBRE_DPT;
+                if (nombre === "Norte de Santander") return "N. Santander";
+                if (nombre === "Archipiélago de San Andrés") return "San Andrés";
+                if (nombre.length > 8) return nombre.substring(0, 8) + ".";
+                return nombre;
+            });
 
-                        mapaCargado = true;
-                    })
-                    .catch(function(error) {
-                        console.error("❌ Error cargando el mapa:", error);
-                        mapContainer.innerHTML = `
-                            <div style="text-align: center; padding: 2rem; color: #666;">
-                                <h3>Error cargando el mapa</h3>
-                                <p>No se pudo cargar el mapa de Colombia: ${error.message}</p>
-                            </div>
-                        `;
-                    });
+        mapaCargado = true;
+    })
+    .catch(function(error) {
+        console.error("❌ Error cargando el mapa:", error);
+        mapContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #666;">
+                <h3>Error cargando el mapa</h3>
+                <p>No se pudo cargar el mapa de Colombia: ${error.message}</p>
+            </div>
+        `;
+    });
             }
-
-            // Cargar opciones de filtros
+            //             // Cargar opciones de filtros
             function cargarFiltros() {
                 departamentosData = Object.keys(delegadosPorDepartamento).sort();
 
@@ -820,6 +1577,139 @@
                 });
             }
 
+            // Función para mapear nombres entre GeoJSON y datos
+            // Función para mapear nombres entre GeoJSON y datos
+function mapearNombreDepartamento(nombreGeoJSON) {
+    console.log("🔄 Mapeando:", nombreGeoJSON);
+    
+    const mapeo = {
+        // Mapeo COMPLETO y CORRECTO
+        "Amazonas": "Amazonas",
+        "Antioquia": "Antioquia", 
+        "Arauca": "Arauca",
+        "Atlántico": "Atlántico",
+         "Bogotá": "Bogotá D.C.",
+        "Bolívar": "Bolívar",
+        "Boyacá": "Boyacá",
+        "Caldas": "Caldas",
+        "Caquetá": "Caquetá", 
+        "Casanare": "Casanare",
+        "Cauca": "Cauca",
+        "Cesar": "Cesar",
+        "Chocó": "Chocó",
+        "Córdoba": "Córdoba",
+        "Cundinamarca": "Cundinamarca",
+        "Guainía": "Guainía",
+        "Guaviare": "Guaviare",
+        "Huila": "Huila", 
+        "La Guajira": "La Guajira",
+        "Magdalena": "Magdalena",
+        "Meta": "Meta",
+        "Nariño": "Nariño",
+        "Norte de Santander": "Norte de Santander",
+        "Putumayo": "Putumayo",
+        "Quindío": "Quindío",
+        "Risaralda": "Risaralda", 
+        "Santander": "Santander",
+        "Sucre": "Sucre",
+        "Tolima": "Tolima",
+        "Valle del Cauca": "Valle del Cauca",
+        "Vaupés": "Vaupés",
+        "Vichada": "Vichada",
+        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés"
+    };
+    
+    const resultado = mapeo[nombreGeoJSON] || nombreGeoJSON;
+    console.log("✅ Resultado:", resultado);
+    return resultado;
+}
+
+            // Actualizar mapa basado en filtros
+ function actualizarMapaConFiltros() {
+    if (!mapaCargado) return;
+
+    const searchTerm = searchInput.value.toLowerCase();
+    const comisionSeleccionada = comisionFilter.value;
+    const departamentoSeleccionado = departamentoFilter.value;
+                console.log("=== 🎯 DEBUG FILTROS ===");
+    console.log("Search Term:", searchTerm);
+    console.log("Comisión Seleccionada:", comisionSeleccionada);
+    console.log("Departamento Seleccionado:", departamentoSeleccionado);
+    console.log("=== FIN DEBUG ===");
+
+    // 🗺️ MAPEO MANUAL GARANTIZADO entre nombres de mapa y datos
+    const mapeoDepartamentos = {
+        "Amazonas": "Amazonas",
+        "Antioquia": "Antioquia", 
+        "Arauca": "Arauca",
+        "Atlántico": "Atlántico",
+        "Bogotá": "Bogotá D.C.", 
+        "Bolívar": "Bolívar",
+        "Boyacá": "Boyacá",
+        "Caldas": "Caldas",
+        "Caquetá": "Caquetá", 
+        "Casanare": "Casanare",
+        "Cauca": "Cauca",
+        "Cesar": "Cesar",
+        "Chocó": "Chocó",
+        "Córdoba": "Córdoba",
+        "Cundinamarca": "Cundinamarca",
+        "Guainía": "Guainía",
+        "Guaviare": "Guaviare",
+        "Huila": "Huila", 
+        "La Guajira": "La Guajira",
+        "Magdalena": "Magdalena",
+        "Meta": "Meta",
+        "Nariño": "Nariño",
+        "Norte de Santander": "Norte de Santander",
+        "Putumayo": "Putumayo",
+        "Quindío": "Quindío",
+        "Risaralda": "Risaralda", 
+        "Santander": "Santander",
+        "Sucre": "Sucre",
+        "Tolima": "Tolima",
+        "Valle del Cauca": "Valle del Cauca",
+        "Vaupés": "Vaupés",
+        "Vichada": "Vichada",
+        "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés"
+    };
+
+    d3.selectAll(".department-path")
+    .classed("filtrado", function(d) {
+        const deptoMapa = d.properties.NOMBRE_DPT;
+        
+        // 🔥 USAR MAPEO MANUAL GARANTIZADO
+        const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
+        const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
+        
+        console.log("🔍 Filtro - Mapa:", deptoMapa, "| Datos:", departamentoEnDatos, "| Delegados:", delegadosDelDepto.length);
+        
+        // Si no hay delegados en este departamento, mostrar tenue
+        if (delegadosDelDepto.length === 0) {
+            console.log("❌ Sin delegados");
+            return true;
+        }
+        
+        // Aplicar filtros
+        const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
+            const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
+            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+            const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
+            
+            const coincide = coincideNombre && coincideComision && coincideDepartamento;
+            if (coincide) console.log("✅ Coincide filtro:", delegado.nombre);
+            
+            return coincide;
+        });
+        
+        console.log("📊 Resultado final - Filtrado:", !tieneDelegadosFiltrados);
+        return !tieneDelegadosFiltrados;
+    });
+}
+
+
+
+            
             // Agregar event listeners
             function agregarEventListeners() {
                 closeModal.addEventListener('click', cerrarModal);
@@ -828,18 +1718,23 @@
                 });
                 searchInput.addEventListener('input', function() {
                     actualizarResultados();
+                    actualizarMapaConFiltros();
                 });
                 comisionFilter.addEventListener('change', function() {
                     actualizarResultados();
+                    actualizarMapaConFiltros();
                 });
                 departamentoFilter.addEventListener('change', function() {
                     actualizarResultados();
+                    actualizarMapaConFiltros();
                 });
 
+                // Redimensionar mapa cuando cambie el tamaño de la ventana
                 window.addEventListener('resize', function() {
-                    if (mapaCargado) {
-                        cargarMapaColombia();
-                    }
+    if (mapaCargado) {
+        console.log("🔄 Redimensionando ventana...");
+        cargarMapaColombia();
+    }
                 });
             }
 
@@ -868,6 +1763,7 @@
                     }
                 });
 
+                // Actualizar texto de resultados
                 let resultadosTexto = `Mostrando ${delegadosFiltrados} delegado${delegadosFiltrados !== 1 ? 's' : ''}`;
                 if (comisionSeleccionada) resultadosTexto += ` en ${comisionSeleccionada}`;
                 if (departamentoSeleccionado) resultadosTexto += ` de ${departamentoSeleccionado}`;
@@ -876,14 +1772,113 @@
                 filterResults.textContent = resultadosTexto;
             }
 
-            // Función para mostrar delegados
-            function mostrarDelegados(nombreDepartamento) {
-                const delegados = delegadosPorDepartamento[nombreDepartamento] || [];
+            // Mostrar delegados en modal
+                        // Mostrar delegados en modal// ==================================================
+// SISTEMA DE CORRECCIÓN DE DEPARTAMENTOS
+// ==================================================
+class NormalizadorDepartamentos {
+    constructor() {
+        this.correcciones = {
+            "casamare": "Casanare",
+            "bogota d.c.": "Bogotá D.C.", 
+            "bogota dc": "Bogotá D.C.",
+            "bogota": "Bogotá D.C.",
+            "la gugiira": "La Guajira",
+            "gugiira": "La Guajira",
+            "botivar": "Bolívar",
+            "gustafa": "Guainía",
+            "hullo": "Huila",
+            "nurillo": "Nariño",
+            "otando": "Quindío",
+            "risardada": "Risaralda",
+            "tolana": "Tolima",
+            "vuques": "Vaupés",
+            "aduito mayor": "Adulto Mayor",
+            "persona con discapacidad": "Persona con discapacidad",
+            "victimas": "Víctimas"
+        };
+    }
+
+    normalizarTexto(texto) {
+        if (!texto) return '';
+        return texto.toString()
+            .toLowerCase()
+            .trim()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9 ]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    corregirDepartamento(departamento) {
+        if (!departamento) return null;
+        const normalizado = this.normalizarTexto(departamento);
+        
+        if (this.correcciones[normalizado]) {
+            return this.correcciones[normalizado];
+        }
+        
+        return this.capitalizarTexto(departamento);
+    }
+
+    capitalizarTexto(texto) {
+        return texto.toLowerCase()
+            .split(' ')
+            .map(palabra => {
+                if (palabra === 'd.c.') return 'D.C.';
+                if (palabra === 'dc') return 'D.C.';
+                return palabra.charAt(0).toUpperCase() + palabra.slice(1);
+            })
+            .join(' ');
+    }
+
+    encontrarMejorCoincidencia(departamentoBuscado, listaDepartamentos) {
+        const corregido = this.corregirDepartamento(departamentoBuscado);
+        const normalizadoBuscado = this.normalizarTexto(corregido);
+
+        const coincidencias = listaDepartamentos.filter(depto => {
+            const normalizadoDisponible = this.normalizarTexto(depto);
+            return normalizadoDisponible === normalizadoBuscado;
+        });
+
+        return {
+            departamentoOriginal: departamentoBuscado,
+            departamentoCorregido: corregido,
+            coincidenciasExactas: coincidencias,
+            mejorCoincidencia: coincidencias.length > 0 ? coincidencias[0] : null,
+            encontrado: coincidencias.length > 0
+        };
+    }
+}
+
+// FUNCIÓN MEJORADA PARA MOSTRAR DELEGADOS
+function mostrarDelegados(nombreDepartamento) {
+    const normalizador = new NormalizadorDepartamentos();
+    const todosDepartamentos = Object.keys(delegadosPorDepartamento);
+    
+    console.log("=== DEBUG MEJORADO DELEGADOS ===");
+    console.log("🔍 Departamento recibido:", nombreDepartamento);
+    console.log("📋 Todos los departamentos disponibles:", todosDepartamentos);
+    
+    // CORREGIR EL NOMBRE DEL DEPARTAMENTO
+    const resultadoCorreccion = normalizador.encontrarMejorCoincidencia(nombreDepartamento, todosDepartamentos);
+    
+    console.log("🔄 Departamento corregido:", resultadoCorreccion.departamentoCorregido);
+    console.log("✅ ¿Coincidencia encontrada?", resultadoCorreccion.encontrado);
+    console.log("🎯 Mejor coincidencia:", resultadoCorreccion.mejorCoincidencia);
+    
+    // USAR EL DEPARTAMENTO CORREGIDO para buscar delegados
+    const departamentoFinal = resultadoCorreccion.encontrado ? resultadoCorreccion.mejorCoincidencia : nombreDepartamento;
+    const delegados = delegadosPorDepartamento[departamentoFinal] || [];
+    
+    console.log("👥 Delegados encontrados para", departamentoFinal + ":", delegados);
+    console.log("=== FIN DEBUG MEJORADO ===");
 
                 const searchTerm = searchInput.value.toLowerCase();
                 const comisionSeleccionada = comisionFilter.value;
                 const departamentoSeleccionado = departamentoFilter.value;
 
+                // Filtrar delegados según los filtros activos
                 const delegadosFiltrados = delegados.filter(delegado => {
                     const coincideNombre = delegado.nombre.toLowerCase().includes(searchTerm);
                     const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
@@ -899,6 +1894,7 @@
                     listaDelegados.innerHTML = `
                         <div class="no-results">
                             <p>No hay delegados que coincidan con los filtros aplicados.</p>
+                            <p><small>Departamento: ${nombreDepartamento}</small></p>
                         </div>
                     `;
                 } else {
@@ -921,199 +1917,244 @@
 
                 modal.style.display = 'block';
             }
-
             function cerrarModal() {
                 modal.style.display = 'none';
+                // Limpiar selección del mapa
+                d3.selectAll(".department-path").classed("seleccionado", false);
             }
-
             // Inicializar la aplicación
             inicializar();
         });
+    </script>
 
-        // ============================================
-        // 🎯 SISTEMA DE AGREGAR DELEGADOS (SIMPLIFICADO)
-        // ============================================
+            <script>
+            // ============================================
+// 🔗 CONEXIÓN INTELIGENTE CON TU GOOGLE SHEETS
+// ============================================
 
-        class GestorDelegados {
-            constructor() {
-                this.scriptUrl = 'https://script.google.com/macros/s/AKfycbx-8xHkrDT7dEgtzUAGWBOf8pNdX_pRtap88D7xgvc2pci4Otg79qz87hcK2D3hdVFw/exec';
-                this.init();
-            }
+class ConexionInteligente {
+    constructor() {
+        this.sheetId = '1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54';
+        this.nombresHojasCache = new Map();
+    }
 
-            init() {
-                this.agregarEventListenersFormulario();
-                this.cargarOpcionesDepartamentos();
-            }
-
-            agregarEventListenersFormulario() {
-                const btnAgregar = document.getElementById('btn-agregar-delegado');
-                const modalForm = document.getElementById('modal-formulario');
-                const closeModalForm = document.querySelector('.close-modal-form');
-                const form = document.getElementById('form-delegado');
-
-                if (btnAgregar) {
-                    btnAgregar.addEventListener('click', () => {
-                        modalForm.style.display = 'block';
-                    });
-                }
-
-                if (closeModalForm) {
-                    closeModalForm.addEventListener('click', () => {
-                        modalForm.style.display = 'none';
-                        this.limpiarFormulario();
-                    });
-                }
-
-                window.addEventListener('click', (event) => {
-                    if (event.target === modalForm) {
-                        modalForm.style.display = 'none';
-                        this.limpiarFormulario();
-                    }
-                });
-
-                if (form) {
-                    form.addEventListener('submit', (event) => {
-                        event.preventDefault();
-                        this.guardarDelegado();
-                    });
-                }
-            }
-
-            cargarOpcionesDepartamentos() {
-                const select = document.getElementById('departamento-delegado');
-                if (!select) return;
+    async encontrarHojaDelegado(nombreDelegado) {
+        const formatos = this.generarFormatosNombre(nombreDelegado);
+        
+        for (const formato of formatos) {
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${this.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(formato)}`;
+                const response = await fetch(url);
+                const text = await response.text();
                 
-                const departamentos = Object.keys(delegadosPorDepartamento).sort();
-                
-                departamentos.forEach(depto => {
-                    const option = document.createElement('option');
-                    option.value = depto;
-                    option.textContent = depto;
-                    select.appendChild(option);
-                });
-            }
-
-            limpiarFormulario() {
-                const form = document.getElementById('form-delegado');
-                const btnSubmit = document.getElementById('btn-submit');
-                const alertDiv = document.getElementById('form-alert');
-                
-                if (form) form.reset();
-                if (alertDiv) alertDiv.innerHTML = '';
-                if (btnSubmit) {
-                    btnSubmit.disabled = false;
-                    btnSubmit.textContent = 'Guardar Delegado';
+                if (text && !text.includes('No table data') && text.length > 100) {
+                    console.log(`✅ Encontrada hoja: "${formato}" para ${nombreDelegado}`);
+                    this.nombresHojasCache.set(nombreDelegado, formato);
+                    return formato;
                 }
-            }
-
-            async guardarDelegado() {
-                const nombreInput = document.getElementById('nombre-delegado');
-                const departamentoSelect = document.getElementById('departamento-delegado');
-                const comisionSelect = document.getElementById('comision-delegado');
-                const btnSubmit = document.getElementById('btn-submit');
-
-                const nombre = nombreInput.value.trim();
-                const departamento = departamentoSelect.value;
-                const comision = comisionSelect.value;
-
-                if (!nombre || !departamento || !comision) {
-                    this.mostrarAlerta('Por favor completa todos los campos', 'error');
-                    return;
-                }
-
-                btnSubmit.disabled = true;
-                btnSubmit.textContent = 'Guardando...';
-
-                try {
-                    // Guardar en Google Sheets
-                    const exito = await this.guardarEnGoogleSheets(nombre, departamento, comision);
-                    
-                    if (exito) {
-                        this.mostrarAlerta('✅ Delegado guardado EXITOSAMENTE en Google Sheets', 'success');
-                        setTimeout(() => {
-                            document.getElementById('modal-formulario').style.display = 'none';
-                            this.limpiarFormulario();
-                        }, 2000);
-                    } else {
-                        this.mostrarAlerta('✅ Delegado guardado localmente', 'success');
-                        setTimeout(() => {
-                            document.getElementById('modal-formulario').style.display = 'none';
-                            this.limpiarFormulario();
-                        }, 2000);
-                    }
-                    
-                } catch (error) {
-                    this.mostrarAlerta('✅ Delegado guardado localmente', 'success');
-                    setTimeout(() => {
-                        document.getElementById('modal-formulario').style.display = 'none';
-                        this.limpiarFormulario();
-                    }, 2000);
-                }
-            }
-
-            async guardarEnGoogleSheets(nombre, departamento, comision) {
-                const datos = {
-                    nombre: nombre,
-                    departamento: departamento,
-                    comision: comision,
-                    votos: 0,
-                    timestamp: new Date().toISOString()
-                };
-
-                try {
-                    const response = await fetch(this.scriptUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(datos)
-                    });
-
-                    if (response.ok) {
-                        const resultado = await response.json();
-                        console.log('✅ Guardado en Sheets:', resultado);
-                        return true;
-                    } else {
-                        throw new Error('Error en respuesta');
-                    }
-                    
-                } catch (error) {
-                    console.log('📝 Guardado localmente por error de conexión');
-                    this.guardarEnLocalStorage(nombre, departamento, comision);
-                    return false;
-                }
-            }
-
-            guardarEnLocalStorage(nombre, departamento, comision) {
-                const datos = {
-                    nombre: nombre,
-                    departamento: departamento,
-                    comision: comision,
-                    fecha: new Date().toISOString()
-                };
-
-                const delegadosTemporales = JSON.parse(localStorage.getItem('delegados_temporales') || '[]');
-                delegadosTemporales.push(datos);
-                localStorage.setItem('delegados_temporales', JSON.stringify(delegadosTemporales));
-            }
-
-            mostrarAlerta(mensaje, tipo) {
-                const alertDiv = document.getElementById('form-alert');
-                if (alertDiv) {
-                    alertDiv.innerHTML = `
-                        <div class="alert alert-${tipo}">
-                            ${mensaje}
-                        </div>
-                    `;
-                }
+            } catch (error) {
+                continue;
             }
         }
+        
+        console.log(`❌ No se encontró hoja para: ${nombreDelegado}`);
+        return null;
+    }
 
-        // 🚀 INICIALIZAR TODO
-        document.addEventListener('DOMContentLoaded', function() {
-            window.gestorDelegados = new GestorDelegados();
-            console.log('✅ Sistema listo');
-        });
-    </script>
+    generarFormatosNombre(nombreCompleto) {
+        const partes = nombreCompleto.trim().split(' ').filter(p => p !== '');
+        const formatos = new Set();
+        
+        formatos.add(nombreCompleto);
+        
+        if (partes.length >= 2) {
+            formatos.add(`${partes[0]} ${partes[1]}`);
+        }
+        
+        if (partes.length >= 3) {
+            formatos.add(`${partes[0]} ${partes[1]} ${partes[2]}`);
+            formatos.add(`${partes[0]} ${partes[2]}`);
+        }
+        
+        if (partes.length >= 4) {
+            formatos.add(`${partes[0]} ${partes[1]} ${partes[2]} ${partes[3]}`);
+            formatos.add(`${partes[0]} ${partes[2]} ${partes[3]}`);
+        }
+        
+        const nombreSinTildes = nombreCompleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        formatos.add(nombreSinTildes);
+        
+        if (partes.length >= 2) {
+            const cortoSinTildes = `${partes[0]} ${partes[1]}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            formatos.add(cortoSinTildes);
+        }
+        
+        formatos.add(nombreCompleto.toUpperCase());
+        formatos.add(nombreCompleto.toLowerCase());
+        
+        return Array.from(formatos);
+    }
+
+    async contarVotosHoja(nombreHoja) {
+        try {
+            const url = `https://docs.google.com/spreadsheets/d/${this.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
+            const response = await fetch(url);
+            const text = await response.text();
+            
+            if (!text || text.includes('No table data')) {
+                return 0;
+            }
+            
+            const json = JSON.parse(text.substring(47).slice(0, -2));
+            const filas = json.table.rows || [];
+            
+            let votos = 0;
+            filas.forEach((fila, index) => {
+                if (index >= 7) {
+                    if (fila.c && fila.c[0] && fila.c[0].v && fila.c[0].v.toString().trim() !== '') {
+                        votos++;
+                    }
+                }
+            });
+            
+            return votos;
+            
+        } catch (error) {
+            return 0;
+        }
+    }
+
+    async cargarVotosDelegado(nombreDelegado) {
+        if (this.nombresHojasCache.has(nombreDelegado)) {
+            const nombreHoja = this.nombresHojasCache.get(nombreDelegado);
+            return await this.contarVotosHoja(nombreHoja);
+        }
+        
+        const nombreHojaEncontrado = await this.encontrarHojaDelegado(nombreDelegado);
+        if (nombreHojaEncontrado) {
+            return await this.contarVotosHoja(nombreHojaEncontrado);
+        }
+        
+        return 0;
+    }
+
+    async cargarTodosLosVotos() {
+        console.log('🔄 Sincronizando con Google Sheets...');
+        
+        let totalGeneral = 0;
+        let delegadosConExito = 0;
+        const totalDelegados = this.contarTotalDelegados();
+        
+        const promesas = [];
+        
+        for (const [departamento, delegados] of Object.entries(delegadosPorDepartamento)) {
+            for (const delegado of delegados) {
+                const promesa = this.cargarVotosDelegado(delegado.nombre)
+                    .then(votos => {
+                        delegado.votos = votos;
+                        totalGeneral += votos;
+                        
+                        if (votos > 0) {
+                            delegadosConExito++;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(`❌ Error con ${delegado.nombre}`);
+                    });
+                
+                promesas.push(promesa);
+                await new Promise(resolve => setTimeout(resolve, 30));
+            }
+        }
+        
+        await Promise.allSettled(promesas);
+        
+        console.log(`🎯 ${delegadosConExito}/${totalDelegados} delegados - ${totalGeneral} votos totales`);
+        
+        this.actualizarInterfaz();
+        this.mostrarContadorTotal(totalGeneral);
+        
+        return totalGeneral;
+    }
+
+    contarTotalDelegados() {
+        let total = 0;
+        for (const delegados of Object.values(delegadosPorDepartamento)) {
+            total += delegados.length;
+        }
+        return total;
+    }
+
+    actualizarInterfaz() {
+        const modal = document.getElementById('modal-delegados');
+        if (modal.style.display === 'block') {
+            const titulo = document.getElementById('modal-titulo');
+            const depto = titulo.textContent.replace('Delegados - ', '').split(' (')[0];
+            if (typeof mostrarDelegados === 'function') {
+                mostrarDelegados(depto);
+            }
+        }
+    }
+
+    mostrarContadorTotal(total) {
+        let counter = document.getElementById('total-votes-counter');
+        
+        if (!counter) {
+            counter = document.createElement('div');
+            counter.id = 'total-votes-counter';
+            counter.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #003366, #004d99);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-size: 14px;
+                font-weight: bold;
+                border: 3px solid #ffd700;
+                text-align: center;
+                min-width: 180px;
+            `;
+            document.body.appendChild(counter);
+        }
+        
+        const ahora = new Date();
+        const hora = ahora.getHours().toString().padStart(2, '0');
+        const minuto = ahora.getMinutes().toString().padStart(2, '0');
+        
+        counter.innerHTML = `
+            <div style="font-size: 11px; opacity: 0.9;">TOTAL VOTOS</div>
+            <div style="font-size: 22px; margin: 5px 0; color: #ffd700;">${total.toLocaleString()}</div>
+            <div style="font-size: 10px; opacity: 0.7;">Actualizado: ${hora}:${minuto}</div>
+        `;
+    }
+}
+
+// 🚀 INICIALIZAR LA CONEXIÓN
+document.addEventListener('DOMContentLoaded', function() {
+    window.conexionInteligente = new ConexionInteligente();
+    
+    const esperarMapa = setInterval(() => {
+        if (window.mapaCargado) {
+            clearInterval(esperarMapa);
+            
+            setTimeout(() => {
+                window.conexionInteligente.cargarTodosLosVotos();
+            }, 3000);
+            
+            setInterval(() => {
+                window.conexionInteligente.cargarTodosLosVotos();
+            }, 45000);
+        }
+    }, 500);
+    
+    console.log('✅ Sistema de sincronización activado');
+});
+            </script>
+</body>
+</html>
 </body>
 </html>
