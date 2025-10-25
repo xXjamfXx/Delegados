@@ -628,10 +628,22 @@
                     }
 
                     syncStatus.className = 'sync-status sync-success';
-                    const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
-                    syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados cargados - Próxima actualización en 60 segundos`;
+const totalDelegados = Object.values(delegadosPorDepartamento).reduce((acc, curr) => acc + curr.length, 0);
+syncStatus.innerHTML = `✅ Sincronizado: ${totalDelegados} delegados cargados - Próxima actualización en 60 segundos`;
 
-                    console.log('📊 Datos cargados:', delegadosPorDepartamento);
+// DEBUG COMPLETO de datos cargados
+console.log("=== 📊 DATOS CARGADOS DESDE SHEETS ===");
+console.log("Total delegados:", totalDelegados);
+console.log("Total departamentos con datos:", Object.keys(delegadosPorDepartamento).length);
+
+Object.keys(delegadosPorDepartamento).sort().forEach(depto => {
+    const delegados = delegadosPorDepartamento[depto];
+    console.log(`🏛️ ${depto}: ${delegados.length} delegados`);
+    delegados.forEach(delegado => {
+        console.log(`   👤 ${delegado.nombre} - ${delegado.comision} - ${delegado.votos} votos`);
+    });
+});
+console.log("=== ✅ FIN DATOS CARGADOS ===");
 
                 } catch (error) {
                     console.error('❌ Error cargando datos:', error);
@@ -697,6 +709,7 @@
                                 const departamentoEnDatos = mapearNombreDepartamento(deptoMapa);
                                 const delegados = delegadosPorDepartamento[departamentoEnDatos] || [];
                                 const cantidad = delegados.length;
+                            console.log(`🖱️ Mouse over: ${deptoMapa} -> ${departamentoEnDatos} -> ${cantidad} delegados`);
                                 
                                 tooltip.transition().duration(200).style("opacity", .9);
                                 tooltip.html(`<strong>${deptoMapa}</strong><br/>${cantidad} delegado${cantidad !== 1 ? 's' : ''}`)
@@ -748,45 +761,51 @@
             }
 
             // Función para mapear nombres entre GeoJSON y datos
-            function mapearNombreDepartamento(nombreGeoJSON) {
-                const mapeo = {
-                    "Amazonas": "Amazonas",
-                    "Antioquia": "Antioquia", 
-                    "Arauca": "Arauca",
-                    "Atlántico": "Atlántico",
-                    "Bogotá": "Bogotá D.C.",
-                    "Bolívar": "Bolívar",
-                    "Boyacá": "Boyacá",
-                    "Caldas": "Caldas",
-                    "Caquetá": "Caquetá", 
-                    "Casanare": "Casanare",
-                    "Cauca": "Cauca",
-                    "Cesar": "Cesar",
-                    "Chocó": "Chocó",
-                    "Córdoba": "Córdoba",
-                    "Cundinamarca": "Cundinamarca",
-                    "Guainía": "Guainía",
-                    "Guaviare": "Guaviare",
-                    "Huila": "Huila", 
-                    "La Guajira": "La Guajira",
-                    "Magdalena": "Magdalena",
-                    "Meta": "Meta",
-                    "Nariño": "Nariño",
-                    "Norte de Santander": "Norte de Santander",
-                    "Putumayo": "Putumayo",
-                    "Quindío": "Quindío",
-                    "Risaralda": "Risaralda", 
-                    "Santander": "Santander",
-                    "Sucre": "Sucre",
-                    "Tolima": "Tolima",
-                    "Valle del Cauca": "Valle del Cauca",
-                    "Vaupés": "Vaupés",
-                    "Vichada": "Vichada",
-                    "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés"
-                };
-                
-                return mapeo[nombreGeoJSON] || nombreGeoJSON;
-            }
+            // Función COMPLETA para mapear nombres de TODOS los departamentos
+function mapearNombreDepartamento(nombreGeoJSON) {
+    // Mapeo completo de todos los departamentos
+    const mapeoCompleto = {
+        // Nombres del MAPA -> Nombres del SHEETS
+        "Amazonas": "Amazonas",
+        "Antioquia": "Antioquia", 
+        "Arauca": "Arauca",
+        "Atlántico": "Atlántico",
+        "Bogotá": "SANTAFE DE BOGOTA D.C",
+        "Bolívar": "Bolívar",
+        "Boyacá": "Boyacá",
+        "Caldas": "Caldas",
+        "Caquetá": "Caquetá", 
+        "Casanare": "Casanare",
+        "Cauca": "Cauca",
+        "Cesar": "Cesar",
+        "Chocó": "Chocó",
+        "Córdoba": "Córdoba",
+        "Cundinamarca": "Cundinamarca",
+        "Guainía": "Guainía",
+        "Guaviare": "Guaviare",
+        "Huila": "Huila", 
+        "La Guajira": "La Guajira",
+        "Magdalena": "Magdalena",
+        "Meta": "Meta",
+        "Nariño": "Nariño",
+        "Norte de Santander": "Norte de Santander",
+        "Putumayo": "Putumayo",
+        "Quindío": "Quindío",
+        "Risaralda": "Risaralda", 
+        "Santander": "Santander",
+        "Sucre": "Sucre",
+        "Tolima": "Tolima",
+        "Valle del Cauca": "Valle del Cauca",
+        "Vaupés": "Vaupés",
+        "Vichada": "Vichada",
+        "Archipiélago de San Andrés, Providencia y Santa Catalina": "ARCHIPIELAGO DE SAN ANDRES PROVIDENCIA Y SANTA CATALINA",
+        "San Andrés": "ARCHIPIELAGO DE SAN ANDRES PROVIDENCIA Y SANTA CATALINA"
+    };
+    
+    const resultado = mapeoCompleto[nombreGeoJSON] || nombreGeoJSON;
+    console.log(`🗺️ Mapeo: "${nombreGeoJSON}" -> "${resultado}"`);
+    return resultado;
+}
 
             // Cargar opciones de filtros
             function cargarFiltros() {
@@ -823,71 +842,52 @@
 
             // Actualizar mapa basado en filtros
             function actualizarMapaConFiltros() {
-                if (!mapaCargado) return;
+    if (!mapaCargado) return;
 
-                const searchTerm = searchInput.value.toLowerCase();
-                const comisionSeleccionada = comisionFilter.value;
-                const departamentoSeleccionado = departamentoFilter.value;
+    const searchTerm = searchInput.value.toLowerCase();
+    const comisionSeleccionada = comisionFilter.value;
+    const departamentoSeleccionado = departamentoFilter.value;
 
-                const mapeoDepartamentos = {
-                    "Amazonas": "Amazonas",
-                    "Antioquia": "Antioquia", 
-                    "Arauca": "Arauca",
-                    "Atlántico": "Atlántico",
-                    "Bogotá": "Bogotá D.C.", 
-                    "Bolívar": "Bolívar",
-                    "Boyacá": "Boyacá",
-                    "Caldas": "Caldas",
-                    "Caquetá": "Caquetá", 
-                    "Casanare": "Casanare",
-                    "Cauca": "Cauca",
-                    "Cesar": "Cesar",
-                    "Chocó": "Chocó",
-                    "Córdoba": "Córdoba",
-                    "Cundinamarca": "Cundinamarca",
-                    "Guainía": "Guainía",
-                    "Guaviare": "Guaviare",
-                    "Huila": "Huila", 
-                    "La Guajira": "La Guajira",
-                    "Magdalena": "Magdalena",
-                    "Meta": "Meta",
-                    "Nariño": "Nariño",
-                    "Norte de Santander": "Norte de Santander",
-                    "Putumayo": "Putumayo",
-                    "Quindío": "Quindío",
-                    "Risaralda": "Risaralda", 
-                    "Santander": "Santander",
-                    "Sucre": "Sucre",
-                    "Tolima": "Tolima",
-                    "Valle del Cauca": "Valle del Cauca",
-                    "Vaupés": "Vaupés",
-                    "Vichada": "Vichada",
-                    "Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés"
-                };
+    console.log("=== 🔍 ACTUALIZANDO MAPA CON FILTROS ===");
+    console.log("Término búsqueda:", searchTerm);
+    console.log("Comisión seleccionada:", comisionSeleccionada);
+    console.log("Departamento seleccionado:", departamentoSeleccionado);
 
-                d3.selectAll(".department-path")
-                    .classed("filtrado", function(d) {
-                        const deptoMapa = d.properties.NOMBRE_DPT;
-                        const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
-                        const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
-                        
-                        // Si no hay delegados en este departamento, mostrar tenue
-                        if (delegadosDelDepto.length === 0) {
-                            return true;
-                        }
-                        
-                        // Aplicar filtros
-                        const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
-                            const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
-                            const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
-                            const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
-                            
-                            return coincideNombre && coincideComision && coincideDepartamento;
-                        });
-                        
-                        return !tieneDelegadosFiltrados;
-                    });
+    d3.selectAll(".department-path")
+        .classed("filtrado", function(d) {
+            const deptoMapa = d.properties.NOMBRE_DPT;
+            const departamentoEnDatos = mapearNombreDepartamento(deptoMapa);
+            const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
+            
+            console.log(`📍 ${deptoMapa} -> ${departamentoEnDatos}: ${delegadosDelDepto.length} delegados`);
+            
+            // Si no hay delegados en este departamento, mostrar tenue
+            if (delegadosDelDepto.length === 0) {
+                console.log(`   ❌ SIN DELEGADOS`);
+                return true;
             }
+            
+            // Aplicar filtros
+            const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
+                const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
+                const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
+                const coincideDepartamento = !departamentoSeleccionado || departamentoEnDatos === departamentoSeleccionado;
+                
+                const resultado = coincideNombre && coincideComision && coincideDepartamento;
+                
+                if (resultado) {
+                    console.log(`   ✅ COINCIDE: ${delegado.nombre}`);
+                }
+                
+                return resultado;
+            });
+            
+            console.log(`   📊 FILTRADO: ${!tieneDelegadosFiltrados}`);
+            return !tieneDelegadosFiltrados;
+        });
+    
+    console.log("=== ✅ FIN ACTUALIZACIÓN MAPA ===");
+}
 
             // Agregar event listeners
             function agregarEventListeners() {
