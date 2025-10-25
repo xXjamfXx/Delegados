@@ -2114,7 +2114,7 @@ function mostrarDelegados(nombreDepartamento) {
                 modalAgregar.style.display = 'none';
             }
 
-            async function guardarDelegado(event) {
+                       async function guardarDelegado(event) {
                 event.preventDefault();
                 
                 const nombre = document.getElementById('nombre-delegado').value.trim();
@@ -2132,9 +2132,16 @@ function mostrarDelegados(nombreDepartamento) {
                 btnGuardar.disabled = true;
 
                 try {
-                    console.log('Guardando delegado:', { nombre, departamento, comision });
-                    alert(`✅ Delegado "${nombre}" agregado exitosamente\n📋 Se creará la hoja en Google Sheets`);
+                    // 1. Crear hoja en Google Sheets
+                    const nombreHoja = await crearHojaEnSheets(nombre);
+                    
+                    // 2. Agregar delegado a los datos locales
+                    await agregarDelegadoADatos(nombre, departamento, comision, nombreHoja);
+                    
+                    // 3. Mostrar éxito
+                    alert(`✅ Delegado "${nombre}" agregado exitosamente\n📊 Hoja creada: "${nombreHoja}"`);
                     cerrarModalAgregar();
+                    
                 } catch (error) {
                     console.error('Error guardando delegado:', error);
                     alert('❌ Error al guardar el delegado: ' + error.message);
@@ -2156,6 +2163,52 @@ function mostrarDelegados(nombreDepartamento) {
 
         // Inicializar formulario
            inicializarFormularioDelegado();
+                    // ============================================
+        // 🔗 CONEXIÓN CON GOOGLE SHEETS - CREAR HOJAS
+        // ============================================
+        async function crearHojaEnSheets(nombreDelegado) {
+            // Por ahora simulamos la creación - en el siguiente paso conectaremos con la API
+            console.log('📝 Creando hoja para:', nombreDelegado);
+            
+            // Simular nombre de hoja (sin caracteres especiales)
+            const nombreHoja = nombreDelegado
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quitar tildes
+                .replace(/[^a-zA-Z0-9 ]/g, '') // quitar caracteres especiales
+                .substring(0, 30) // máximo 30 caracteres
+                .trim();
+                
+            // Simular delay de creación
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            return nombreHoja;
+        }
+
+        function agregarDelegadoADatos(nombre, departamento, comision, nombreHoja) {
+            // Verificar si el departamento existe, si no crearlo
+            if (!delegadosPorDepartamento[departamento]) {
+                delegadosPorDepartamento[departamento] = [];
+            }
+            
+            // Crear nuevo delegado
+            const nuevoDelegado = {
+                nombre: nombre,
+                comision: comision,
+                votos: 0,
+                enlace: `https://docs.google.com/spreadsheets/d/1yLszln1_j6ZIGw86-CGWdfEPWJr3qqVGaCwk668af54/edit#gid=0&range=A1`
+            };
+            
+            // Agregar a los datos
+            delegadosPorDepartamento[departamento].push(nuevoDelegado);
+            
+            console.log('📊 Delegado agregado:', { departamento, nombre, comision });
+            
+            // Actualizar filtros
+            if (typeof cargarFiltros === 'function') {
+                cargarFiltros();
+            }
+            
+            return nuevoDelegado;
+        }
             inicializar();
         });
     </script>
