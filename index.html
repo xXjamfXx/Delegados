@@ -367,6 +367,86 @@
             display: inline-block;
         }
 
+        /* =============================== */
+        /* 🎯 FORMULARIO AGREGAR DELEGADO */
+        /* =============================== */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #003366;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e6f2ff;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #004d99;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-guardar {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-guardar:hover {
+            background: linear-gradient(135deg, #218838 0%, #1e9e8a 100%);
+            transform: translateY(-2px);
+        }
+
+        .btn-cancelar {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancelar:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn-guardar, .btn-cancelar {
+                width: 100%;
+            }
+        }
+        
         .delegado-votos:hover {
             background: #003366;
             transform: scale(1.05);
@@ -461,6 +541,51 @@
             <span class="close-modal">&times;</span>
             <h3 id="modal-titulo">Delegados - Departamento</h3>
             <div id="lista-delegados"></div>
+        </div>
+    </div>
+
+                <!-- =============================== -->
+    <!-- 🎯 MODAL AGREGAR DELEGADO -->
+    <!-- =============================== -->
+    <div id="modal-agregar-delegado" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-agregar-modal">&times;</span>
+            <h3 id="modal-titulo-agregar">Agregar Nuevo Delegado</h3>
+            <form id="form-agregar-delegado">
+                <div class="form-group">
+                    <label for="nombre-delegado">Nombre Completo del Delegado:</label>
+                    <input type="text" id="nombre-delegado" class="form-input" required 
+                           placeholder="Ej: María González Pérez">
+                </div>
+                
+                <div class="form-group">
+                    <label for="departamento-delegado">Departamento:</label>
+                    <select id="departamento-delegado" class="form-input" required>
+                        <option value="">Seleccionar departamento...</option>
+                        <!-- Las opciones se cargarán automáticamente -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comision-delegado">Comisión:</label>
+                    <select id="comision-delegado" class="form-input" required>
+                        <option value="">Seleccionar comisión...</option>
+                        <option value="COMISIÓN PRIMERA">COMISIÓN PRIMERA</option>
+                        <option value="COMISIÓN SEGUNDA">COMISIÓN SEGUNDA</option>
+                        <option value="COMISIÓN TERCERA">COMISIÓN TERCERA</option>
+                        <option value="COMISIÓN CUARTA">COMISIÓN CUARTA</option>
+                        <option value="COMISIÓN QUINTA">COMISIÓN QUINTA</option>
+                        <option value="COMISIÓN SEXTA">COMISIÓN SEXTA</option>
+                        <option value="COMISIÓN SÉPTIMA">COMISIÓN SÉPTIMA</option>
+                        <option value="ALIADO">ALIADO</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="btn-cancelar-agregar" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" id="btn-guardar-delegado" class="btn-guardar">Guardar Delegado</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1430,6 +1555,7 @@
                 cargarMapaColombia();
                 agregarEventListeners();
                 actualizarResultados();
+                            inicializarFormularioDelegado();
             }
 
             // Cargar el mapa de Colombia
@@ -1742,8 +1868,11 @@ function mapearNombreDepartamento(nombreGeoJSON) {
             // Agregar event listeners
             function agregarEventListeners() {
                 closeModal.addEventListener('click', cerrarModal);
-                window.addEventListener('click', (event) => {
+                                window.addEventListener('click', (event) => {
                     if (event.target === modal) cerrarModal();
+                    if (event.target === document.getElementById('modal-agregar-delegado')) {
+                        document.getElementById('modal-agregar-delegado').style.display = 'none';
+                    }
                 });
                 searchInput.addEventListener('input', function() {
                     actualizarResultados();
@@ -1758,6 +1887,81 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                     actualizarMapaConFiltros();
                 });
 
+        // ============================================
+        // 🎯 SISTEMA AGREGAR DELEGADO
+        // ============================================
+        function inicializarFormularioDelegado() {
+            const btnAgregar = document.getElementById('btn-agregar-delegado');
+            const modalAgregar = document.getElementById('modal-agregar-delegado');
+            const closeAgregarModal = document.getElementById('close-agregar-modal');
+            const btnCancelar = document.getElementById('btn-cancelar-agregar');
+            const formAgregar = document.getElementById('form-agregar-delegado');
+            const selectDepartamento = document.getElementById('departamento-delegado');
+
+            // Cargar departamentos en el select
+            cargarDepartamentosEnSelect();
+
+            // Event Listeners
+            btnAgregar.addEventListener('click', abrirModalAgregar);
+            closeAgregarModal.addEventListener('click', cerrarModalAgregar);
+            btnCancelar.addEventListener('click', cerrarModalAgregar);
+            formAgregar.addEventListener('submit', guardarDelegado);
+
+            function cargarDepartamentosEnSelect() {
+                selectDepartamento.innerHTML = '<option value="">Seleccionar departamento...</option>';
+                departamentosData.forEach(depto => {
+                    const option = document.createElement('option');
+                    option.value = depto;
+                    option.textContent = depto;
+                    selectDepartamento.appendChild(option);
+                });
+            }
+
+            function abrirModalAgregar() {
+                modalAgregar.style.display = 'block';
+                // Limpiar formulario
+                formAgregar.reset();
+            }
+
+            function cerrarModalAgregar() {
+                modalAgregar.style.display = 'none';
+            }
+
+            async function guardarDelegado(event) {
+                event.preventDefault();
+                
+                const nombre = document.getElementById('nombre-delegado').value.trim();
+                const departamento = document.getElementById('departamento-delegado').value;
+                const comision = document.getElementById('comision-delegado').value;
+
+                if (!nombre || !departamento || !comision) {
+                    alert('Por favor complete todos los campos');
+                    return;
+                }
+
+                const btnGuardar = document.getElementById('btn-guardar-delegado');
+                btnGuardar.textContent = 'Guardando...';
+                btnGuardar.disabled = true;
+
+                try {
+                    // Aquí irá la conexión con Google Sheets
+                    console.log('Guardando delegado:', { nombre, departamento, comision });
+                    
+                    // Por ahora solo muestra el éxito
+                    alert(`✅ Delegado "${nombre}" agregado exitosamente\n📋 Se creará la hoja en Google Sheets`);
+                    
+                    cerrarModalAgregar();
+                    
+                } catch (error) {
+                    console.error('Error guardando delegado:', error);
+                    alert('❌ Error al guardar el delegado: ' + error.message);
+                } finally {
+                    btnGuardar.textContent = 'Guardar Delegado';
+                    btnGuardar.disabled = false;
+                }
+            }
+        }
+                
                 // Redimensionar mapa cuando cambie el tamaño de la ventana
                 window.addEventListener('resize', function() {
     if (mapaCargado) {
