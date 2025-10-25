@@ -1887,80 +1887,7 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                     actualizarMapaConFiltros();
                 });
 
-        // ============================================
-        // 🎯 SISTEMA AGREGAR DELEGADO
-        // ============================================
-        function inicializarFormularioDelegado() {
-            const btnAgregar = document.getElementById('btn-agregar-delegado');
-            const modalAgregar = document.getElementById('modal-agregar-delegado');
-            const closeAgregarModal = document.getElementById('close-agregar-modal');
-            const btnCancelar = document.getElementById('btn-cancelar-agregar');
-            const formAgregar = document.getElementById('form-agregar-delegado');
-            const selectDepartamento = document.getElementById('departamento-delegado');
-
-            // Cargar departamentos en el select
-            cargarDepartamentosEnSelect();
-
-            // Event Listeners
-            btnAgregar.addEventListener('click', abrirModalAgregar);
-            closeAgregarModal.addEventListener('click', cerrarModalAgregar);
-            btnCancelar.addEventListener('click', cerrarModalAgregar);
-            formAgregar.addEventListener('submit', guardarDelegado);
-
-            function cargarDepartamentosEnSelect() {
-                selectDepartamento.innerHTML = '<option value="">Seleccionar departamento...</option>';
-                departamentosData.forEach(depto => {
-                    const option = document.createElement('option');
-                    option.value = depto;
-                    option.textContent = depto;
-                    selectDepartamento.appendChild(option);
-                });
-            }
-
-            function abrirModalAgregar() {
-                modalAgregar.style.display = 'block';
-                // Limpiar formulario
-                formAgregar.reset();
-            }
-
-            function cerrarModalAgregar() {
-                modalAgregar.style.display = 'none';
-            }
-
-            async function guardarDelegado(event) {
-                event.preventDefault();
-                
-                const nombre = document.getElementById('nombre-delegado').value.trim();
-                const departamento = document.getElementById('departamento-delegado').value;
-                const comision = document.getElementById('comision-delegado').value;
-
-                if (!nombre || !departamento || !comision) {
-                    alert('Por favor complete todos los campos');
-                    return;
-                }
-
-                const btnGuardar = document.getElementById('btn-guardar-delegado');
-                btnGuardar.textContent = 'Guardando...';
-                btnGuardar.disabled = true;
-
-                try {
-                    // Aquí irá la conexión con Google Sheets
-                    console.log('Guardando delegado:', { nombre, departamento, comision });
-                    
-                    // Por ahora solo muestra el éxito
-                    alert(`✅ Delegado "${nombre}" agregado exitosamente\n📋 Se creará la hoja en Google Sheets`);
-                    
-                    cerrarModalAgregar();
-                    
-                } catch (error) {
-                    console.error('Error guardando delegado:', error);
-                    alert('❌ Error al guardar el delegado: ' + error.message);
-                } finally {
-                    btnGuardar.textContent = 'Guardar Delegado';
-                    btnGuardar.disabled = false;
-                }
-            }
-        }
+        
                 
                 // Redimensionar mapa cuando cambie el tamaño de la ventana
                 window.addEventListener('resize', function() {
@@ -2155,6 +2082,79 @@ function mostrarDelegados(nombreDepartamento) {
                 // Limpiar selección del mapa
                 d3.selectAll(".department-path").classed("seleccionado", false);
             }
+                    // ============================================
+        // 🎯 SISTEMA AGREGAR DELEGADO
+        // ============================================
+        function inicializarFormularioDelegado() {
+            const btnAgregar = document.getElementById('btn-agregar-delegado');
+            const modalAgregar = document.getElementById('modal-agregar-delegado');
+            const closeAgregarModal = document.getElementById('close-agregar-modal');
+            const btnCancelar = document.getElementById('btn-cancelar-agregar');
+            const formAgregar = document.getElementById('form-agregar-delegado');
+            const selectDepartamento = document.getElementById('departamento-delegado');
+
+            // Cargar departamentos en el select
+            function cargarDepartamentosEnSelect() {
+                selectDepartamento.innerHTML = '<option value="">Seleccionar departamento...</option>';
+                const departamentos = Object.keys(delegadosPorDepartamento).sort();
+                departamentos.forEach(depto => {
+                    const option = document.createElement('option');
+                    option.value = depto;
+                    option.textContent = depto;
+                    selectDepartamento.appendChild(option);
+                });
+            }
+
+            function abrirModalAgregar() {
+                modalAgregar.style.display = 'block';
+                formAgregar.reset();
+            }
+
+            function cerrarModalAgregar() {
+                modalAgregar.style.display = 'none';
+            }
+
+            async function guardarDelegado(event) {
+                event.preventDefault();
+                
+                const nombre = document.getElementById('nombre-delegado').value.trim();
+                const departamento = document.getElementById('departamento-delegado').value;
+                const comision = document.getElementById('comision-delegado').value;
+
+                if (!nombre || !departamento || !comision) {
+                    alert('Por favor complete todos los campos');
+                    return;
+                }
+
+                const btnGuardar = document.getElementById('btn-guardar-delegado');
+                const textoOriginal = btnGuardar.textContent;
+                btnGuardar.textContent = 'Guardando...';
+                btnGuardar.disabled = true;
+
+                try {
+                    console.log('Guardando delegado:', { nombre, departamento, comision });
+                    alert(`✅ Delegado "${nombre}" agregado exitosamente\n📋 Se creará la hoja en Google Sheets`);
+                    cerrarModalAgregar();
+                } catch (error) {
+                    console.error('Error guardando delegado:', error);
+                    alert('❌ Error al guardar el delegado: ' + error.message);
+                } finally {
+                    btnGuardar.textContent = textoOriginal;
+                    btnGuardar.disabled = false;
+                }
+            }
+
+            // Event Listeners
+            btnAgregar.addEventListener('click', abrirModalAgregar);
+            closeAgregarModal.addEventListener('click', cerrarModalAgregar);
+            btnCancelar.addEventListener('click', cerrarModalAgregar);
+            formAgregar.addEventListener('submit', guardarDelegado);
+            
+            // Inicializar
+            cargarDepartamentosEnSelect();
+        }
+
+        // Inicializar formulario
            inicializarFormularioDelegado();
             inicializar();
         });
