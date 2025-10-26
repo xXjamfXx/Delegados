@@ -2439,37 +2439,90 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
     
     console.log('✅ Sistema de sincronización activado');
-});
-function sumarTodosLosVotos() {
-    let totalVotos = 0;
+});// ============================================
+// 🏆 CONTADOR TOTAL DE VOTOS EN PÁGINA
+// ============================================
+
+function mostrarContadorTotal() {
+    const total = calcularTotalVotos();
     
-    console.log("=== 🔢 CONTEO TOTAL DE VOTOS ===");
+    // Crear o actualizar el contador
+    let counter = document.getElementById('total-votes-counter');
+    if (!counter) {
+        counter = document.createElement('div');
+        counter.id = 'total-votes-counter';
+        counter.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #003366, #004d99);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            z-index: 10000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: bold;
+            border: 4px solid #ffd700;
+            text-align: center;
+            min-width: 220px;
+            cursor: pointer;
+        `;
+        document.body.appendChild(counter);
+        
+        // Actualizar al hacer clic
+        counter.onclick = function() {
+            const nuevoTotal = calcularTotalVotos();
+            counter.querySelector('.total-number').textContent = nuevoTotal.toLocaleString();
+            const ahora = new Date();
+            const hora = ahora.getHours().toString().padStart(2, '0');
+            const minuto = ahora.getMinutes().toString().padStart(2, '0');
+            counter.querySelector('.update-time').textContent = `Actualizado: ${hora}:${minuto}`;
+        };
+    }
     
-    // 1. SUMAR VOTOS DE DELEGADOS
-    Object.values(delegadosPorDepartamento).forEach(delegados => {
-        delegados.forEach(delegado => {
-            totalVotos += delegado.votos || 0;
-        });
-    });
-    console.log("📊 Delegados:", totalVotos, "votos");
+    const ahora = new Date();
+    const hora = ahora.getHours().toString().padStart(2, '0');
+    const minuto = ahora.getMinutes().toString().padStart(2, '0');
     
-    // 2. SUMAR VOTOS DE FOCALES Y LÍDERES
-    Object.values(focalesPorDepartamento).forEach(focales => {
-        focales.forEach(focal => {
-            totalVotos += focal.votos || 0;
-        });
-    });
-    console.log("📊 Total con focales/líderes:", totalVotos, "votos");
-    
-    console.log("🎯 TOTAL GENERAL:", totalVotos.toLocaleString(), "votos");
-    console.log("=== ✅ FIN CONTEO ===");
-    
-    return totalVotos;
+    counter.innerHTML = `
+        <div style="font-size: 12px; opacity: 0.9; margin-bottom: 5px;">TOTAL VOTOS</div>
+        <div class="total-number" style="font-size: 28px; margin: 8px 0; color: #ffd700; font-weight: bold;">${total.toLocaleString()}</div>
+        <div class="update-time" style="font-size: 10px; opacity: 0.7;">Actualizado: ${hora}:${minuto}</div>
+        <div style="font-size: 9px; opacity: 0.6; margin-top: 8px;">👆 Click para actualizar</div>
+    `;
 }
 
-// Mostrar resultado
-const totalVotos = sumarTodosLosVotos();
-console.log("🏆 TOTAL VOTOS MARTIN CARABALÍ:", totalVotos.toLocaleString()); 
+// Función mejorada para calcular total
+function calcularTotalVotos() {
+    let total = 0;
+    
+    // Sumar delegados
+    Object.values(delegadosPorDepartamento).forEach(delegados => {
+        delegados.forEach(delegado => {
+            total += delegado.votos || 0;
+        });
+    });
+    
+    // Sumar focales y líderes
+    Object.values(focalesPorDepartamento).forEach(focales => {
+        focales.forEach(focal => {
+            total += focal.votos || 0;
+        });
+    });
+    
+    return total;
+}
+
+// Mostrar contador al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        mostrarContadorTotal();
+    }, 2000);
+    
+    // Actualizar cada 30 segundos
+    setInterval(mostrarContadorTotal, 30000);
+});
             </script>
 </body>
 </html>
