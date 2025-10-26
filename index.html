@@ -1711,9 +1711,9 @@ console.log("Centro:", projection.center());
   .on("mouseover", function(event, d) {
     const deptoMapa = d.properties.NOMBRE_DPT;
     
-    // CONTADORES DIRECTOS
-    const delegados = delegadosPorDepartamento[deptoMapa] || [];
-    const focales = focalesPorDepartamento[deptoMapa] || [];
+    // BUSCAR EN AMBAS VERSIONES (mayúsculas y minúsculas)
+    const delegados = delegadosPorDepartamento[deptoMapa] || delegadosPorDepartamento[deptoMapa.toLowerCase()] || [];
+    const focales = focalesPorDepartamento[deptoMapa] || focalesPorDepartamento[deptoMapa.toLowerCase()] || [];
     
     const cantidadDelegados = delegados.length;
     let cantidadFocales = 0;
