@@ -2440,129 +2440,36 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('✅ Sistema de sincronización activado');
 });
-
-// ============================================
-// 🔢 CONTADOR TOTAL DE VOTOS (MEJORADO)
-// ============================================
-
-function calcularTotalVotos() {
+function sumarTodosLosVotos() {
     let totalVotos = 0;
     
-    console.log("=== 🔍 INICIANDO CONTEO DE VOTOS ===");
+    console.log("=== 🔢 CONTEO TOTAL DE VOTOS ===");
     
-    // 1. Sumar votos de delegados por departamento
+    // 1. SUMAR VOTOS DE DELEGADOS
     Object.values(delegadosPorDepartamento).forEach(delegados => {
         delegados.forEach(delegado => {
             totalVotos += delegado.votos || 0;
         });
     });
-    console.log("📊 Delegados departamento:", totalVotos);
+    console.log("📊 Delegados:", totalVotos, "votos");
     
-    // 2. Sumar votos de TODOS los elementos con clase 'delegado-votos' en la página
-    const todosLosVotosElements = document.querySelectorAll('.delegado-votos');
-    let votosHTML = 0;
-    
-    todosLosVotosElements.forEach(element => {
-        const textoVotos = element.textContent;
-        const votos = parseInt(textoVotos.replace(/\D/g, '')) || 0;
-        votosHTML += votos;
+    // 2. SUMAR VOTOS DE FOCALES Y LÍDERES
+    Object.values(focalesPorDepartamento).forEach(focales => {
+        focales.forEach(focal => {
+            totalVotos += focal.votos || 0;
+        });
     });
+    console.log("📊 Total con focales/líderes:", totalVotos, "votos");
     
-    console.log("📊 Elementos HTML con votos:", votosHTML);
-    totalVotos += votosHTML;
-    
-    console.log("🎯 TOTAL FINAL:", totalVotos);
+    console.log("🎯 TOTAL GENERAL:", totalVotos.toLocaleString(), "votos");
     console.log("=== ✅ FIN CONTEO ===");
     
     return totalVotos;
 }
 
-function actualizarContadorTotal() {
-    const total = calcularTotalVotos();
-    console.log("🎯 Total de votos calculado:", total, "votos");
-    // Solo muestra en consola, no en pantalla
-}
-
-// Función para DEBUG - mostrar todos los elementos con votos
-function debugVotos() {
-    console.log("=== 🐛 DEBUG DETALLADO DE VOTOS ===");
-    
-    const todosLosVotosElements = document.querySelectorAll('.delegado-votos');
-    console.log("📋 Elementos encontrados con 'delegado-votos':", todosLosVotosElements.length);
-    
-    todosLosVotosElements.forEach((element, index) => {
-        const texto = element.textContent;
-        const votos = parseInt(texto.replace(/\D/g, '')) || 0;
-        console.log(`${index + 1}. ${texto} → ${votos} votos`);
-    });
-    
-    console.log("=== 🐛 FIN DEBUG ===");
-}
-
-// Botón para debug
-function agregarBotonDebug() {
-    const boton = document.createElement('button');
-    boton.textContent = '🐛 Debug Votos';
-    boton.style.cssText = `
-        position: fixed;
-        top: 120px;
-        right: 20px;
-        background: #ff4444;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: bold;
-        z-index: 10000;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    `;
-    boton.onclick = debugVotos;
-    document.body.appendChild(boton);
-}
-
-// Función para forzar actualización manual
-function actualizarVotos() {
-    actualizarContadorTotal();
-    console.log('✅ Votos actualizados manualmente');
-}
-
-// Botón para actualizar manualmente
-function agregarBotonActualizar() {
-    const boton = document.createElement('button');
-    boton.textContent = '🔄 Actualizar Votos';
-    boton.style.cssText = `
-        position: fixed;
-        top: 170px;
-        right: 20px;
-        background: #ffd700;
-        color: #003366;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: bold;
-        z-index: 10000;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    `;
-    boton.onclick = actualizarVotos;
-    document.body.appendChild(boton);
-}
-
-// Inicializar contador
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        actualizarContadorTotal();
-        agregarBotonActualizar();
-        agregarBotonDebug();
-    }, 2000);
-    
-    setInterval(actualizarContadorTotal, 30000);
-});
-
-window.actualizarVotos = actualizarVotos;
-window.debugVotos = debugVotos;
-            
+// Mostrar resultado
+const totalVotos = sumarTodosLosVotos();
+console.log("🏆 TOTAL VOTOS MARTIN CARABALÍ:", totalVotos.toLocaleString()); 
             </script>
 </body>
 </html>
