@@ -2309,17 +2309,20 @@ function mostrarDelegados(nombreDepartamento) {
     // OBTENER VOTOS DE LA REGISTRADURÍA
     const votosRegistraduria = votosRegistraduriaPorDepartamento[departamentoFinal] || 0;
     
-    // CALCULAR DIFERENCIA
-    const diferencia = totalVotosDepartamento - votosRegistraduria;
+        // CALCULAR DIFERENCIA (RESPECTO A TU META)
+    const diferencia = votosRegistraduria - totalVotosDepartamento;
     let claseDiferencia = "diferencia-neutra";
     let textoDiferencia = "Sin diferencia";
+    let textoEstado = "Sin diferencia";
     
     if (diferencia > 0) {
         claseDiferencia = "diferencia-positiva";
         textoDiferencia = `+${diferencia.toLocaleString()}`;
+        textoEstado = "Por encima";
     } else if (diferencia < 0) {
         claseDiferencia = "diferencia-negativa";
         textoDiferencia = `${diferencia.toLocaleString()}`;
+        textoEstado = "Por debajo";
     }
     
     // ACTUALIZAR TÍTULO
@@ -2349,7 +2352,7 @@ function mostrarDelegados(nombreDepartamento) {
             <div class="voto-titulo"> Diferencia</div>
             <div class="voto-valor">${textoDiferencia}</div>
             <div class="voto-diferencia ${claseDiferencia}">
-                ${diferencia === 0 ? "Sin diferencia" : (diferencia > 0 ? "Por encima" : "Por debajo")}
+                ${textoEstado}
             </div>
         </div>
     `;
@@ -2655,7 +2658,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================
 
 function mostrarContadorTotal() {
-    const total = calcularTotalVotos();
+    const totalSistema = calcularTotalVotos();
+    const totalRegistraduria = calcularTotalVotosRegistraduria();
+    const diferencia = totalRegistraduria - totalSistema;
     
     // Crear o actualizar el contador
     let counter = document.getElementById('total-votes-counter');
@@ -2676,15 +2681,22 @@ function mostrarContadorTotal() {
             font-weight: bold;
             border: 4px solid #ffd700;
             text-align: center;
-            min-width: 220px;
+            min-width: 250px;
             cursor: pointer;
         `;
         document.body.appendChild(counter);
         
         // Actualizar al hacer clic
         counter.onclick = function() {
-            const nuevoTotal = calcularTotalVotos();
-            counter.querySelector('.total-number').textContent = nuevoTotal.toLocaleString();
+            const nuevoTotalSistema = calcularTotalVotos();
+            const nuevoTotalRegistraduria = calcularTotalVotosRegistraduria();
+            const nuevaDiferencia = nuevoTotalRegistraduria - nuevoTotalSistema;
+            
+            counter.querySelector('.total-number').textContent = nuevoTotalSistema.toLocaleString();
+            counter.querySelector('.total-registraduria').textContent = nuevoTotalRegistraduria.toLocaleString();
+            counter.querySelector('.diferencia-total').textContent = `${nuevaDiferencia >= 0 ? '+' : ''}${nuevaDiferencia.toLocaleString()}`;
+            counter.querySelector('.diferencia-total').style.color = nuevaDiferencia >= 0 ? '#00cc00' : '#ff6666';
+            
             const ahora = new Date();
             const hora = ahora.getHours().toString().padStart(2, '0');
             const minuto = ahora.getMinutes().toString().padStart(2, '0');
@@ -2692,6 +2704,49 @@ function mostrarContadorTotal() {
         };
     }
     
+    const ahora = new Date();
+    const hora = ahora.getHours().toString().padStart(2, '0');
+    const minuto = ahora.getMinutes().toString().padStart(2, '0');
+    
+    counter.innerHTML = `
+        <div style="font-size: 12px; opacity: 0.9; margin-bottom: 8px;">TOTAL VOTOS</div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 8px 0;">
+            <div style="text-align: left; font-size: 11px; opacity: 0.8;">Nuestro Sistema:</div>
+            <div class="total-number" style="font-size: 22px; color: #ffd700; font-weight: bold;">${totalSistema.toLocaleString()}</div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 8px 0;">
+            <div style="text-align: left; font-size: 11px; opacity: 0.8;">Registraduría:</div>
+            <div class="total-registraduria" style="font-size: 22px; color: #ff6666; font-weight: bold;">${totalRegistraduria.toLocaleString()}</div>
+        </div>
+        
+        <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 8px 0; padding-top: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="text-align: left; font-size: 11px; opacity: 0.8;">Diferencia:</div>
+                <div class="diferencia-total" style="font-size: 16px; color: ${diferencia >= 0 ? '#00cc00' : '#ff6666'}; font-weight: bold;">
+                    ${diferencia >= 0 ? '+' : ''}${diferencia.toLocaleString()}
+                </div>
+            </div>
+        </div>
+        
+        <div class="update-time" style="font-size: 10px; opacity: 0.7; margin-top: 8px;">Actualizado: ${hora}:${minuto}</div>
+        <div style="font-size: 9px; opacity: 0.6; margin-top: 5px;">👆 Click para actualizar</div>
+    `;
+}
+
+// NUEVA FUNCIÓN: Calcular total de votos de la registraduría
+// Función para calcular total de votos de la registraduría
+function calcularTotalVotosRegistraduria() {
+    let total = 0;
+    
+    // Sumar todos los votos de la registraduría
+    Object.values(votosRegistraduriaPorDepartamento).forEach(votos => {
+        total += votos || 0;
+    });
+    
+    return total;
+}    
     const ahora = new Date();
     const hora = ahora.getHours().toString().padStart(2, '0');
     const minuto = ahora.getMinutes().toString().padStart(2, '0');
