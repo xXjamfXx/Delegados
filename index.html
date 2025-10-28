@@ -2353,6 +2353,15 @@ function mostrarDelegados(nombreDepartamento) {
         </div>
     `;
     listaDelegados.appendChild(comparacionVotos);
+
+    if (totalElementos === 0) {
+        const noResults = document.createElement('div');
+        noResults.className = 'no-results';
+        noResults.innerHTML = `
+            <p>No hay delegados ni focales que coincidan con los filtros aplicados.</p>
+            <p><small>Departamento: ${nombreDepartamento}</small></p>
+        `;
+        listaDelegados.appendChild(noResults);
     } else {
         // MOSTRAR DELEGADOS PRIMERO
         if (delegadosFiltrados.length > 0) {
