@@ -396,6 +396,91 @@
             .department-label { font-size: 8px !important; }
 .map-tooltip { font-size: 12px !important; }
         }
+
+
+        .votos-comparacion {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fbff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e6f2ff;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .voto-item {
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            padding: 0.5rem;
+        }
+        
+        .voto-titulo {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .voto-valor {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 0.5rem;
+        }
+        
+        .voto-registraduria {
+            color: #cc0000;
+        }
+        
+        .voto-diferencia {
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        
+        .diferencia-positiva {
+            background: #e6ffe6;
+            color: #006600;
+            border: 1px solid #00cc00;
+        }
+        
+        .diferencia-negativa {
+            background: #ffe6e6;
+            color: #cc0000;
+            border: 1px solid #ff6666;
+        }
+        
+        .diferencia-neutra {
+            background: #f0f0f0;
+            color: #666;
+            border: 1px solid #cccccc;
+        }
+        
+        @media (max-width: 768px) {
+            .votos-comparacion {
+                flex-direction: column;
+                text-align: center;
+                padding: 1rem;
+            }
+            
+            .voto-item {
+                min-width: 100%;
+                padding: 0.8rem 0;
+            }
+            
+            .voto-valor {
+                font-size: 1.5rem;
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -1692,6 +1777,45 @@ const focalesPorDepartamento = {
     ],
 };
 
+// ============================================
+// 📊 VOTOS OFICIALES REGISTRADURÍA POR DEPARTAMENTO
+// ============================================
+const votosRegistraduriaPorDepartamento = {
+    "Amazonas": 0,
+    "Antioquia": 0,
+    "Arauca": 0,
+    "Atlántico": 0,
+    "SANTAFE DE BOGOTA D.C": 0,
+    "Bolívar": 0,
+    "Boyacá": 0,
+    "Caldas": 0,
+    "Caquetá": 0,
+    "Casanare": 0,
+    "Cauca": 0,
+    "Cesar": 0,
+    "Chocó": 0,
+    "Córdoba": 0,
+    "Cundinamarca": 0,
+    "Guainía": 0,
+    "La Guajira": 0,
+    "Guaviare": 0,
+    "Huila": 0,
+    "Magdalena": 0,
+    "Meta": 0,
+    "Nariño": 0,
+    "Putumayo": 0,
+    "Quindío": 0,
+    "Risaralda": 0,
+    "Archipiélago de San Andrés, Providencia y Santa Catalina": 0,
+    "Santander": 0,
+    "Sucre": 0,
+    "Tolima": 0,
+    "Valle del Cauca": 0,
+    "Vaupés": 0,
+    "Vichada": 0
+};
+        
+
         // ============================================
         // 🗺️ CÓDIGO DEL MAPA Y FUNCIONALIDAD
         // ============================================
@@ -2168,7 +2292,7 @@ function mostrarDelegados(nombreDepartamento) {
 
     const totalElementos = delegadosFiltrados.length + focalesFiltrados.length;
     
-        // CALCULAR TOTAL DE VOTOS DEL DEPARTAMENTO
+    // CALCULAR TOTAL DE VOTOS DEL DEPARTAMENTO
     let totalVotosDepartamento = 0;
     
     // Sumar votos de delegados
@@ -2181,24 +2305,54 @@ function mostrarDelegados(nombreDepartamento) {
         totalVotosDepartamento += focal.votos || 0;
     });
     
-    // ACTUALIZAR TÍTULO CON TOTAL DE VOTOS
+    // OBTENER VOTOS DE LA REGISTRADURÍA
+    const votosRegistraduria = votosRegistraduriaPorDepartamento[departamentoFinal] || 0;
+    
+    // CALCULAR DIFERENCIA
+    const diferencia = totalVotosDepartamento - votosRegistraduria;
+    let claseDiferencia = "diferencia-neutra";
+    let textoDiferencia = "Sin diferencia";
+    
+    if (diferencia > 0) {
+        claseDiferencia = "diferencia-positiva";
+        textoDiferencia = `+${diferencia.toLocaleString()}`;
+    } else if (diferencia < 0) {
+        claseDiferencia = "diferencia-negativa";
+        textoDiferencia = `${diferencia.toLocaleString()}`;
+    }
+    
+    // ACTUALIZAR TÍTULO
     modalTitulo.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <span>Delegados y Focales - ${nombreDepartamento} (${totalElementos})</span>
-            <span style="background: #ffd700; color: #003366; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; margin-left: 10px;">
-                Total: ${totalVotosDepartamento.toLocaleString()} votos
-            </span>
         </div>
     `;
+    
     listaDelegados.innerHTML = '';
-
-    if (totalElementos === 0) {
-        listaDelegados.innerHTML = `
-            <div class="no-results">
-                <p>No hay delegados ni focales que coincidan con los filtros aplicados.</p>
-                <p><small>Departamento: ${nombreDepartamento}</small></p>
+    
+    // AGREGAR COMPARACIÓN DE VOTOS
+    const comparacionVotos = document.createElement('div');
+    comparacionVotos.className = 'votos-comparacion';
+    comparacionVotos.innerHTML = `
+        <div class="voto-item">
+            <div class="voto-titulo">📊 Votos Actuales</div>
+            <div class="voto-valor">${totalVotosDepartamento.toLocaleString()}</div>
+            <div style="font-size: 0.8rem; color: #666;">Nuestro sistema</div>
+        </div>
+        <div class="voto-item">
+            <div class="voto-titulo">🏛️ Votos Registraduría</div>
+            <div class="voto-valor voto-registraduria">${votosRegistraduria.toLocaleString()}</div>
+            <div style="font-size: 0.8rem; color: #666;">Oficial</div>
+        </div>
+        <div class="voto-item">
+            <div class="voto-titulo">⚖️ Diferencia</div>
+            <div class="voto-valor">${textoDiferencia}</div>
+            <div class="voto-diferencia ${claseDiferencia}">
+                ${diferencia === 0 ? "Sin diferencia" : (diferencia > 0 ? "Por encima" : "Por debajo")}
             </div>
-        `;
+        </div>
+    `;
+    listaDelegados.appendChild(comparacionVotos);
     } else {
         // MOSTRAR DELEGADOS PRIMERO
         if (delegadosFiltrados.length > 0) {
