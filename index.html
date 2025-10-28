@@ -64,18 +64,12 @@
 .logo img {
     width: 100%;
     height: 100%;
-    border-radius: 50%; /* Mismo radio que el contenedor */
-    object-fit: cover; /* Esto es clave - ajusta la imagen al círculo */
-    object-position: center; /* Centra la imagen */
+    border-radius: 50%; 
+    object-fit: cover; 
+    object-position: center; 
 }
 
-        .logo img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            object-position: center;
-        }
+    
 
         h1 {
             font-size: 2.5rem;
@@ -120,9 +114,7 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
             border-left: 5px solid #004d99;
         }
-        /* =============================== */
-        /* 🎯 SISTEMA DE FILTROS */
-        /* =============================== */
+        
         .filters-section {
             background: white;
             padding: 2rem;
@@ -181,9 +173,7 @@
             font-size: 0.9rem;
         }
 
-        /* =============================== */
-        /* 🗺️ MAPA DE COLOMBIA */
-        /* =============================== */
+      
         .map-section {
             background: white;
             padding: 2rem;
@@ -252,9 +242,7 @@
             z-index: 1000;
         }
 
-        /* =============================== */
-        /* 🎯 MODAL DE DELEGADOS */
-        /* =============================== */
+     
         .modal {
             display: none;
             position: fixed;
@@ -362,9 +350,7 @@
             padding: 2rem 0;
             margin-top: 3rem;
         }
-/* =============================== */
-/* 🎯 ESTILOS PARA CATEGORÍAS */    ← AGREGAR EN EL CSS
-/* =============================== */
+
 .categoria-title {
     margin: 2rem 0 1rem 0;
     padding-bottom: 0.5rem;
@@ -508,9 +494,7 @@
             <p>El Pacto Histórico representa la esperanza de un cambio verdadero para Colombia. Con Martin Carabalí como candidato, trabajamos por una nación más justa, equitativa y llena de oportunidades para todos los colombianos.</p>
         </section>
 
-        <!-- =============================== -->
-        <!-- 🎯 SISTEMA DE FILTROS -->
-        <!-- =============================== -->
+      
         <section class="filters-section">
             <h2>Lideres por Departamento</h2>
             <div class="search-container">
@@ -529,9 +513,7 @@
             </div>
         </section>
 
-        <!-- =============================== -->
-        <!-- 🗺️ MAPA DE COLOMBIA -->
-        <!-- =============================== -->
+     
         <section class="map-section">
             <h2>Departamentos de Colombia</h2>
             <div id="colombia-map"></div>
@@ -541,9 +523,7 @@
 </section>
 
 <style>
-/* =============================== */
-/* 🎯 ESTILOS LÍDERES */
-/* =============================== */
+
 .lideres-section {
     background: white;
     padding: 2rem;
@@ -601,9 +581,7 @@
 }
 </style>
 <style>
-/* =============================== */
-/* 🎯 ESTILOS FOCALES */
-/* =============================== */
+
 .focales-section {
     background: white;
     padding: 2rem;
@@ -659,9 +637,7 @@
 }
 </style>    </div>
 
-    <!-- =============================== -->
-    <!-- 🎯 MODAL DE DELEGADOS -->
-    <!-- =============================== -->
+    
     <div id="modal-delegados" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -678,9 +654,7 @@
     </footer>
 
     <script>
-        // ============================================
-        // 🔧 DATOS DE DELEGADOS - EDITAR AQUÍ
-        // ============================================
+     
 
         const delegadosPorDepartamento = {
     "Amazonas": [
@@ -1675,9 +1649,7 @@
     
 };
 
-        // ============================================
-// 🎯 NUEVOS FOCALES Y LÍDERES POR DEPARTAMENTO
-// ============================================
+      
 const focalesPorDepartamento = {
     "NORTE DE SANTANDER": [  // ← SOLO ESTE CAMBIADO A MAYÚSCULAS
         { nombre: "LEIDY URIBE", grupo: "ICBF", votos: 69, enlace: "https://docs.google.com/spreadsheets/d/1p6UdNw0t3F8p1iZ6mrVHdvB7ndX5wKtb/edit?gid=1050694091#gid=1050694091" },
@@ -1783,9 +1755,7 @@ const focalesPorDepartamento = {
     ],
 };
 
-// ============================================
-// 📊 VOTOS OFICIALES REGISTRADURÍA POR DEPARTAMENTO
-// ============================================
+
 const votosRegistraduriaPorDepartamento = {
     "Amazonas": 39,
     "Antioquia": 780,
@@ -1823,9 +1793,7 @@ const votosRegistraduriaPorDepartamento = {
 };
         
 
-        // ============================================
-        // 🗺️ CÓDIGO DEL MAPA Y FUNCIONALIDAD
-        // ============================================
+        
         
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('modal-delegados');
@@ -1858,7 +1826,7 @@ const votosRegistraduriaPorDepartamento = {
                 const svg = d3.select("#colombia-map")
                     
     .append("svg")
-    .attr("width", width)     // ✅ VUELVE A ESTO
+    .attr("width", width)     
     .attr("height", height);
 
                 const g = svg.append("g");
@@ -1882,7 +1850,7 @@ const baseScale = isMobile ? 2000 : 3000;
 let center = [-74, 4.5];
 let translate = [width / 2, height / 2];
 
-// 📱 SOLO PARA MÓVILES - ajustar posición
+
 if (isMobile) {
     translate = [width / 2, height / 1.8];
 }
@@ -1900,7 +1868,7 @@ console.log("Centro:", projection.center());
 
         const path = d3.geoPath().projection(projection);
 
-        // DIBUJAR FORMAS PRIMERO (paths)
+        
         g.selectAll("path")
             .data(colombia.features)
             .enter()
@@ -1920,18 +1888,18 @@ console.log("Centro:", projection.center());
 })
             .on("mouseout", function(d) {
     tooltip.transition().duration(500).style("opacity", 0);
-    d3.select(this).style("fill", "#ff9c03");  // ✅ NARANJA BASE
+    d3.select(this).style("fill", "#ff9c03");  
 })
             .on("click", function(event, d) {
     const depto = d.properties.NOMBRE_DPT;
     mostrarDelegados(depto);
     
-    // Resaltar selección
-    g.selectAll(".department-path").style("fill", "#ff9c03");  // ✅ NARANJA BASE
-    d3.select(this).style("fill", "#cc7d02");  // ✅ NARANJA OSCURO
+    
+    g.selectAll(".department-path").style("fill", "#ff9c03");  
+    d3.select(this).style("fill", "#cc7d02");  
 })
 
-        // LUEGO ETIQUETAS
+        
         g.selectAll("text")
             .data(colombia.features)
             .enter()
@@ -1959,7 +1927,7 @@ console.log("Centro:", projection.center());
         `;
     });
             }
-            //             // Cargar opciones de filtros
+           
             function cargarFiltros() {
                 departamentosData = Object.keys(delegadosPorDepartamento).sort();
 
@@ -1972,7 +1940,7 @@ console.log("Centro:", projection.center());
                     });
                 });
 
-                // Agregar opciones de comisión al select
+              
                 comisionFilter.innerHTML = '<option value="">Todas las comisiones</option>';
                 [...comisionesUnicas].sort().forEach(comision => {
                     const option = document.createElement('option');
@@ -1981,7 +1949,7 @@ console.log("Centro:", projection.center());
                     comisionFilter.appendChild(option);
                 });
 
-                // Agregar opciones de departamento al select
+                
                 departamentoFilter.innerHTML = '<option value="">Todos los departamentos</option>';
                 departamentosData.forEach(depto => {
                     const option = document.createElement('option');
@@ -1991,8 +1959,7 @@ console.log("Centro:", projection.center());
                 });
             }
 
-            // Función para mapear nombres entre GeoJSON y datos
-            // Función para mapear nombres entre GeoJSON y datos
+           
 function mapearNombreDepartamento(nombreGeoJSON) {
     console.log("🔄 Mapeando:", nombreGeoJSON);
     
@@ -2038,7 +2005,7 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     return resultado;
 }
 
-            // Actualizar mapa basado en filtros
+           
  function actualizarMapaConFiltros() {
     if (!mapaCargado) return;
 
@@ -2051,7 +2018,7 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     console.log("Departamento Seleccionado:", departamentoSeleccionado);
     console.log("=== FIN DEBUG ===");
 
-    // 🗺️ MAPEO MANUAL GARANTIZADO entre nombres de mapa y datos
+  
     const mapeoDepartamentos = {
         "Amazonas": "Amazonas",
         "Antioquia": "Antioquia", 
@@ -2092,19 +2059,17 @@ function mapearNombreDepartamento(nombreGeoJSON) {
     .classed("filtrado", function(d) {
         const deptoMapa = d.properties.NOMBRE_DPT;
         
-        // 🔥 USAR MAPEO MANUAL GARANTIZADO
         const departamentoEnDatos = mapeoDepartamentos[deptoMapa] || deptoMapa;
         const delegadosDelDepto = delegadosPorDepartamento[departamentoEnDatos] || [];
         
         console.log("🔍 Filtro - Mapa:", deptoMapa, "| Datos:", departamentoEnDatos, "| Delegados:", delegadosDelDepto.length);
         
-        // Si no hay delegados en este departamento, mostrar tenue
+       
         if (delegadosDelDepto.length === 0) {
             console.log("❌ Sin delegados");
             return true;
         }
         
-        // Aplicar filtros
         const tieneDelegadosFiltrados = delegadosDelDepto.some(delegado => {
             const coincideNombre = !searchTerm || delegado.nombre.toLowerCase().includes(searchTerm);
             const coincideComision = !comisionSeleccionada || delegado.comision === comisionSeleccionada;
@@ -2124,7 +2089,7 @@ function mapearNombreDepartamento(nombreGeoJSON) {
 
 
             
-            // Agregar event listeners
+            
             function agregarEventListeners() {
                 closeModal.addEventListener('click', cerrarModal);
                 window.addEventListener('click', (event) => {
@@ -2143,7 +2108,7 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                     actualizarMapaConFiltros();
                 });
 
-                // Redimensionar mapa cuando cambie el tamaño de la ventana
+                
                 window.addEventListener('resize', function() {
     if (mapaCargado) {
         console.log("🔄 Redimensionando ventana...");
@@ -2152,7 +2117,7 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                 });
             }
 
-            // Actualizar resultados basados en filtros
+            
             function actualizarResultados() {
                 const searchTerm = searchInput.value.toLowerCase();
                 const comisionSeleccionada = comisionFilter.value;
@@ -2186,10 +2151,7 @@ function mapearNombreDepartamento(nombreGeoJSON) {
                 filterResults.textContent = resultadosTexto;
             }
 
-            // Mostrar delegados en modal
-                        // Mostrar delegados en modal// ==================================================
-// SISTEMA DE CORRECCIÓN DE DEPARTAMENTOS
-// ==================================================
+            
 class NormalizadorDepartamentos {
     constructor() {
         this.correcciones = {
