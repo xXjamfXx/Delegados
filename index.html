@@ -2694,6 +2694,7 @@ function mostrarContadorTotal() {
             
             counter.querySelector('.total-number').textContent = nuevoTotalSistema.toLocaleString();
             counter.querySelector('.total-registraduria').textContent = nuevoTotalRegistraduria.toLocaleString();
+                        counter.querySelector('.total-registraduria').style.color = '#00cc00';
             counter.querySelector('.diferencia-total').textContent = `${nuevaDiferencia >= 0 ? '+' : ''}${nuevaDiferencia.toLocaleString()}`;
             counter.querySelector('.diferencia-total').style.color = nuevaDiferencia >= 0 ? '#00cc00' : '#ff6666';
             
@@ -2718,7 +2719,7 @@ function mostrarContadorTotal() {
         
         <div style="display: flex; justify-content: space-between; align-items: center; margin: 8px 0;">
             <div style="text-align: left; font-size: 11px; opacity: 0.8;">Registraduría:</div>
-            <div class="total-registraduria" style="font-size: 22px; color: #ff6666; font-weight: bold;">${totalRegistraduria.toLocaleString()}</div>
+            <div class="total-registraduria" style="font-size: 22px; color: #00cc00; font-weight: bold;">${totalRegistraduria.toLocaleString()}</div>
         </div>
         
         <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 8px 0; padding-top: 8px;">
