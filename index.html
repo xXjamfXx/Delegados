@@ -2335,17 +2335,17 @@ function mostrarDelegados(nombreDepartamento) {
     comparacionVotos.className = 'votos-comparacion';
     comparacionVotos.innerHTML = `
         <div class="voto-item">
-            <div class="voto-titulo">📊 Votos Actuales</div>
+            <div class="voto-titulo"> Votos Actuales</div>
             <div class="voto-valor">${totalVotosDepartamento.toLocaleString()}</div>
             <div style="font-size: 0.8rem; color: #666;">Nuestro sistema</div>
         </div>
         <div class="voto-item">
-            <div class="voto-titulo">🏛️ Votos Registraduría</div>
+            <div class="voto-titulo"> Votos Registraduría</div>
             <div class="voto-valor voto-registraduria">${votosRegistraduria.toLocaleString()}</div>
             <div style="font-size: 0.8rem; color: #666;">Oficial</div>
         </div>
         <div class="voto-item">
-            <div class="voto-titulo">⚖️ Diferencia</div>
+            <div class="voto-titulo"> Diferencia</div>
             <div class="voto-valor">${textoDiferencia}</div>
             <div class="voto-diferencia ${claseDiferencia}">
                 ${diferencia === 0 ? "Sin diferencia" : (diferencia > 0 ? "Por encima" : "Por debajo")}
