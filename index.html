@@ -2653,9 +2653,44 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
     
     console.log('✅ Sistema de sincronización activado');
-});// ============================================
+});
+
+// ============================================
 // 🏆 CONTADOR TOTAL DE VOTOS EN PÁGINA
 // ============================================
+
+// Función para calcular total de votos de la registraduría
+function calcularTotalVotosRegistraduria() {
+    let total = 0;
+    
+    // Sumar todos los votos de la registraduría
+    Object.values(votosRegistraduriaPorDepartamento).forEach(votos => {
+        total += votos || 0;
+    });
+    
+    return total;
+}
+
+// Función para calcular total de votos del sistema
+function calcularTotalVotos() {
+    let total = 0;
+    
+    // Sumar delegados
+    Object.values(delegadosPorDepartamento).forEach(delegados => {
+        delegados.forEach(delegado => {
+            total += delegado.votos || 0;
+        });
+    });
+    
+    // Sumar focales y líderes
+    Object.values(focalesPorDepartamento).forEach(focales => {
+        focales.forEach(focal => {
+            total += focal.votos || 0;
+        });
+    });
+    
+    return total;
+}
 
 function mostrarContadorTotal() {
     const totalSistema = calcularTotalVotos();
@@ -2694,7 +2729,7 @@ function mostrarContadorTotal() {
             
             counter.querySelector('.total-number').textContent = nuevoTotalSistema.toLocaleString();
             counter.querySelector('.total-registraduria').textContent = nuevoTotalRegistraduria.toLocaleString();
-                        counter.querySelector('.total-registraduria').style.color = '#00cc00';
+            counter.querySelector('.total-registraduria').style.color = '#00cc00';
             counter.querySelector('.diferencia-total').textContent = `${nuevaDiferencia >= 0 ? '+' : ''}${nuevaDiferencia.toLocaleString()}`;
             counter.querySelector('.diferencia-total').style.color = nuevaDiferencia >= 0 ? '#00cc00' : '#ff6666';
             
@@ -2735,6 +2770,17 @@ function mostrarContadorTotal() {
         <div style="font-size: 9px; opacity: 0.6; margin-top: 5px;">👆 Click para actualizar</div>
     `;
 }
+
+// Mostrar contador al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        mostrarContadorTotal();
+    }, 2000);
+    
+    // Actualizar cada 30 segundos
+    setInterval(mostrarContadorTotal, 30000);
+});
+                
 
 // NUEVA FUNCIÓN: Calcular total de votos de la registraduría
 // Función para calcular total de votos de la registraduría
