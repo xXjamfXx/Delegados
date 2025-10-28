@@ -2780,6 +2780,17 @@ function calcularTotalVotos() {
     
     return total;
 }
+                // Función para calcular total de votos de la registraduría
+function calcularTotalVotosRegistraduria() {
+    let total = 0;
+    
+    // Sumar todos los votos de la registraduría
+    Object.values(votosRegistraduriaPorDepartamento).forEach(votos => {
+        total += votos || 0;
+    });
+    
+    return total;
+}f
 
 // Mostrar contador al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
