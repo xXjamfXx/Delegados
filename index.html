@@ -2835,7 +2835,7 @@ function normalizarNombreDepartamento(nombre) {
             }
         }
                 // ========== FUNCIONALIDAD RANKING ==========
-                window.generarRanking = function() {
+                  window.generarRanking = function() {
             console.log("📊 Generando ranking...");
             
             const rankingList = document.getElementById('ranking-list');
@@ -2844,15 +2844,15 @@ function normalizarNombreDepartamento(nombre) {
                 return;
             }
             
-            // Verificar que existen los datos
-            if (!window.votosRegistraduriaPorDepartamento) {
+            // Verificar que existen los datos - USAR LA VARIABLE DIRECTA
+            if (!votosRegistraduriaPorDepartamento) {
                 console.log("❌ No se encontraron datos de votos");
                 rankingList.innerHTML = '<div class="no-results">No hay datos disponibles</div>';
                 return;
             }
             
-            // Convertir a array y ordenar por votos (mayor a menor)
-            const rankingArray = Object.entries(window.votosRegistraduriaPorDepartamento)
+            // Convertir a array y ordenar por votos (mayor a menor) - USAR VARIABLE DIRECTA
+            const rankingArray = Object.entries(votosRegistraduriaPorDepartamento)
                 .map(([departamento, votos]) => ({ 
                     departamento, 
                     votos: votos || 0 
