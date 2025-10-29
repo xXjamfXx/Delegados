@@ -2796,7 +2796,7 @@ function normalizarNombreDepartamento(nombre) {
         .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
         .join(' ');
 }
-                 // ========== FUNCIONALIDAD RANKING ==========
+               // ========== FUNCIONALIDAD RANKING ==========
         function inicializarRanking() {
             const rankingBtn = document.getElementById('ranking-btn');
             const rankingContainer = document.getElementById('ranking-container');
@@ -2805,13 +2805,16 @@ function normalizarNombreDepartamento(nombre) {
             console.log("🔍 Botón de ranking encontrado:", rankingBtn);
             
             if (rankingBtn && rankingContainer && rankingList) {
+                // ESTADO INICIAL - Asegurar que empiece cerrado
+                rankingContainer.style.display = 'none';
+                rankingBtn.classList.remove('active');
+                
                 rankingBtn.addEventListener('click', function() {
                     console.log("🎯 Click en botón ranking");
                     console.log("📊 Estado actual display:", rankingContainer.style.display);
                     
-                    // VERIFICACIÓN MÁS PRECISA
-                    const isVisible = rankingContainer.style.display === 'block' || 
-                                     rankingContainer.style.display === '';
+                    // VERIFICACIÓN CORRECTA
+                    const isVisible = rankingContainer.style.display === 'block';
                     
                     console.log("🔍 ¿Está visible?", isVisible);
                     
