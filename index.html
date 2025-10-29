@@ -580,6 +580,96 @@
                 padding: 8px 10px;
             }
         }
+        /* NUEVOS ESTILOS PARA LA SECCIÓN DE RANKING */
+.ranking-section {
+    background: white;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid #004d99;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.ranking-section h2 {
+    color: #003366;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.ranking-table th {
+    background: #003366;
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 0.9rem;
+    position: sticky;
+    top: 0;
+}
+
+.ranking-table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #e6f2ff;
+}
+
+.ranking-table tr:hover {
+    background: #f8fbff;
+}
+
+.ranking-posicion {
+    font-weight: bold;
+    color: #003366;
+    text-align: center;
+    width: 50px;
+}
+
+.ranking-departamento {
+    font-weight: 600;
+    color: #003366;
+}
+
+.ranking-votos {
+    text-align: right;
+    font-weight: bold;
+    color: #004d99;
+}
+
+.ranking-top-3 {
+    background: #fff8e6;
+}
+
+.ranking-top-3 .ranking-posicion {
+    color: #ff6b00;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .ranking-section {
+        max-height: 400px;
+    }
+    
+    .ranking-table {
+        font-size: 0.8rem;
+    }
+    
+    .ranking-table th,
+    .ranking-table td {
+        padding: 8px 10px;
+    }
+}
         
     </style>
 </head>
@@ -616,6 +706,12 @@
                 <p id="filter-results">Mostrando todos los delegados</p>
             </div>
         </section>
+
+        <!-- NUEVA SECCIÓN DE RANKING -->
+<section class="ranking-section">
+    <h2>📊 Ranking de Votos Oficiales por Departamento</h2>
+    <div id="ranking-votos"></div>
+</section>
 
      
         <section class="map-section">
@@ -1952,7 +2048,52 @@ const votosPorMunicipio = {
                 cargarMapaColombia();
                 agregarEventListeners();
                 actualizarResultados();
+                mostrarRankingVotos();
             }
+            // NUEVA FUNCIÓN PARA MOSTRAR RANKING DE VOTOS
+function mostrarRankingVotos() {
+    const container = document.getElementById('ranking-votos');
+    
+    // Convertir objeto a array y ordenar por votos (mayor a menor)
+    const departamentosOrdenados = Object.entries(votosRegistraduriaPorDepartamento)
+        .sort(([,a], [,b]) => b - a);
+    
+    let html = `
+        <table class="ranking-table">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">Pos</th>
+                    <th>Departamento</th>
+                    <th style="text-align: right;">Votos Oficiales</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    departamentosOrdenados.forEach(([departamento, votos], index) => {
+        const posicion = index + 1;
+        const esTop3 = posicion <= 3;
+        const claseFila = esTop3 ? 'ranking-top-3' : '';
+        
+        html += `
+            <tr class="${claseFila}">
+                <td class="ranking-posicion">${posicion}°</td>
+                <td class="ranking-departamento">${departamento}</td>
+                <td class="ranking-votos">${votos.toLocaleString()}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+        </table>
+        <div style="text-align: center; margin-top: 1rem; color: #666; font-size: 0.9rem;">
+            Total: ${Object.values(votosRegistraduriaPorDepartamento).reduce((a, b) => a + b, 0).toLocaleString()} votos oficiales
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
 
             function cargarMapaColombia() {
                 const width = mapContainer.clientWidth;
