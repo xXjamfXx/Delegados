@@ -2835,7 +2835,7 @@ function normalizarNombreDepartamento(nombre) {
             }
         }
                 // ========== FUNCIONALIDAD RANKING ==========
-        function generarRanking() {
+                window.generarRanking = function() {
             console.log("📊 Generando ranking...");
             
             const rankingList = document.getElementById('ranking-list');
@@ -2885,7 +2885,7 @@ function normalizarNombreDepartamento(nombre) {
             });
             
             rankingList.innerHTML = rankingHTML;
-        }
+        };
         
         function toggleRanking() {
             console.log("🎯 Botón de ranking clickeado");
