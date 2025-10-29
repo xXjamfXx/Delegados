@@ -2807,10 +2807,16 @@ function normalizarNombreDepartamento(nombre) {
             if (rankingBtn && rankingContainer && rankingList) {
                 rankingBtn.addEventListener('click', function() {
                     console.log("🎯 Click en botón ranking");
-                    const isVisible = rankingContainer.style.display === 'block';
+                    console.log("📊 Estado actual display:", rankingContainer.style.display);
+                    
+                    // VERIFICACIÓN MÁS PRECISA
+                    const isVisible = rankingContainer.style.display === 'block' || 
+                                     rankingContainer.style.display === '';
+                    
+                    console.log("🔍 ¿Está visible?", isVisible);
                     
                     if (!isVisible) {
-                        console.log("📊 Generando ranking...");
+                        console.log("📊 Abriendo y generando ranking...");
                         generarRanking();
                         rankingContainer.style.display = 'block';
                         rankingBtn.classList.add('active');
