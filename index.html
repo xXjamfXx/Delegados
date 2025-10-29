@@ -466,6 +466,121 @@
             }
         }
         
+   
+           
+        .modal-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e6f2ff;
+            background: #f8fbff;
+            border-radius: 10px 10px 0 0;
+            padding: 5px;
+        }
+
+        .modal-tab {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            margin-right: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+        }
+
+        .modal-tab.active {
+            background: #004d99;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 77, 153, 0.3);
+        }
+
+        .modal-tab:hover:not(.active) {
+            background: #e6f2ff;
+            color: #003366;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+       
+        .municipios-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .municipios-table th {
+            background: #003366;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .municipios-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e6f2ff;
+        }
+
+        .municipios-table tr:hover {
+            background: #f8fbff;
+        }
+
+        .municipio-nombre {
+            font-weight: 600;
+            color: #003366;
+        }
+
+        .municipio-votos {
+            text-align: right;
+            font-weight: bold;
+            color: #004d99;
+        }
+
+        .total-municipios {
+            background: #e6ffe6;
+            font-weight: bold;
+            color: #006600;
+        }
+
+        .total-municipios td {
+            border-top: 2px solid #00cc00;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .modal-tabs {
+                flex-direction: column;
+            }
+            
+            .modal-tab {
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+            
+            .municipios-table {
+                font-size: 0.8rem;
+            }
+            
+            .municipios-table th,
+            .municipios-table td {
+                padding: 8px 10px;
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -626,11 +741,30 @@
 </style>    </div>
 
     
-    <div id="modal-delegados" class="modal">
+        <div id="modal-delegados" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h3 id="modal-titulo">Delegados - Departamento</h3>
-            <div id="lista-delegados"></div>
+            
+            <!-- PESTAÑAS NUEVAS -->
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="delegados">
+                    👥 Delegados y Focales
+                </button>
+                <button class="modal-tab" data-tab="municipios">
+                    🏛️ Votos por Municipio
+                </button>
+            </div>
+            
+            <!-- CONTENIDO PESTAÑA DELEGADOS (lo que ya tenías) -->
+            <div id="tab-delegados" class="tab-content active">
+                <div id="lista-delegados"></div>
+            </div>
+            
+            <!-- CONTENIDO PESTAÑA MUNICIPIOS (NUEVO) -->
+            <div id="tab-municipios" class="tab-content">
+                <div id="lista-municipios"></div>
+            </div>
         </div>
     </div>
 
@@ -1775,6 +1909,18 @@ const votosRegistraduriaPorDepartamento = {
     "Vaupés": 690,
     "Vichada": 27
 };
+        // ========== DATOS DE VOTOS POR MUNICIPIO ==========
+const votosPorMunicipio = {
+    "Arauca": [
+        { municipio: "Arauca", votos: 4500 },
+        { municipio: "Tame", votos: 1200 },
+        { municipio: "Saravena", votos: 800 },
+        { municipio: "Cravo Norte", votos: 600 },
+        { municipio: "Fortul", votos: 400 }
+    ]
+    // AGREGA AQUÍ TODOS LOS DEMÁS DEPARTAMENTOS CON SUS MUNICIPIOS
+};
+// ========== FIN DATOS MUNICIPIOS ==========
         
 
         
@@ -2256,9 +2402,9 @@ function mostrarDelegados(nombreDepartamento) {
         textoEstado = "Por debajo";
     }
     
-    modalTitulo.innerHTML = `
+        modalTitulo.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-            <span>Delegados y Focales - ${nombreDepartamento} (${totalElementos})</span>
+            <span>${nombreDepartamento} - Información Electoral</span>
         </div>
     `;
     
@@ -2342,13 +2488,108 @@ function mostrarDelegados(nombreDepartamento) {
             });
         }
     }
-
+    // Configurar las pestañas
+    const modalTabs = document.querySelector('.modal-tabs');
+    modalTabs.innerHTML = `
+        <button class="modal-tab active" data-tab="delegados" onclick="cambiarPestaña('delegados', '${nombreDepartamento}')">
+            👥 Delegados y Focales (${totalElementos})
+        </button>
+        <button class="modal-tab" data-tab="municipios" onclick="cambiarPestaña('municipios', '${nombreDepartamento}')">
+            🏛️ Votos por Municipio
+        </button>
+    `;
+    
+    // Asegurar que empiece en la pestaña de delegados
+    cambiarPestaña('delegados', nombreDepartamento);
     modal.style.display = 'block';
 }
             function cerrarModal() {
                 modal.style.display = 'none';
                 d3.selectAll(".department-path").classed("seleccionado", false);
             }
+
+                        // ========== FUNCIONES PARA PESTAÑAS ==========
+            function cambiarPestaña(tabName, departamento) {
+                console.log(`Cambiando a pestaña: ${tabName} - Departamento: ${departamento}`);
+                
+                // Quitar "active" de todas las pestañas
+                document.querySelectorAll('.modal-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Quitar "active" de todos los contenidos
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Activar la pestaña clickeada
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(`tab-${tabName}`).classList.add('active');
+                
+                // Si es la pestaña de municipios, cargar los datos
+                if (tabName === 'municipios') {
+                    mostrarVotosMunicipio(departamento);
+                }
+            }
+
+            function mostrarVotosMunicipio(departamento) {
+                const municipios = votosPorMunicipio[departamento] || [];
+                const container = document.getElementById('lista-municipios');
+                
+                if (municipios.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-results">
+                            <p>📊 Datos en proceso de carga</p>
+                            <p><small>Los votos por municipio para ${departamento} se están actualizando</small></p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Calcular total
+                const totalVotos = municipios.reduce((sum, mun) => sum + mun.votos, 0);
+                
+                // Ordenar por votos (mayor a menor)
+                municipios.sort((a, b) => b.votos - a.votos);
+                
+                let html = `
+                    <table class="municipios-table">
+                        <thead>
+                            <tr>
+                                <th>Municipio</th>
+                                <th style="text-align: right;">Votos Obtenidos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                municipios.forEach(mun => {
+                    html += `
+                        <tr>
+                            <td class="municipio-nombre">${mun.municipio}</td>
+                            <td class="municipio-votos">${mun.votos.toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-municipios">
+                                <td><strong>Total ${departamento}</strong></td>
+                                <td style="text-align: right;"><strong>${totalVotos.toLocaleString()}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    
+                    <div style="margin-top: 1rem; text-align: center; color: #666; font-size: 0.9rem;">
+                        Mostrando ${municipios.length} municipios
+                    </div>
+                `;
+                
+                container.innerHTML = html;
+            }
+            // ========== FIN FUNCIONES PESTAÑAS ==========
             inicializar();
         });
     </script>
