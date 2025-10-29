@@ -2489,15 +2489,24 @@ function mostrarDelegados(nombreDepartamento) {
         }
     }
     // Configurar las pestañas
+        // Configurar las pestañas
     const modalTabs = document.querySelector('.modal-tabs');
     modalTabs.innerHTML = `
-        <button class="modal-tab active" data-tab="delegados" onclick="cambiarPestaña('delegados', '${nombreDepartamento}')">
+        <button class="modal-tab active" data-tab="delegados">
             👥 Delegados y Focales (${totalElementos})
         </button>
-        <button class="modal-tab" data-tab="municipios" onclick="cambiarPestaña('municipios', '${nombreDepartamento}')">
+        <button class="modal-tab" data-tab="municipios">
             🏛️ Votos por Municipio
         </button>
     `;
+
+    // Agregar event listeners a las pestañas
+    modalTabs.querySelectorAll('.modal-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            cambiarPestaña(tabName, nombreDepartamento);
+        });
+    });
     
     // Asegurar que empiece en la pestaña de delegados
     cambiarPestaña('delegados', nombreDepartamento);
@@ -2928,6 +2937,88 @@ document.addEventListener('DOMContentLoaded', function() {
     
     setInterval(mostrarContadorTotal, 30000);
 });
+                // ========== FUNCIONES GLOBALES PARA PESTAÑAS ==========
+function cambiarPestaña(tabName, departamento) {
+    console.log(`Cambiando a pestaña: ${tabName} - Departamento: ${departamento}`);
+    
+    // Quitar "active" de todas las pestañas
+    document.querySelectorAll('.modal-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Quitar "active" de todos los contenidos
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Activar la pestaña clickeada
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+    
+    // Si es la pestaña de municipios, cargar los datos
+    if (tabName === 'municipios') {
+        mostrarVotosMunicipio(departamento);
+    }
+}
+
+function mostrarVotosMunicipio(departamento) {
+    const municipios = votosPorMunicipio[departamento] || [];
+    const container = document.getElementById('lista-municipios');
+    
+    if (municipios.length === 0) {
+        container.innerHTML = `
+            <div class="no-results">
+                <p>📊 Datos en proceso de carga</p>
+                <p><small>Los votos por municipio para ${departamento} se están actualizando</small></p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Calcular total
+    const totalVotos = municipios.reduce((sum, mun) => sum + mun.votos, 0);
+    
+    // Ordenar por votos (mayor a menor)
+    municipios.sort((a, b) => b.votos - a.votos);
+    
+    let html = `
+        <table class="municipios-table">
+            <thead>
+                <tr>
+                    <th>Municipio</th>
+                    <th style="text-align: right;">Votos Obtenidos</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    municipios.forEach(mun => {
+        html += `
+            <tr>
+                <td class="municipio-nombre">${mun.municipio}</td>
+                <td class="municipio-votos">${mun.votos.toLocaleString()}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+            <tfoot>
+                <tr class="total-municipios">
+                    <td><strong>Total ${departamento}</strong></td>
+                    <td style="text-align: right;"><strong>${totalVotos.toLocaleString()}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div style="margin-top: 1rem; text-align: center; color: #666; font-size: 0.9rem;">
+            Mostrando ${municipios.length} municipios
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+// ========== FIN FUNCIONES PESTAÑAS ==========
 </script>
 </body>
 </html>
