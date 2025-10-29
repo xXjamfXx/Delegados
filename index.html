@@ -2123,7 +2123,67 @@ const votosPorMunicipio = {
     ]
     // AGREGA AQUÍ TODOS LOS DEMÁS DEPARTAMENTOS CON SUS MUNICIPIOS
 };
-// ========== FIN DATOS MUNICIPIOS ==========
+ // NUEVA FUNCIÓN PARA MOSTRAR RANKING DE VOTOS
+        function mostrarRankingVotos() {
+            const container = document.getElementById('ranking-votos');
+            
+            // Convertir objeto a array y ordenar por votos (mayor a menor)
+            const departamentosOrdenados = Object.entries(votosRegistraduriaPorDepartamento)
+                .sort(([,a], [,b]) => b - a);
+            
+            let html = `
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Posición</th>
+                            <th>Departamento</th>
+                            <th style="text-align: right;">Votos Oficiales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            departamentosOrdenados.forEach(([departamento, votos], index) => {
+                const posicion = index + 1;
+                let claseFila = '';
+                let medalla = '';
+                
+                if (posicion === 1) {
+                    claseFila = 'ranking-top-1';
+                    medalla = '🥇';
+                } else if (posicion === 2) {
+                    claseFila = 'ranking-top-2';
+                    medalla = '🥈';
+                } else if (posicion === 3) {
+                    claseFila = 'ranking-top-3';
+                    medalla = '🥉';
+                }
+                
+                html += `
+                    <tr class="${claseFila}">
+                        <td class="ranking-posicion">${medalla} ${posicion}°</td>
+                        <td class="ranking-departamento">${departamento}</td>
+                        <td class="ranking-votos">${votos.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+            
+            const totalVotos = Object.values(votosRegistraduriaPorDepartamento).reduce((a, b) => a + b, 0);
+            
+            html += `
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-ranking">
+                            <td colspan="3">
+                                🏁 TOTAL GENERAL: ${totalVotos.toLocaleString()} VOTOS OFICIALES
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
         
 
         
@@ -2150,67 +2210,18 @@ const votosPorMunicipio = {
                 actualizarResultados();
               
             }
-// NUEVA FUNCIÓN PARA MOSTRAR RANKING DE VOTOS
-function mostrarRankingVotos() {
-    const container = document.getElementById('ranking-votos');
-    
-    // Convertir objeto a array y ordenar por votos (mayor a menor)
-    const departamentosOrdenados = Object.entries(votosRegistraduriaPorDepartamento)
-        .sort(([,a], [,b]) => b - a);
-    
-    let html = `
-        <table class="ranking-table">
-            <thead>
-                <tr>
-                    <th style="width: 80px;">Posición</th>
-                    <th>Departamento</th>
-                    <th style="text-align: right;">Votos Oficiales</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-    
-    departamentosOrdenados.forEach(([departamento, votos], index) => {
-        const posicion = index + 1;
-        let claseFila = '';
-        let medalla = '';
-        
-        if (posicion === 1) {
-            claseFila = 'ranking-top-1';
-            medalla = '';
-        } else if (posicion === 2) {
-            claseFila = 'ranking-top-2';
-            medalla = '';
-        } else if (posicion === 3) {
-            claseFila = 'ranking-top-3';
-            medalla = '';
-        }
-        
-        html += `
-            <tr class="${claseFila}">
-                <td class="ranking-posicion">${medalla} ${posicion}°</td>
-                <td class="ranking-departamento">${departamento}</td>
-                <td class="ranking-votos">${votos.toLocaleString()}</td>
-            </tr>
-        `;
-    });
-    
-    const totalVotos = Object.values(votosRegistraduriaPorDepartamento).reduce((a, b) => a + b, 0);
-    
-    html += `
-            </tbody>
-            <tfoot>
-                <tr class="total-ranking">
-                    <td colspan="3">
-                         TOTAL GENERAL: ${totalVotos.toLocaleString()} VOTOS OFICIALES
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-    `;
-    
-    container.innerHTML = html;
-}
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('modal-delegados');
+            // ... el resto del código permanece igual ...
+            
+            function inicializar() {
+                cargarFiltros();
+                cargarMapaColombia();
+                agregarEventListeners();
+                actualizarResultados();
+            }
 
             function cargarMapaColombia() {
                 const width = mapContainer.clientWidth;
