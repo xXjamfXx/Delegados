@@ -115,38 +115,6 @@
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
         }
-                <!-- BUSCA ESTO EXACTO: -->
-        <section class="filters-section">
-            <h2>Lideres por Departamento</h2>
-            <div class="search-container">
-                <input type="text" id="search-input" class="search-box" placeholder="🔍 Buscar delegado por nombre...">
-                <select id="comision-filter" class="filter-select">
-                    <option value="">Todas las comisiones</option>
-                </select>
-                <select id="departamento-filter" class="filter-select">
-                    <option value="">Todos los departamentos</option>
-                </select>
-            </div>
-            <div class="filter-info">
-                <p id="filter-results">Mostrando todos los delegados</p>
-            </div>
-        </section>
-
-        <!-- Y AGREGAR INMEDIATAMENTE DESPUÉS: -->
-        <!-- BOTÓN Y MODAL PARA RANKING -->
-        <div class="ranking-floating-btn">
-            <button id="btn-mostrar-ranking">📊 Ver Ranking Oficial</button>
-        </div>
-
-        <div id="modal-ranking" class="modal">
-            <div class="modal-content" style="max-width: 800px;">
-                <span class="close-modal" onclick="cerrarModalRanking()">&times;</span>
-                <h3 style="color: #003366; margin-bottom: 1.5rem; text-align: center;">
-                    🏆 Ranking Oficial de Votos por Departamento
-                </h3>
-                <div id="ranking-votos"></div>
-            </div>
-        </div>
 
         .filters-section h2 {
             color: #003366;
@@ -611,158 +579,7 @@
             .municipios-table td {
                 padding: 8px 10px;
             }
-        
-        .ranking-floating-btn {
-        position: fixed;
-        bottom: 30px;
-        left: 30px;
-        z-index: 1000;
-    }
-
-    #btn-mostrar-ranking {
-        background: linear-gradient(135deg, #003366, #004d99);
-        color: white;
-        border: none;
-        padding: 15px 25px;
-        border-radius: 50px;
-        font-size: 1rem;
-        font-weight: bold;
-        cursor: pointer;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease;
-        border: 3px solid #ffd700;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    #btn-mostrar-ranking:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        background: linear-gradient(135deg, #004d99, #0055aa);
-    }
-
-    /* MODAL DE RANKING MEJORADO */
-    #ranking-votos {
-        max-height: 70vh;
-        overflow-y: auto;
-    }
-
-    .ranking-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1rem 0;
-        background: white;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .ranking-table th {
-        background: linear-gradient(135deg, #003366, #004d99);
-        color: white;
-        padding: 15px 20px;
-        text-align: left;
-        font-weight: bold;
-        font-size: 1rem;
-        position: sticky;
-        top: 0;
-        border: none;
-    }
-
-    .ranking-table td {
-        padding: 12px 20px;
-        border-bottom: 1px solid #e6f2ff;
-        transition: background 0.3s ease;
-    }
-
-    .ranking-table tr:hover {
-        background: #f0f8ff;
-        transform: scale(1.01);
-    }
-
-    .ranking-posicion {
-        font-weight: bold;
-        color: #003366;
-        text-align: center;
-        width: 70px;
-        font-size: 1.1rem;
-    }
-
-    .ranking-departamento {
-        font-weight: 600;
-        color: #003366;
-        font-size: 1rem;
-    }
-
-    .ranking-votos {
-        text-align: right;
-        font-weight: bold;
-        color: #004d99;
-        font-size: 1rem;
-    }
-
-    .ranking-top-1 {
-        background: linear-gradient(135deg, #fff8e6, #ffeed6);
-        border-left: 5px solid #ff6b00;
-    }
-
-    .ranking-top-1 .ranking-posicion {
-        color: #ff6b00;
-        font-size: 1.3rem;
-    }
-
-    .ranking-top-2 {
-        background: linear-gradient(135deg, #f0f8ff, #e6f2ff);
-        border-left: 5px solid #004d99;
-    }
-
-    .ranking-top-3 {
-        background: linear-gradient(135deg, #f0fff0, #e6ffe6);
-        border-left: 5px solid #00cc00;
-    }
-
-    .ranking-medalla {
-        font-size: 1.2rem;
-        margin-right: 5px;
-    }
-
-    .total-ranking {
-        background: linear-gradient(135deg, #003366, #004d99);
-        color: white;
-        font-weight: bold;
-        font-size: 1.1rem;
-    }
-
-    .total-ranking td {
-        border: none;
-        text-align: center;
-        padding: 15px;
-    }
-
-    @media (max-width: 768px) {
-        .ranking-floating-btn {
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
         }
-        
-        #btn-mostrar-ranking {
-            width: 100%;
-            justify-content: center;
-            padding: 12px 20px;
-            font-size: 0.9rem;
-        }
-        
-        .ranking-table {
-            font-size: 0.8rem;
-        }
-        
-        .ranking-table th,
-        .ranking-table td {
-            padding: 10px 12px;
-        }
-    }
         
     </style>
 </head>
@@ -783,7 +600,8 @@
             <p>El Pacto Histórico representa la esperanza de un cambio verdadero para Colombia. Con Martin Carabalí como candidato, trabajamos por una nación más justa, equitativa y llena de oportunidades para todos los colombianos.</p>
         </section>
 
-              <section class="filters-section">
+      
+        <section class="filters-section">
             <h2>Lideres por Departamento</h2>
             <div class="search-container">
                 <input type="text" id="search-input" class="search-box" placeholder="🔍 Buscar delegado por nombre...">
@@ -799,21 +617,7 @@
             </div>
         </section>
 
-        <!-- BOTÓN Y MODAL PARA RANKING -->
-        <div class="ranking-floating-btn">
-            <button id="btn-mostrar-ranking">Ver Ranking </button>
-        </div>
-
-        <div id="modal-ranking" class="modal">
-            <div class="modal-content" style="max-width: 800px;">
-                <span class="close-modal" onclick="cerrarModalRanking()">&times;</span>
-                <h3 style="color: #003366; margin-bottom: 1.5rem; text-align: center;">
-                    Ranking de Votos por Departamento
-                </h3>
-                <div id="ranking-votos"></div>
-            </div>
-        </div>
-
+     
         <section class="map-section">
             <h2>Departamentos de Colombia</h2>
             <div id="colombia-map"></div>
@@ -2123,67 +1927,7 @@ const votosPorMunicipio = {
     ]
     // AGREGA AQUÍ TODOS LOS DEMÁS DEPARTAMENTOS CON SUS MUNICIPIOS
 };
- // NUEVA FUNCIÓN PARA MOSTRAR RANKING DE VOTOS
-        function mostrarRankingVotos() {
-            const container = document.getElementById('ranking-votos');
-            
-            // Convertir objeto a array y ordenar por votos (mayor a menor)
-            const departamentosOrdenados = Object.entries(votosRegistraduriaPorDepartamento)
-                .sort(([,a], [,b]) => b - a);
-            
-            let html = `
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 80px;">Posición</th>
-                            <th>Departamento</th>
-                            <th style="text-align: right;">Votos Oficiales</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            departamentosOrdenados.forEach(([departamento, votos], index) => {
-                const posicion = index + 1;
-                let claseFila = '';
-                let medalla = '';
-                
-                if (posicion === 1) {
-                    claseFila = 'ranking-top-1';
-                    medalla = '🥇';
-                } else if (posicion === 2) {
-                    claseFila = 'ranking-top-2';
-                    medalla = '🥈';
-                } else if (posicion === 3) {
-                    claseFila = 'ranking-top-3';
-                    medalla = '🥉';
-                }
-                
-                html += `
-                    <tr class="${claseFila}">
-                        <td class="ranking-posicion">${medalla} ${posicion}°</td>
-                        <td class="ranking-departamento">${departamento}</td>
-                        <td class="ranking-votos">${votos.toLocaleString()}</td>
-                    </tr>
-                `;
-            });
-            
-            const totalVotos = Object.values(votosRegistraduriaPorDepartamento).reduce((a, b) => a + b, 0);
-            
-            html += `
-                    </tbody>
-                    <tfoot>
-                        <tr class="total-ranking">
-                            <td colspan="3">
-                                🏁 TOTAL GENERAL: ${totalVotos.toLocaleString()} VOTOS OFICIALES
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-            `;
-            
-            container.innerHTML = html;
-        }
+// ========== FIN DATOS MUNICIPIOS ==========
         
 
         
@@ -2203,19 +1947,6 @@ const votosPorMunicipio = {
             let departamentosData = [];
             let mapaCargado = false;
 
-            function inicializar() {
-                cargarFiltros();
-                cargarMapaColombia();
-                agregarEventListeners();
-                actualizarResultados();
-              
-            }
-
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('modal-delegados');
-            // ... el resto del código permanece igual ...
-            
             function inicializar() {
                 cargarFiltros();
                 cargarMapaColombia();
@@ -2901,7 +2632,7 @@ function normalizarNombreDepartamento(nombre) {
         .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
         .join(' ');
 }
-           
+            // ========== FIN FUNCIONES PESTAÑAS ==========
             inicializar();
         });
     </script>
@@ -3321,23 +3052,7 @@ function mostrarVotosMunicipio(departamento) {
     
     container.innerHTML = html;
 }
-// FUNCIONES PARA EL MODAL DE RANKING
-function mostrarModalRanking() {
-    document.getElementById('modal-ranking').style.display = 'block';
-    mostrarRankingVotos();
-}
 
-function cerrarModalRanking() {
-    document.getElementById('modal-ranking').style.display = 'none';
-}
-
-// Agregar event listener para el botón
-document.getElementById('btn-mostrar-ranking').addEventListener('click', mostrarModalRanking);
-
-// Cerrar modal al hacer click fuera
-document.getElementById('modal-ranking').addEventListener('click', function(e) {
-    if (e.target === this) cerrarModalRanking();
-});
 </script>
 </body>
 </html>
