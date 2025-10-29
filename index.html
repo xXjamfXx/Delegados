@@ -2796,64 +2796,93 @@ function normalizarNombreDepartamento(nombre) {
         .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
         .join(' ');
 }
-            // ========== FIN FUNCIONES PESTAÑAS ==========
-                    // ========== FUNCIONALIDAD RANKING ==========
-        document.addEventListener('DOMContentLoaded', function() {
+                 // ========== FUNCIONALIDAD RANKING ==========
+        function inicializarRanking() {
             const rankingBtn = document.getElementById('ranking-btn');
             const rankingContainer = document.getElementById('ranking-container');
             const rankingList = document.getElementById('ranking-list');
             
-            if (rankingBtn) {
+            console.log("🔍 Botón de ranking encontrado:", rankingBtn);
+            
+            if (rankingBtn && rankingContainer && rankingList) {
                 rankingBtn.addEventListener('click', function() {
+                    console.log("🎯 Click en botón ranking");
                     const isVisible = rankingContainer.style.display === 'block';
                     
                     if (!isVisible) {
+                        console.log("📊 Generando ranking...");
                         generarRanking();
                         rankingContainer.style.display = 'block';
                         rankingBtn.classList.add('active');
                     } else {
+                        console.log("❌ Cerrando ranking...");
                         rankingContainer.style.display = 'none';
                         rankingBtn.classList.remove('active');
                     }
                 });
+            } else {
+                console.log("❌ Elementos del ranking no encontrados");
             }
+        }
+        
+        function generarRanking() {
+            const rankingList = document.getElementById('ranking-list');
+            if (!rankingList) return;
             
-            function generarRanking() {
-                // Convertir a array y ordenar por votos (mayor a menor)
-                const rankingArray = Object.entries(votosRegistraduriaPorDepartamento)
-                    .map(([departamento, votos]) => ({ 
-                        departamento, 
-                        votos: votos || 0 
-                    }))
-                    .sort((a, b) => b.votos - a.votos);
+            console.log("📈 Generando ranking con datos:", votosRegistraduriaPorDepartamento);
+            
+            // Convertir a array y ordenar por votos (mayor a menor)
+            const rankingArray = Object.entries(votosRegistraduriaPorDepartamento)
+                .map(([departamento, votos]) => ({ 
+                    departamento, 
+                    votos: votos || 0 
+                }))
+                .sort((a, b) => b.votos - a.votos);
+            
+            // Calcular total para porcentajes
+            const totalVotos = rankingArray.reduce((sum, item) => sum + item.votos, 0);
+            
+            console.log("📊 Total de votos:", totalVotos);
+            
+            // Generar HTML del ranking
+            let rankingHTML = '';
+            
+            rankingArray.forEach((item, index) => {
+                const posicion = index + 1;
+                const porcentaje = totalVotos > 0 ? ((item.votos / totalVotos) * 100).toFixed(1) : 0;
+                const posicionClass = posicion <= 3 ? 'top-3' : '';
                 
-                // Calcular total para porcentajes
-                const totalVotos = rankingArray.reduce((sum, item) => sum + item.votos, 0);
-                
-                // Generar HTML del ranking
-                let rankingHTML = '';
-                
-                rankingArray.forEach((item, index) => {
-                    const posicion = index + 1;
-                    const porcentaje = totalVotos > 0 ? ((item.votos / totalVotos) * 100).toFixed(1) : 0;
-                    const posicionClass = posicion <= 3 ? 'top-3' : '';
-                    
-                    rankingHTML += `
-                        <div class="ranking-item">
-                            <div class="ranking-position ${posicionClass}">${posicion}</div>
-                            <div class="ranking-department">
-                                ${item.departamento}
-                                <div class="ranking-percentage">${porcentaje}% del total</div>
-                            </div>
-                            <div class="ranking-votes">${item.votos.toLocaleString()} votos</div>
+                rankingHTML += `
+                    <div class="ranking-item">
+                        <div class="ranking-position ${posicionClass}">${posicion}</div>
+                        <div class="ranking-department">
+                            ${item.departamento}
+                            <div class="ranking-percentage">${porcentaje}% del total nacional</div>
                         </div>
-                    `;
-                });
-                
-                rankingList.innerHTML = rankingHTML;
-            }
+                        <div class="ranking-votes">${item.votos.toLocaleString()} votos</div>
+                    </div>
+                `;
+            });
+            
+            rankingList.innerHTML = rankingHTML;
+            console.log("✅ Ranking generado correctamente");
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🚀 DOM cargado - Inicializando ranking");
+            inicializarRanking();
         });
+
+        // También inicializar después de un tiempo por si acaso
+        setTimeout(function() {
+            if (document.getElementById('ranking-btn') && !document.querySelector('.ranking-item')) {
+                console.log("🕒 Inicializando ranking con timeout");
+                inicializarRanking();
+            }
+        }, 1000);
             inicializar();
+             inicializarRanking();
         });
         
     </script>
