@@ -2541,63 +2541,83 @@ function mostrarDelegados(nombreDepartamento) {
                 }
             }
 
-            function mostrarVotosMunicipio(departamento) {
-                const municipios = votosPorMunicipio[departamento] || [];
-                const container = document.getElementById('lista-municipios');
-                
-                if (municipios.length === 0) {
-                    container.innerHTML = `
-                        <div class="no-results">
-                            <p>📊 Datos en proceso de carga</p>
-                            <p><small>Los votos por municipio para ${departamento} se están actualizando</small></p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // Calcular total
-                const totalVotos = municipios.reduce((sum, mun) => sum + mun.votos, 0);
-                
-                // Ordenar por votos (mayor a menor)
-                municipios.sort((a, b) => b.votos - a.votos);
-                
-                let html = `
-                    <table class="municipios-table">
-                        <thead>
-                            <tr>
-                                <th>Municipio</th>
-                                <th style="text-align: right;">Votos Obtenidos</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                municipios.forEach(mun => {
-                    html += `
-                        <tr>
-                            <td class="municipio-nombre">${mun.municipio}</td>
-                            <td class="municipio-votos">${mun.votos.toLocaleString()}</td>
-                        </tr>
-                    `;
-                });
-                
-                html += `
-                        </tbody>
-                        <tfoot>
-                            <tr class="total-municipios">
-                                <td><strong>Total ${departamento}</strong></td>
-                                <td style="text-align: right;"><strong>${totalVotos.toLocaleString()}</strong></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                    
-                    <div style="margin-top: 1rem; text-align: center; color: #666; font-size: 0.9rem;">
-                        Mostrando ${municipios.length} municipios
-                    </div>
-                `;
-                
-                container.innerHTML = html;
-            }
+function mostrarVotosMunicipio(departamento) {
+    console.log("🔍 DEPARTAMENTO BUSCADO:", departamento);
+    console.log("📊 DEPARTAMENTOS DISPONIBLES:", Object.keys(votosPorMunicipio));
+    
+    const municipios = votosPorMunicipio[departamento] || [];
+    console.log("🏛️ MUNICIPIOS ENCONTRADOS:", municipios);
+    
+    const container = document.getElementById('lista-municipios');
+    
+    // VERIFICACIÓN EXTRA - mostrar todos los departamentos y sus keys
+    console.log("🎯 TODOS LOS DEPARTAMENTOS EN votosPorMunicipio:");
+    Object.keys(votosPorMunicipio).forEach(depto => {
+        console.log(`   - "${depto}"`);
+    });
+    
+    // Verificar si el departamento existe exactamente
+    const existeExacto = Object.keys(votosPorMunicipio).includes(departamento);
+    console.log("✅ ¿Existe exactamente?", existeExacto);
+    
+    if (municipios.length === 0) {
+        console.log("❌ NO hay municipios para:", departamento);
+        container.innerHTML = `
+            <div class="no-results">
+                <p>📊 Datos en proceso de carga</p>
+                <p><small>Los votos por municipio para ${departamento} se están actualizando</small></p>
+                <p style="color: red; font-size: 0.8rem;">DEBUG: Departamento buscado: "${departamento}"</p>
+            </div>
+        `;
+        return;
+    }
+    
+    console.log("✅ SI hay municipios, procediendo a mostrar...");
+    
+    // Calcular total
+    const totalVotos = municipios.reduce((sum, mun) => sum + mun.votos, 0);
+    
+    // Ordenar por votos (mayor a menor)
+    municipios.sort((a, b) => b.votos - a.votos);
+    
+    let html = `
+        <table class="municipios-table">
+            <thead>
+                <tr>
+                    <th>Municipio</th>
+                    <th style="text-align: right;">Votos Obtenidos</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    municipios.forEach(mun => {
+        html += `
+            <tr>
+                <td class="municipio-nombre">${mun.municipio}</td>
+                <td class="municipio-votos">${mun.votos.toLocaleString()}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+            <tfoot>
+                <tr class="total-municipios">
+                    <td><strong>Total ${departamento}</strong></td>
+                    <td style="text-align: right;"><strong>${totalVotos.toLocaleString()}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div style="margin-top: 1rem; text-align: center; color: #666; font-size: 0.9rem;">
+            Mostrando ${municipios.length} municipios
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    console.log("✅ Tabla de municipios cargada correctamente");
+}
             // ========== FIN FUNCIONES PESTAÑAS ==========
             inicializar();
         });
