@@ -916,15 +916,16 @@
         </div>
     </div>
     <!-- Sección de Ranking -->
+       <!-- Sección de Ranking -->
     <section class="ranking-section">
         <div class="container">
-            <button id="ranking-btn" class="ranking-button">
+            <button id="ranking-btn" class="ranking-button" onclick="toggleRanking()">
                 <span class="ranking-icon">🏆</span>
                 Ver Ranking de Departamentos
                 <span class="ranking-arrow">▼</span>
             </button>
             
-            <div id="ranking-container" class="ranking-container" style="display: none;">
+            <div id="ranking-container" class="ranking-container">
                 <h3>Ranking de Departamentos por Votos de la Registraduría</h3>
                 <div class="ranking-list" id="ranking-list">
                     <!-- Ranking se carga aquí -->
@@ -2833,15 +2834,25 @@ function normalizarNombreDepartamento(nombre) {
                 console.log("❌ Elementos del ranking no encontrados");
             }
         }
-        
+                // ========== FUNCIONALIDAD RANKING ==========
         function generarRanking() {
-            const rankingList = document.getElementById('ranking-list');
-            if (!rankingList) return;
+            console.log("📊 Generando ranking...");
             
-            console.log("📈 Generando ranking con datos:", votosRegistraduriaPorDepartamento);
+            const rankingList = document.getElementById('ranking-list');
+            if (!rankingList) {
+                console.log("❌ No se encontró ranking-list");
+                return;
+            }
+            
+            // Verificar que existen los datos
+            if (!window.votosRegistraduriaPorDepartamento) {
+                console.log("❌ No se encontraron datos de votos");
+                rankingList.innerHTML = '<div class="no-results">No hay datos disponibles</div>';
+                return;
+            }
             
             // Convertir a array y ordenar por votos (mayor a menor)
-            const rankingArray = Object.entries(votosRegistraduriaPorDepartamento)
+            const rankingArray = Object.entries(window.votosRegistraduriaPorDepartamento)
                 .map(([departamento, votos]) => ({ 
                     departamento, 
                     votos: votos || 0 
@@ -2851,7 +2862,7 @@ function normalizarNombreDepartamento(nombre) {
             // Calcular total para porcentajes
             const totalVotos = rankingArray.reduce((sum, item) => sum + item.votos, 0);
             
-            console.log("📊 Total de votos:", totalVotos);
+            console.log("📈 Ranking generado con", rankingArray.length, "departamentos");
             
             // Generar HTML del ranking
             let rankingHTML = '';
@@ -2874,8 +2885,69 @@ function normalizarNombreDepartamento(nombre) {
             });
             
             rankingList.innerHTML = rankingHTML;
-            console.log("✅ Ranking generado correctamente");
         }
+        
+        function toggleRanking() {
+            console.log("🎯 Botón de ranking clickeado");
+            
+            const rankingContainer = document.getElementById('ranking-container');
+            const rankingBtn = document.getElementById('ranking-btn');
+            
+            if (!rankingContainer || !rankingBtn) {
+                console.log("❌ No se encontraron elementos del ranking");
+                return;
+            }
+            
+            const isVisible = rankingContainer.style.display === 'block';
+            
+            if (isVisible) {
+                // Cerrar
+                rankingContainer.style.display = 'none';
+                rankingBtn.classList.remove('active');
+                console.log("✅ Ranking cerrado");
+            } else {
+                // Abrir
+                generarRanking();
+                rankingContainer.style.display = 'block';
+                rankingBtn.classList.add('active');
+                console.log("✅ Ranking abierto");
+            }
+        }
+        
+        // Inicializar cuando todo esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🚀 DOM cargado - Configurando ranking");
+            
+            const rankingBtn = document.getElementById('ranking-btn');
+            const rankingContainer = document.getElementById('ranking-container');
+            
+            if (rankingBtn && rankingContainer) {
+                // Estado inicial cerrado
+                rankingContainer.style.display = 'none';
+                
+                // Agregar event listener
+                rankingBtn.addEventListener('click', toggleRanking);
+                console.log("✅ Event listener agregado al botón");
+            } else {
+                console.log("❌ No se encontró el botón o contenedor del ranking");
+            }
+        });
+        
+        // También intentar inicializar después de un tiempo
+        setTimeout(function() {
+            const rankingBtn = document.getElementById('ranking-btn');
+            if (rankingBtn && !rankingBtn.hasEventListener) {
+                console.log("🕒 Configurando ranking con timeout");
+                rankingBtn.addEventListener('click', toggleRanking);
+                rankingBtn.hasEventListener = true;
+                
+                // Asegurar estado inicial
+                const rankingContainer = document.getElementById('ranking-container');
+                if (rankingContainer) {
+                    rankingContainer.style.display = 'none';
+                }
+            }
+        }, 2000);
 
         // Inicializar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
