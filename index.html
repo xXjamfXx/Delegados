@@ -2545,28 +2545,24 @@ function mostrarVotosMunicipio(departamento) {
     console.log("🔍 DEPARTAMENTO BUSCADO:", departamento);
     console.log("📊 DEPARTAMENTOS DISPONIBLES:", Object.keys(votosPorMunicipio));
     
-    const municipios = votosPorMunicipio[departamento] || [];
+    // NORMALIZAR EL NOMBRE (case-insensitive)
+    const departamentoNormalizado = normalizarNombreDepartamento(departamento);
+    console.log("🔄 DEPARTAMENTO NORMALIZADO:", departamentoNormalizado);
+    
+    const municipios = votosPorMunicipio[departamentoNormalizado] || [];
     console.log("🏛️ MUNICIPIOS ENCONTRADOS:", municipios);
     
     const container = document.getElementById('lista-municipios');
     
-    // VERIFICACIÓN EXTRA - mostrar todos los departamentos y sus keys
-    console.log("🎯 TODOS LOS DEPARTAMENTOS EN votosPorMunicipio:");
-    Object.keys(votosPorMunicipio).forEach(depto => {
-        console.log(`   - "${depto}"`);
-    });
-    
-    // Verificar si el departamento existe exactamente
-    const existeExacto = Object.keys(votosPorMunicipio).includes(departamento);
-    console.log("✅ ¿Existe exactamente?", existeExacto);
-    
     if (municipios.length === 0) {
-        console.log("❌ NO hay municipios para:", departamento);
+        console.log("❌ NO hay municipios para:", departamentoNormalizado);
         container.innerHTML = `
             <div class="no-results">
                 <p>📊 Datos en proceso de carga</p>
                 <p><small>Los votos por municipio para ${departamento} se están actualizando</small></p>
-                <p style="color: red; font-size: 0.8rem;">DEBUG: Departamento buscado: "${departamento}"</p>
+                <p style="color: red; font-size: 0.8rem;">
+                    DEBUG: Buscado: "${departamento}" → Normalizado: "${departamentoNormalizado}"
+                </p>
             </div>
         `;
         return;
@@ -2617,6 +2613,17 @@ function mostrarVotosMunicipio(departamento) {
     
     container.innerHTML = html;
     console.log("✅ Tabla de municipios cargada correctamente");
+}
+
+// AGREGA ESTA FUNCIÓN NUEVA para normalizar nombres
+function normalizarNombreDepartamento(nombre) {
+    if (!nombre) return nombre;
+    
+    // Convertir a minúsculas y luego capitalizar primera letra
+    return nombre.toLowerCase()
+        .split(' ')
+        .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+        .join(' ');
 }
             // ========== FIN FUNCIONES PESTAÑAS ==========
             inicializar();
